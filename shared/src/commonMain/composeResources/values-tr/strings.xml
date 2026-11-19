@@ -40,4 +40,8 @@
     <string name="notice_no_truth">Bu seviyede doğruluk kartı yok</string>
     <string name="notice_no_dare">Bu seviyede cesaret kartı yok</string>
     <string name="notice_no_penalty">Bu seviyede ceza yok, devam ediyoruz</string>
+    <string name="spin_hint">%1$s çeviriyor, şişeyi fırlat</string>
+    <string name="landed_on_self">Kendine denk geldi, tekrar çevir!</string>
+    <string name="asks_answers">%1$s soruyor → %2$s cevaplıyor</string>
+    <string name="answered">Cevapladı</string>
 </resources>

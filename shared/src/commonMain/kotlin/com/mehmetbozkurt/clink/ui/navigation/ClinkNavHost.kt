@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
+import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleScreen
 import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareScreen
 import com.mehmetbozkurt.clink.ui.screens.GameListScreen
 import com.mehmetbozkurt.clink.ui.screens.GameOverScreen
@@ -22,8 +23,9 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
     fun startGame(game: GameId, players: List<String>, level: Level, options: NavOptionsBuilder.() -> Unit = {}) {
         val route: Any = when (game) {
             GameId.TRUTH_OR_DARE -> TruthOrDareRoute(players, level)
-            // Spin the Bottle gets its screen in Task 10; until then it goes straight to GameOver.
-            else -> GameOverRoute(game, players, level)
+            GameId.SPIN_THE_BOTTLE -> SpinTheBottleRoute(players, level)
+            // Beer Pong is disabled in the game list until Plan 2.
+            GameId.BEER_PONG -> GameOverRoute(game, players, level)
         }
         navController.navigate(route, options)
     }
@@ -55,6 +57,18 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 onEnd = {
                     navController.navigate(GameOverRoute(GameId.TRUTH_OR_DARE, route.players, route.level)) {
                         popUpTo<TruthOrDareRoute> { inclusive = true }
+                    }
+                },
+            )
+        }
+        composable<SpinTheBottleRoute> { entry ->
+            val route = entry.toRoute<SpinTheBottleRoute>()
+            SpinTheBottleScreen(
+                players = route.players,
+                level = route.level,
+                onEnd = {
+                    navController.navigate(GameOverRoute(GameId.SPIN_THE_BOTTLE, route.players, route.level)) {
+                        popUpTo<SpinTheBottleRoute> { inclusive = true }
                     }
                 },
             )

@@ -40,4 +40,8 @@
     <string name="notice_no_truth">No truth cards at this level</string>
     <string name="notice_no_dare">No dare cards at this level</string>
     <string name="notice_no_penalty">No penalties at this level, moving on</string>
+    <string name="spin_hint">%1$s spins — flick the bottle</string>
+    <string name="landed_on_self">Landed on yourself, spin again!</string>
+    <string name="asks_answers">%1$s asks → %2$s answers</string>
+    <string name="answered">Answered</string>
 </resources>
