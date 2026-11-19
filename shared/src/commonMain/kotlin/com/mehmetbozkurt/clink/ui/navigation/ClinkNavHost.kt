@@ -77,6 +77,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             val route = entry.toRoute<GameOverRoute>()
             GameOverScreen(
                 game = route.game,
+                level = route.level,
                 onPlayAgain = {
                     startGame(route.game, route.players, route.level) { popUpTo<GameOverRoute> { inclusive = true } }
                 },

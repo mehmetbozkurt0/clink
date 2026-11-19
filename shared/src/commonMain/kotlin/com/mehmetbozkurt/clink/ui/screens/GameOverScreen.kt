@@ -9,20 +9,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.back_to_games
 import com.mehmetbozkurt.clink.resources.game_over
 import com.mehmetbozkurt.clink.resources.play_again
+import com.mehmetbozkurt.clink.ui.components.AdultConfirmDialog
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
+import com.mehmetbozkurt.clink.ui.components.needsAdultConfirmation
 import com.mehmetbozkurt.clink.ui.components.SecondaryButton
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.stringResource
 
+/** "Play again" starts a new session, so a Spicy one asks the 18+ question again. */
 @Composable
-fun GameOverScreen(game: GameId, onPlayAgain: () -> Unit, onBackToGames: () -> Unit) {
+fun GameOverScreen(game: GameId, level: Level, onPlayAgain: () -> Unit, onBackToGames: () -> Unit) {
+    var askAdult by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -31,7 +41,21 @@ fun GameOverScreen(game: GameId, onPlayAgain: () -> Unit, onBackToGames: () -> U
         Text(text = game.title(), color = ClinkColors.Primary, style = MaterialTheme.typography.labelLarge)
         Text(text = stringResource(Res.string.game_over), color = ClinkColors.TextPrimary, style = MaterialTheme.typography.displaySmall)
         Spacer(Modifier.weight(1f))
-        PrimaryButton(text = stringResource(Res.string.play_again), onClick = onPlayAgain, modifier = Modifier.fillMaxWidth())
+        PrimaryButton(
+            text = stringResource(Res.string.play_again),
+            onClick = { if (level.needsAdultConfirmation()) askAdult = true else onPlayAgain() },
+            modifier = Modifier.fillMaxWidth(),
+        )
         SecondaryButton(text = stringResource(Res.string.back_to_games), onClick = onBackToGames, modifier = Modifier.fillMaxWidth())
+    }
+
+    if (askAdult) {
+        AdultConfirmDialog(
+            onConfirm = {
+                askAdult = false
+                onPlayAgain()
+            },
+            onDismiss = { askAdult = false },
+        )
     }
 }
