@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -72,7 +71,7 @@ fun BottleCircle(
     onFlick: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxWidth().aspectRatio(1f)) {
+    BoxWithConstraints(modifier = modifier.aspectRatio(1f)) {
         val radiusPx = constraints.maxWidth / 2f * 0.8f
         players.forEachIndexed { index, name ->
             val angle = playerAngleDegrees(index, players.size) * PI / 180.0

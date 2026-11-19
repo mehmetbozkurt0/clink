@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -108,18 +109,23 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
                 }
             }
             val phase = state.phase
-            BottleCircle(
-                players = state.players,
-                spinner = state.spinner,
-                answerer = (phase as? SpinPhase.Asking)?.answerer?.takeIf { !spinning },
-                rotation = rotation.value,
-                flickEnabled = !spinning && phase is SpinPhase.ReadyToSpin,
-                onFlick = ::flick,
-            )
+            // The circle takes whatever space the bottom panel leaves (the largest square that fits),
+            // so the panel's buttons always fit: small phones, large font scale, landscape on large screens.
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                BottleCircle(
+                    players = state.players,
+                    spinner = state.spinner,
+                    answerer = (phase as? SpinPhase.Asking)?.answerer?.takeIf { !spinning },
+                    rotation = rotation.value,
+                    flickEnabled = !spinning && phase is SpinPhase.ReadyToSpin,
+                    onFlick = ::flick,
+                    modifier = Modifier.aspectRatio(1f, matchHeightConstraintsFirst = true),
+                )
+            }
             Spacer(Modifier.height(16.dp))
             Column(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Bottom),
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (!spinning) {
