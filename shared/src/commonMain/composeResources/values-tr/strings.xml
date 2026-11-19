@@ -1,0 +1,31 @@
+<resources>
+    <string name="tagline">Masadaki herkes için.</string>
+    <string name="play">OYNA</string>
+    <string name="games_title">Oyun seç</string>
+    <string name="game_tod">Doğruluk mu Cesaret mi</string>
+    <string name="game_spin">Şişe Çevirmece</string>
+    <string name="game_beerpong">Beer Pong</string>
+    <string name="coming_soon">Yakında</string>
+    <string name="mode_title">Nasıl oynuyorsunuz?</string>
+    <string name="mode_local">Arkadaşlarla</string>
+    <string name="mode_local_sub">Tek telefon, sırayla</string>
+    <string name="mode_online">Online</string>
+    <string name="players_title">Kim oynuyor?</string>
+    <string name="player_hint">Oyuncu %1$d</string>
+    <string name="add_player">Oyuncu ekle</string>
+    <string name="continue_button">Devam</string>
+    <string name="err_too_few">En az 2 oyuncu gerekli</string>
+    <string name="err_too_many">En fazla 12 oyuncu</string>
+    <string name="err_duplicate">“%1$s” zaten oyunda</string>
+    <string name="level_title">Seviye seç</string>
+    <string name="level_casual_desc">Herkesle eğlenceli</string>
+    <string name="level_hard_desc">Daha kişisel, daha zor cezalar</string>
+    <string name="level_spicy_desc">Flörtöz ve cesur, 18+</string>
+    <string name="adult_title">18 yaş ve üzeri</string>
+    <string name="adult_body">Spicy yetişkinlere yönelik cesur içerik barındırır. Masadaki herkes 18 yaşından büyük mü?</string>
+    <string name="adult_yes">Evet, hepimiz 18+</string>
+    <string name="cancel">Vazgeç</string>
+    <string name="game_over">Oyun bitti</string>
+    <string name="play_again">Tekrar oyna</string>
+    <string name="back_to_games">Oyun listesine dön</string>
+</resources>

@@ -1,0 +1,31 @@
+<resources>
+    <string name="tagline">For everyone at the table.</string>
+    <string name="play">PLAY</string>
+    <string name="games_title">Pick a game</string>
+    <string name="game_tod">Truth or Dare</string>
+    <string name="game_spin">Spin the Bottle</string>
+    <string name="game_beerpong">Beer Pong</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="mode_title">How are you playing?</string>
+    <string name="mode_local">With friends</string>
+    <string name="mode_local_sub">One phone, take turns</string>
+    <string name="mode_online">Online</string>
+    <string name="players_title">Who’s playing?</string>
+    <string name="player_hint">Player %1$d</string>
+    <string name="add_player">Add player</string>
+    <string name="continue_button">Continue</string>
+    <string name="err_too_few">At least 2 players needed</string>
+    <string name="err_too_many">12 players max</string>
+    <string name="err_duplicate">“%1$s” is already playing</string>
+    <string name="level_title">Pick a level</string>
+    <string name="level_casual_desc">Fun with anyone</string>
+    <string name="level_hard_desc">More personal, tougher penalties</string>
+    <string name="level_spicy_desc">Flirty and bold, 18+</string>
+    <string name="adult_title">18 and over</string>
+    <string name="adult_body">Spicy has bold, adult content. Is everyone at the table 18 or older?</string>
+    <string name="adult_yes">Yes, we’re all 18+</string>
+    <string name="cancel">Cancel</string>
+    <string name="game_over">Game over</string>
+    <string name="play_again">Play again</string>
+    <string name="back_to_games">Back to games</string>
+</resources>
