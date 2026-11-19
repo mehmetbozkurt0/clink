@@ -15,6 +15,12 @@ object ContentParser {
     fun parse(json: String): List<Pack> {
         val file = this.json.decodeFromString<ContentFile>(json)
         require(file.version == SUPPORTED_VERSION) { "Unsupported content format version: ${file.version}" }
+        // A card with no text, or a blank one, would show an empty card or crash when drawn.
+        file.packs.flatMap { it.cards }.forEach { card ->
+            require(card.text.isNotEmpty() && card.text.values.none { it.isBlank() }) {
+                "Card ${card.id} has no text or an empty text"
+            }
+        }
         return file.packs
     }
 }

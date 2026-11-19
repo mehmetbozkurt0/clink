@@ -48,4 +48,6 @@ Dosyayı değiştirdikten sonra testleri çalıştır:
 ./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.content.*"
 ```
 
-Testler şunları kontrol eder: format bozuk mu, aynı ID iki kez kullanılmış mı, her kartta TR ve EN metni var mı, her tip ve seviyede en az 3 kart var mı, içkiyle ilgili bir kelime geçiyor mu.
+Testler şunları kontrol eder: format bozuk mu, metni olmayan ya da boş metinli kart var mı, aynı ID iki kez kullanılmış mı, her kartta TR ve EN metni var mı, her tip ve seviyede en az 3 kart var mı, içkiyle ilgili bir kelime geçiyor mu.
+
+Uygulama da dosyayı okurken boş metinli kartları reddeder. Bu yüzden dosyayı değiştirdikten sonra testleri çalıştırmadan uygulamayı derleme: bozuk bir dosya uygulamanın açılışta kapanmasına yol açar.
