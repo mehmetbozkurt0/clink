@@ -28,8 +28,9 @@ fun SecondaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modi
     ClinkButton(text, onClick, modifier, enabled, ClinkColors.SurfaceRaised, ClinkColors.TextPrimary)
 }
 
+/** A button in any color pair, for game actions such as "Done" (mint) or "Take penalty" (coral text). */
 @Composable
-private fun ClinkButton(
+internal fun ClinkButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier,

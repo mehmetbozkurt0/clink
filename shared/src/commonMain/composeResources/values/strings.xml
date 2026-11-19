@@ -28,4 +28,16 @@
     <string name="game_over">Game over</string>
     <string name="play_again">Play again</string>
     <string name="back_to_games">Back to games</string>
+    <string name="turn_of">Turn: %1$s</string>
+    <string name="truth">Truth</string>
+    <string name="dare">Dare</string>
+    <string name="done">Done</string>
+    <string name="take_penalty">Take penalty</string>
+    <string name="penalty_title">Penalty!</string>
+    <string name="penalty_done">Penalty done</string>
+    <string name="end">End</string>
+    <string name="end_confirm">End this game?</string>
+    <string name="notice_no_truth">No truth cards at this level</string>
+    <string name="notice_no_dare">No dare cards at this level</string>
+    <string name="notice_no_penalty">No penalties at this level, moving on</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
+import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareScreen
 import com.mehmetbozkurt.clink.ui.screens.GameListScreen
 import com.mehmetbozkurt.clink.ui.screens.GameOverScreen
 import com.mehmetbozkurt.clink.ui.screens.LevelSelectScreen
@@ -18,9 +19,13 @@ import com.mehmetbozkurt.clink.ui.screens.WelcomeScreen
 
 @Composable
 fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
-    // Game screens are registered in Tasks 9 and 10; until then a game goes straight to GameOver.
     fun startGame(game: GameId, players: List<String>, level: Level, options: NavOptionsBuilder.() -> Unit = {}) {
-        navController.navigate(GameOverRoute(game, players, level), options)
+        val route: Any = when (game) {
+            GameId.TRUTH_OR_DARE -> TruthOrDareRoute(players, level)
+            // Spin the Bottle gets its screen in Task 10; until then it goes straight to GameOver.
+            else -> GameOverRoute(game, players, level)
+        }
+        navController.navigate(route, options)
     }
 
     NavHost(navController = navController, startDestination = WelcomeRoute) {
@@ -41,6 +46,18 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         composable<LevelRoute> { entry ->
             val route = entry.toRoute<LevelRoute>()
             LevelSelectScreen(onLevel = { level -> startGame(route.game, route.players, level) })
+        }
+        composable<TruthOrDareRoute> { entry ->
+            val route = entry.toRoute<TruthOrDareRoute>()
+            TruthOrDareScreen(
+                players = route.players,
+                level = route.level,
+                onEnd = {
+                    navController.navigate(GameOverRoute(GameId.TRUTH_OR_DARE, route.players, route.level)) {
+                        popUpTo<TruthOrDareRoute> { inclusive = true }
+                    }
+                },
+            )
         }
         composable<GameOverRoute> { entry ->
             val route = entry.toRoute<GameOverRoute>()

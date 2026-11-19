@@ -28,4 +28,16 @@
     <string name="game_over">Oyun bitti</string>
     <string name="play_again">Tekrar oyna</string>
     <string name="back_to_games">Oyun listesine dön</string>
+    <string name="turn_of">Sıra: %1$s</string>
+    <string name="truth">Doğruluk</string>
+    <string name="dare">Cesaret</string>
+    <string name="done">Yaptı</string>
+    <string name="take_penalty">Ceza çek</string>
+    <string name="penalty_title">Ceza!</string>
+    <string name="penalty_done">Cezayı çekti</string>
+    <string name="end">Bitir</string>
+    <string name="end_confirm">Oyunu bitirmek istiyor musun?</string>
+    <string name="notice_no_truth">Bu seviyede doğruluk kartı yok</string>
+    <string name="notice_no_dare">Bu seviyede cesaret kartı yok</string>
+    <string name="notice_no_penalty">Bu seviyede ceza yok, devam ediyoruz</string>
 </resources>

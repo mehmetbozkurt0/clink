@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.material3)
             implementation(libs.compose.components.resources)
+            implementation(libs.jetbrains.navigationevent.compose)
             implementation(libs.jetbrains.navigation.compose)
             implementation(libs.jetbrains.lifecycle.viewmodel.compose)
             implementation(libs.kotlinx.serialization.json)
