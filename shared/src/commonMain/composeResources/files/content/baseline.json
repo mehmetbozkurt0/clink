@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "packs": [
+    {
+      "id": "truth-casual-base", "type": "TRUTH", "level": "CASUAL", "access": "FREE",
+      "cards": [
+        { "id": "truth-casual-001", "text": { "tr": "Bu odadaki kimin telefonuna bakmak isterdin?", "en": "Whose phone in this room would you most like to look through?" } },
+        { "id": "truth-casual-002", "text": { "tr": "En son ne zaman yalan söyledin ve neydi?", "en": "When did you last tell a lie, and what was it?" } },
+        { "id": "truth-casual-003", "text": { "tr": "Çocukken en garip korkun neydi?", "en": "What was your strangest fear as a child?" } }
+      ]
+    },
+    {
+      "id": "truth-hard-base", "type": "TRUTH", "level": "HARD", "access": "FREE",
+      "cards": [
+        { "id": "truth-hard-001", "text": { "tr": "Kimseye söylemediğin bir pişmanlığın var mı? Anlat.", "en": "Is there a regret you've never told anyone? Tell it." } },
+        { "id": "truth-hard-002", "text": { "tr": "Bu odadaki birinin seninle ilgili asla öğrenmesini istemediğin şey ne?", "en": "What is one thing you'd hate someone in this room to find out about you?" } },
+        { "id": "truth-hard-003", "text": { "tr": "En son kimi kıskandın ve neden?", "en": "Who did you last feel jealous of, and why?" } }
+      ]
+    },
+    {
+      "id": "truth-spicy-base", "type": "TRUTH", "level": "SPICY", "access": "FREE",
+      "cards": [
+        { "id": "truth-spicy-001", "text": { "tr": "Bu odadaki kimi bir randevuya çıkarırdın?", "en": "Who in this room would you take on a date?" } },
+        { "id": "truth-spicy-002", "text": { "tr": "En unutulmaz ilk öpücüğünü anlat.", "en": "Describe your most memorable first kiss." } },
+        { "id": "truth-spicy-003", "text": { "tr": "Birinde seni en çok çeken özellik ne?", "en": "What attracts you most in a person?" } }
+      ]
+    },
+    {
+      "id": "dare-casual-base", "type": "DARE", "level": "CASUAL", "access": "FREE",
+      "cards": [
+        { "id": "dare-casual-001", "text": { "tr": "Sağındaki kişiyi 30 saniye boyunca taklit et.", "en": "Imitate the person on your right for 30 seconds." } },
+        { "id": "dare-casual-002", "text": { "tr": "En sevdiğin şarkının nakaratını yüksek sesle söyle.", "en": "Sing the chorus of your favorite song out loud." } },
+        { "id": "dare-casual-003", "text": { "tr": "Bir sonraki turuna kadar robot gibi konuş.", "en": "Talk like a robot until your next turn." } }
+      ]
+    },
+    {
+      "id": "dare-hard-base", "type": "DARE", "level": "HARD", "access": "FREE",
+      "cards": [
+        { "id": "dare-hard-001", "text": { "tr": "Telefonundaki son fotoğrafı herkese göster.", "en": "Show everyone the last photo on your phone." } },
+        { "id": "dare-hard-002", "text": { "tr": "Grubun seçtiği birine \"Seni özledim\" diye mesaj at.", "en": "Text \"I miss you\" to someone the group picks." } },
+        { "id": "dare-hard-003", "text": { "tr": "En son aradığın kişiyi ara ve ona bir şarkı söyle.", "en": "Call the last person you phoned and sing them a song." } }
+      ]
+    },
+    {
+      "id": "dare-spicy-base", "type": "DARE", "level": "SPICY", "access": "FREE",
+      "cards": [
+        { "id": "dare-spicy-001", "text": { "tr": "Odadaki birine en güzel iltifatını fısılda.", "en": "Whisper your best compliment to someone in the room." } },
+        { "id": "dare-spicy-002", "text": { "tr": "Seçtiğin biriyle gülmeden 10 saniye göz göze bak.", "en": "Hold eye contact with someone you choose for 10 seconds without laughing." } },
+        { "id": "dare-spicy-003", "text": { "tr": "Grubun seçtiği kişiye en iyi tavlama repliğini söyle.", "en": "Say your best pick-up line to someone the group chooses." } }
+      ]
+    },
+    {
+      "id": "penalty-casual-base", "type": "PENALTY", "level": "CASUAL", "access": "FREE",
+      "cards": [
+        { "id": "penalty-casual-001", "text": { "tr": "10 squat yap.", "en": "Do 10 squats." } },
+        { "id": "penalty-casual-002", "text": { "tr": "Bir sonraki turuna kadar bir aksanla konuş.", "en": "Speak in an accent until your next turn." } },
+        { "id": "penalty-casual-003", "text": { "tr": "Tavuk gibi gıdaklayarak odada bir tur at.", "en": "Walk a lap of the room clucking like a chicken." } }
+      ]
+    },
+    {
+      "id": "penalty-hard-base", "type": "PENALTY", "level": "HARD", "access": "FREE",
+      "cards": [
+        { "id": "penalty-hard-001", "text": { "tr": "30 saniye plank yap.", "en": "Hold a plank for 30 seconds." } },
+        { "id": "penalty-hard-002", "text": { "tr": "Bir sonraki turuna kadar grubun seçtiği bir kelimeyi her cümlende kullan.", "en": "Use a word the group picks in every sentence until your next turn." } },
+        { "id": "penalty-hard-003", "text": { "tr": "Grubun seçtiği profil fotoğrafını 10 dakika kullan.", "en": "Use a profile picture the group picks for 10 minutes." } }
+      ]
+    },
+    {
+      "id": "penalty-spicy-base", "type": "PENALTY", "level": "SPICY", "access": "FREE",
+      "cards": [
+        { "id": "penalty-spicy-001", "text": { "tr": "Grubun seçtiği kişiye 20 saniyelik bir serenat yap.", "en": "Serenade someone the group picks for 20 seconds." } },
+        { "id": "penalty-spicy-002", "text": { "tr": "Odadaki birinin omuzlarına 30 saniye masaj yap.", "en": "Give someone in the room a 30-second shoulder massage." } },
+        { "id": "penalty-spicy-003", "text": { "tr": "Bir sonraki turuna kadar solundaki kişinin elini tut.", "en": "Hold hands with the person on your left until your next turn." } }
+      ]
+    }
+  ]
+}
