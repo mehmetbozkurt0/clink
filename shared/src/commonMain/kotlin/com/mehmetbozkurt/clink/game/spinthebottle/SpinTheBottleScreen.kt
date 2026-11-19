@@ -53,6 +53,7 @@ import com.mehmetbozkurt.clink.ui.components.ClinkCard
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
+import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -87,8 +88,10 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
         }
     }
 
+    val tapGuard = rememberPhaseTapGuard(state.phase)
+
     // The notice reacts to the tap, so it doesn't repeat after a configuration change.
-    fun act(action: SpinAction) {
+    fun act(action: SpinAction) = tapGuard {
         viewModel.onAction(action)
         if (viewModel.state.value.notice == SpinNotice.NO_PENALTY_CARDS) {
             scope.launch { snackbar.showSnackbar(getString(Res.string.notice_no_penalty)) }

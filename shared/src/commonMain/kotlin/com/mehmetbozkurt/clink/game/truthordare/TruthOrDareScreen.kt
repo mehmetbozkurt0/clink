@@ -62,6 +62,7 @@ import com.mehmetbozkurt.clink.ui.components.ClinkCard
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
+import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -76,9 +77,10 @@ fun TruthOrDareScreen(players: List<String>, level: Level, onEnd: () -> Unit) {
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var confirmEnd by remember { mutableStateOf(false) }
+    val tapGuard = rememberPhaseTapGuard(state.phase)
 
     // Notices and haptics react to the tap, not to the state, so they don't repeat after a configuration change.
-    fun act(action: TodAction) {
+    fun act(action: TodAction) = tapGuard {
         viewModel.onAction(action)
         val after = viewModel.state.value
         if (action == TodAction.Refuse && after.phase is TodPhase.ShowingPenalty) {
