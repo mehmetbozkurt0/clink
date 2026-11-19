@@ -30,24 +30,25 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         navController.navigate(route, options)
     }
 
+    // Every navigation goes through entry.ifResumed, so a double tap can't open the same screen twice.
     NavHost(navController = navController, startDestination = WelcomeRoute) {
-        composable<WelcomeRoute> {
-            WelcomeScreen(onPlay = { navController.navigate(GameListRoute) })
+        composable<WelcomeRoute> { entry ->
+            WelcomeScreen(onPlay = { entry.ifResumed { navController.navigate(GameListRoute) } })
         }
-        composable<GameListRoute> {
-            GameListScreen(onGame = { navController.navigate(ModeRoute(it)) })
+        composable<GameListRoute> { entry ->
+            GameListScreen(onGame = { game -> entry.ifResumed { navController.navigate(ModeRoute(game)) } })
         }
         composable<ModeRoute> { entry ->
             val route = entry.toRoute<ModeRoute>()
-            ModeSelectScreen(game = route.game, onLocal = { navController.navigate(PlayersRoute(route.game)) })
+            ModeSelectScreen(game = route.game, onLocal = { entry.ifResumed { navController.navigate(PlayersRoute(route.game)) } })
         }
         composable<PlayersRoute> { entry ->
             val route = entry.toRoute<PlayersRoute>()
-            PlayerSetupScreen(onContinue = { players -> navController.navigate(LevelRoute(route.game, players)) })
+            PlayerSetupScreen(onContinue = { players -> entry.ifResumed { navController.navigate(LevelRoute(route.game, players)) } })
         }
         composable<LevelRoute> { entry ->
             val route = entry.toRoute<LevelRoute>()
-            LevelSelectScreen(onLevel = { level -> startGame(route.game, route.players, level) })
+            LevelSelectScreen(onLevel = { level -> entry.ifResumed { startGame(route.game, route.players, level) } })
         }
         composable<TruthOrDareRoute> { entry ->
             val route = entry.toRoute<TruthOrDareRoute>()
@@ -55,8 +56,10 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 players = route.players,
                 level = route.level,
                 onEnd = {
-                    navController.navigate(GameOverRoute(GameId.TRUTH_OR_DARE, route.players, route.level)) {
-                        popUpTo<TruthOrDareRoute> { inclusive = true }
+                    entry.ifResumed {
+                        navController.navigate(GameOverRoute(GameId.TRUTH_OR_DARE, route.players, route.level)) {
+                            popUpTo<TruthOrDareRoute> { inclusive = true }
+                        }
                     }
                 },
             )
@@ -67,8 +70,10 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 players = route.players,
                 level = route.level,
                 onEnd = {
-                    navController.navigate(GameOverRoute(GameId.SPIN_THE_BOTTLE, route.players, route.level)) {
-                        popUpTo<SpinTheBottleRoute> { inclusive = true }
+                    entry.ifResumed {
+                        navController.navigate(GameOverRoute(GameId.SPIN_THE_BOTTLE, route.players, route.level)) {
+                            popUpTo<SpinTheBottleRoute> { inclusive = true }
+                        }
                     }
                 },
             )
@@ -79,9 +84,11 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 game = route.game,
                 level = route.level,
                 onPlayAgain = {
-                    startGame(route.game, route.players, route.level) { popUpTo<GameOverRoute> { inclusive = true } }
+                    entry.ifResumed {
+                        startGame(route.game, route.players, route.level) { popUpTo<GameOverRoute> { inclusive = true } }
+                    }
                 },
-                onBackToGames = { navController.popBackStack(GameListRoute, inclusive = false) },
+                onBackToGames = { entry.ifResumed { navController.popBackStack(GameListRoute, inclusive = false) } },
             )
         }
     }
