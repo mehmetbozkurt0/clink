@@ -1,2 +1,13 @@
 # Superpowers visual companion (brainstorm mockups)
 .superpowers/
+
+# Gradle / Kotlin / Android
+build/
+.gradle/
+.kotlin/
+local.properties
+captures/
+
+# IDE
+.idea/
+*.iml
