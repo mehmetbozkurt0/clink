@@ -25,6 +25,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -121,9 +122,10 @@ fun PlayerSetupScreen(onContinue: (List<String>) -> Unit) {
     }
 }
 
+/** Not focusable, so the keyboard's Next key jumps straight to the next name field. */
 @Composable
 private fun RowAction(symbol: String, enabled: Boolean, onClick: () -> Unit) {
-    IconButton(onClick = onClick, enabled = enabled) {
+    IconButton(onClick = onClick, enabled = enabled, modifier = Modifier.focusProperties { canFocus = false }) {
         Text(text = symbol, color = if (enabled) ClinkColors.TextMuted else ClinkColors.SurfaceRaised, style = MaterialTheme.typography.titleMedium)
     }
 }
