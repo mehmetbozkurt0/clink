@@ -44,4 +44,11 @@
     <string name="landed_on_self">Kendine denk geldi, tekrar çevir!</string>
     <string name="asks_answers">%1$s soruyor → %2$s cevaplıyor</string>
     <string name="answered">Cevapladı</string>
+    <string name="bp_score">%1$s %2$d · %3$s %4$d</string>
+    <string name="bp_hint">Topu bardaklara fırlat</string>
+    <string name="bp_hit">Bardağa girdi!</string>
+    <string name="bp_rim_out">Kenardan döndü!</string>
+    <string name="bp_miss">Iska</string>
+    <string name="bp_win">%1$s kazandı!</string>
+    <string name="bp_loser_penalty">%1$s ceza çekiyor</string>
 </resources>

@@ -44,4 +44,11 @@
     <string name="landed_on_self">Landed on yourself, spin again!</string>
     <string name="asks_answers">%1$s asks → %2$s answers</string>
     <string name="answered">Answered</string>
+    <string name="bp_score">%1$s %2$d · %3$s %4$d</string>
+    <string name="bp_hint">Flick the ball at the cups</string>
+    <string name="bp_hit">In the cup!</string>
+    <string name="bp_rim_out">Off the rim!</string>
+    <string name="bp_miss">Miss</string>
+    <string name="bp_win">%1$s wins!</string>
+    <string name="bp_loser_penalty">%1$s takes a penalty</string>
 </resources>
