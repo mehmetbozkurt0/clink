@@ -4,6 +4,9 @@
 # Firebase Admin SDK key and other secrets (never committed)
 secrets/
 
+# Firebase app config: holds the Android API key, kept out of the repo (copy it by hand on a new machine)
+androidApp/google-services.json
+
 # Gradle / Kotlin / Android
 build/
 .gradle/
