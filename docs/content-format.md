@@ -51,3 +51,18 @@ Dosyayı değiştirdikten sonra testleri çalıştır:
 Testler şunları kontrol eder: format bozuk mu, metni olmayan ya da boş metinli kart var mı, aynı ID iki kez kullanılmış mı, her kartta TR ve EN metni var mı, her tip ve seviyede en az 3 kart var mı, içkiyle ilgili bir kelime geçiyor mu.
 
 Uygulama da dosyayı okurken boş metinli kartları reddeder. Bu yüzden dosyayı değiştirdikten sonra testleri çalıştırmadan uygulamayı derleme: bozuk bir dosya uygulamanın açılışta kapanmasına yol açar.
+
+## Firestore'a gönderme
+
+Uygulama kartları Firestore'dan da indirir. Bu yüzden dosyayı değiştirince uygulamayı güncellemeden yeni kartları telefonlara ulaştırabilirsin:
+
+```
+./gradlew :tools:content-import:run
+```
+
+(Bu bilgisayarda PowerShell'den: `.\gradlew.bat :tools:content-import:run`.)
+
+- Komut önce yukarıdaki testleri çalıştırır. Bir test başarısız olursa hiçbir şey gönderilmez.
+- Dosyadaki her paketi Firestore'a yazar. Dosyadan çıkardığın paketleri Firestore'dan da siler. İçerik sürümünü bir artırır.
+- Telefonlar yeni kartları **bir sonraki açılışta** indirir ve ondan sonraki açılışta kullanır. Böylece oyunun ortasında kartlar değişmez.
+- Yönetici anahtarı `secrets/firebase-admin.json` dosyasında olmalı (bkz. `docs/firebase-setup.md`, adım 6). Bu dosya git'e girmez.
