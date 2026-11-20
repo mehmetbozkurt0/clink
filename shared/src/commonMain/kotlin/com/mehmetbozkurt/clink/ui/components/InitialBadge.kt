@@ -37,11 +37,11 @@ fun initialOf(name: String, language: String): String {
     }
 }
 
-/** A colored circle with the player's initial. */
+/** A colored circle with the player's initial; [color] defaults to the player's color from the Players screen. */
 @Composable
-fun InitialBadge(name: String, index: Int, modifier: Modifier = Modifier, size: Dp = 28.dp) {
+fun InitialBadge(name: String, index: Int, modifier: Modifier = Modifier, size: Dp = 28.dp, color: Color = badgeColor(index)) {
     Box(
-        modifier = modifier.size(size).background(badgeColor(index), CircleShape),
+        modifier = modifier.size(size).background(color, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Text(

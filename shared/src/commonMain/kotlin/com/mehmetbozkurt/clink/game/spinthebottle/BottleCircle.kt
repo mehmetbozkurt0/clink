@@ -78,6 +78,8 @@ fun BottleCircle(
                     .widthIn(max = 104.dp),
                 selected = index == spinner || index == answerer,
                 color = if (index == spinner) ClinkColors.Acid else ClinkColors.Pink,
+                // Smaller chips from 9 players on, so neighbors at the top and bottom of the circle don't touch.
+                compact = players.size > 8,
             )
         }
         Box(

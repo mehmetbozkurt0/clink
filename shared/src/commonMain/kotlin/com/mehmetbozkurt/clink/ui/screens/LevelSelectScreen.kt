@@ -1,7 +1,11 @@
 package com.mehmetbozkurt.clink.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,18 +38,24 @@ fun LevelSelectScreen(onLevel: (Level) -> Unit, onBack: () -> Unit) {
     ScreenColumn {
         TopBar(navigation = TopBarNav.Back, onNavigate = onBack)
         ScreenTitle(stringResource(Res.string.level_title))
-        Level.entries.forEachIndexed { index, level ->
-            ChoiceCard(
-                onClick = { if (level.needsAdultConfirmation()) askAdult = true else onLevel(level) },
-                rotation = PosterTilts[index % PosterTilts.size],
-            ) {
-                LevelTag(level)
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    text = level.description(),
-                    color = ClinkColors.Ink,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                )
+        // Scrolls when long descriptions or a large font don't fit.
+        Column(
+            modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Level.entries.forEachIndexed { index, level ->
+                ChoiceCard(
+                    onClick = { if (level.needsAdultConfirmation()) askAdult = true else onLevel(level) },
+                    rotation = PosterTilts[index % PosterTilts.size],
+                ) {
+                    LevelTag(level)
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = level.description(),
+                        color = ClinkColors.Ink,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    )
+                }
             }
         }
     }

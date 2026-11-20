@@ -3,7 +3,7 @@ package com.mehmetbozkurt.clink.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
@@ -27,7 +28,8 @@ private val ChipShape = RoundedCornerShape(12.dp)
 
 /**
  * A sticker on the wall: raised wall color with a hairline border, or filled with [color] (acid by default)
- * when [selected]. An optional icon sits before the text.
+ * when [selected]. An optional icon sits before the text. [compact] is a smaller chip for crowded layouts
+ * (the Spin circle with many players).
  */
 @Composable
 fun WallChip(
@@ -37,6 +39,7 @@ fun WallChip(
     color: Color? = null,
     icon: DrawableResource? = null,
     iconTint: Color = ClinkColors.Acid,
+    compact: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
     val fill = if (selected) color ?: ClinkColors.Acid else ClinkColors.WallRaised
@@ -46,8 +49,9 @@ fun WallChip(
             .clip(ChipShape)
             .background(fill)
             .border(1.dp, if (selected) ClinkColors.Ink else ClinkColors.Paper.copy(alpha = 0.14f), ChipShape)
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
-            .padding(horizontal = 12.dp, vertical = 9.dp),
+            // A tappable chip is a pick (Beer Pong picker), so screen readers also hear whether it is selected.
+            .let { if (onClick != null) it.selectable(selected = selected, role = Role.Checkbox, onClick = onClick) else it }
+            .padding(horizontal = if (compact) 9.dp else 12.dp, vertical = if (compact) 5.dp else 9.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -59,6 +63,12 @@ fun WallChip(
                 colorFilter = ColorFilter.tint(if (selected) ClinkColors.Ink else iconTint),
             )
         }
-        Text(text = text, color = textColor, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(
+            text = text,
+            color = textColor,
+            style = if (compact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }

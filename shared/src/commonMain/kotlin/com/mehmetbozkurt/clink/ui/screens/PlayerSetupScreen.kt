@@ -145,6 +145,7 @@ fun PlayerSetupScreen(onContinue: (List<String>) -> Unit, onBack: () -> Unit) {
         val pitch = rowHeight + spacingPx
         dragOffset += dy
         var index = rows.indexOfFirst { it.id == id }
+        if (index < 0) return // the row was removed mid-drag
         while (dragOffset > pitch / 2 && index < rows.lastIndex) {
             move(index, index + 1)
             index++
@@ -317,7 +318,7 @@ private fun NameRow(
 @Composable
 private fun RowIcon(icon: DrawableResource, enabled: Boolean, modifier: Modifier) {
     Box(
-        modifier = Modifier.size(44.dp).clip(RowShape).focusProperties { canFocus = false }.then(modifier),
+        modifier = Modifier.size(48.dp).clip(RowShape).focusProperties { canFocus = false }.then(modifier),
         contentAlignment = Alignment.Center,
     ) {
         Image(

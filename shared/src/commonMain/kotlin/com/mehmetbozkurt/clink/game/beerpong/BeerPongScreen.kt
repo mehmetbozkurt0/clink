@@ -5,25 +5,25 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
@@ -31,11 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import androidx.navigationevent.NavigationEventInfo
-import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.LocalAppContainer
+import com.mehmetbozkurt.clink.content.Level
+import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.bp_hint
 import com.mehmetbozkurt.clink.resources.bp_hit
 import com.mehmetbozkurt.clink.resources.bp_loser_penalty
@@ -47,16 +48,15 @@ import com.mehmetbozkurt.clink.resources.continue_button
 import com.mehmetbozkurt.clink.resources.notice_no_penalty
 import com.mehmetbozkurt.clink.resources.penalty_done
 import com.mehmetbozkurt.clink.resources.penalty_title
-import com.mehmetbozkurt.clink.resources.Res
-import com.mehmetbozkurt.clink.ui.components.cardTextStyle
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
-import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.components.SlapPoster
 import com.mehmetbozkurt.clink.ui.components.TopBar
 import com.mehmetbozkurt.clink.ui.components.TopBarNav
 import com.mehmetbozkurt.clink.ui.components.TurnBadge
+import com.mehmetbozkurt.clink.ui.components.cardTextStyle
+import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -68,10 +68,17 @@ private data class Flight(val thrower: Int, val cupsBefore: Set<Int>, val result
 
 /**
  * One Beer Pong match on one phone. [players] are the two match players in throwing order;
- * [onMatchOver] gets the winner and loser as 0/1 in that list.
+ * [onMatchOver] gets the winner and loser as 0/1 in that list. [playerIndexes] are their positions in the full
+ * player list, so their turn badges keep their colors from the Players screen.
  */
 @Composable
-fun BeerPongScreen(players: List<String>, level: Level, onMatchOver: (winner: Int, loser: Int) -> Unit, onEnd: () -> Unit) {
+fun BeerPongScreen(
+    players: List<String>,
+    level: Level,
+    onMatchOver: (winner: Int, loser: Int) -> Unit,
+    onEnd: () -> Unit,
+    playerIndexes: List<Int>,
+) {
     val container = LocalAppContainer.current
     val viewModel = viewModel { BeerPongViewModel(players, level, container.library, container.random) }
     val state by viewModel.state.collectAsState()
@@ -134,7 +141,7 @@ fun BeerPongScreen(players: List<String>, level: Level, onMatchOver: (winner: In
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
         TopBar(navigation = TopBarNav.Close, onNavigate = { confirmEnd = true }) {
             // No turn on match over: nobody throws any more.
-            if (over == null || shown != null) TurnBadge(name = state.players[thrower], index = thrower)
+            if (over == null || shown != null) TurnBadge(name = state.players[thrower], index = playerIndexes[thrower])
         }
         Text(
             text = stringResource(Res.string.bp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)).toUpperCase(Locale.current),

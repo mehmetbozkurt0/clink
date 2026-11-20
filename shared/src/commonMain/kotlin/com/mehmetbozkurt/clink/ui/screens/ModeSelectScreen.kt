@@ -1,6 +1,10 @@
 package com.mehmetbozkurt.clink.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,11 +31,17 @@ fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onBack: () -> Unit) {
     ScreenColumn {
         TopBar(navigation = TopBarNav.Back, onNavigate = onBack)
         ScreenTitle(stringResource(Res.string.mode_title), overline = game.title())
-        ChoiceCard(onClick = onLocal, rotation = PosterTilts[0]) {
-            ModeText(stringResource(Res.string.mode_local), stringResource(Res.string.mode_local_sub))
-        }
-        ChoiceCard(onClick = {}, enabled = false, rotation = PosterTilts[1]) {
-            ModeText(stringResource(Res.string.mode_online), stringResource(Res.string.coming_soon))
+        // Scrolls when a large font doesn't fit.
+        Column(
+            modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            ChoiceCard(onClick = onLocal, rotation = PosterTilts[0]) {
+                ModeText(stringResource(Res.string.mode_local), stringResource(Res.string.mode_local_sub))
+            }
+            ChoiceCard(onClick = {}, enabled = false, rotation = PosterTilts[1]) {
+                ModeText(stringResource(Res.string.mode_online), stringResource(Res.string.coming_soon))
+            }
         }
     }
 }

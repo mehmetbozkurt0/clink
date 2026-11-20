@@ -5,6 +5,11 @@ import androidx.compose.animation.core.EaseOutQuart
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -109,10 +114,13 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
         onBackCompleted = { confirmEnd = true },
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        // The panel never takes more than this, so a long penalty can't squeeze the circle away; the card scrolls instead.
+        val maxPanelHeight = maxHeight * 0.55f
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
             TopBar(navigation = TopBarNav.Close, onNavigate = { confirmEnd = true }) {
-                TurnBadge(name = state.players[state.spinner], index = state.spinner)
+                // Acid, like the spinner's chip on the circle (pink there means the answerer).
+                TurnBadge(name = state.players[state.spinner], index = state.spinner, color = ClinkColors.Acid)
             }
             val phase = state.phase
             // The circle takes whatever space the bottom panel leaves (the largest square that fits),
@@ -130,7 +138,7 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
             }
             Spacer(Modifier.height(16.dp))
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().heightIn(max = maxPanelHeight),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -154,7 +162,7 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
 }
 
 @Composable
-private fun PhasePanel(
+private fun ColumnScope.PhasePanel(
     state: SpinState,
     penaltyText: (String) -> String,
     onAnswered: () -> Unit,
@@ -186,20 +194,23 @@ private fun PhasePanel(
             }
         }
         is SpinPhase.ShowingPenalty -> {
-            SlapPoster(key = phase, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
-                LevelTag(state.level)
-                Text(
-                    text = stringResource(Res.string.penalty_title).toUpperCase(Locale.current),
-                    modifier = Modifier.padding(top = 12.dp),
-                    color = ClinkColors.Ink,
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-                Text(
-                    text = "${state.players[phase.answerer]}: ${penaltyText(phase.cardId)}",
-                    modifier = Modifier.padding(top = 8.dp),
-                    color = ClinkColors.Ink,
-                    style = cardTextStyle(),
-                )
+            // A long penalty scrolls inside the card; "Penalty done" stays on screen.
+            Column(modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(vertical = 4.dp)) {
+                SlapPoster(key = phase, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
+                    LevelTag(state.level)
+                    Text(
+                        text = stringResource(Res.string.penalty_title).toUpperCase(Locale.current),
+                        modifier = Modifier.padding(top = 12.dp),
+                        color = ClinkColors.Ink,
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    Text(
+                        text = "${state.players[phase.answerer]}: ${penaltyText(phase.cardId)}",
+                        modifier = Modifier.padding(top = 8.dp),
+                        color = ClinkColors.Ink,
+                        style = cardTextStyle(),
+                    )
+                }
             }
             PrimaryButton(text = stringResource(Res.string.penalty_done), onClick = onPenaltyDone, modifier = Modifier.fillMaxWidth())
         }

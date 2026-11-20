@@ -143,6 +143,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             val matchIndexes = listOf(route.first, route.second)
             BeerPongScreen(
                 players = matchIndexes.map { route.players[it] },
+                playerIndexes = matchIndexes,
                 level = route.level,
                 onMatchOver = { winner, loser ->
                     entry.ifResumed {

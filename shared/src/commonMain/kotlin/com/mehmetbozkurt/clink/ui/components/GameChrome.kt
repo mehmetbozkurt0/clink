@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
@@ -28,11 +29,14 @@ import com.mehmetbozkurt.clink.resources.turn_of
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.stringResource
 
-/** Whose turn it is (design §6): the player's initial badge and "SIRA: MERT". [index] keeps the badge color from the Players screen. */
+/**
+ * Whose turn it is (design §6): the player's initial badge and "SIRA: MERT". [index] (the player's position in the full
+ * list) keeps the badge color from the Players screen; a game where colors mean roles passes [color] instead.
+ */
 @Composable
-fun TurnBadge(name: String, index: Int, modifier: Modifier = Modifier) {
+fun TurnBadge(name: String, index: Int, modifier: Modifier = Modifier, color: Color = badgeColor(index)) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        InitialBadge(name = name, index = index)
+        InitialBadge(name = name, index = index, color = color)
         Text(
             text = stringResource(Res.string.turn_of, name).toUpperCase(Locale.current),
             color = ClinkColors.Paper,
