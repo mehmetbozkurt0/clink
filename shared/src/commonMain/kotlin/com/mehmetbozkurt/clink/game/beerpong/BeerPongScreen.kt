@@ -5,36 +5,37 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.mehmetbozkurt.clink.LocalAppContainer
+import androidx.navigationevent.NavigationEventInfo
 import com.mehmetbozkurt.clink.content.Level
-import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.LocalAppContainer
 import com.mehmetbozkurt.clink.resources.bp_hint
 import com.mehmetbozkurt.clink.resources.bp_hit
 import com.mehmetbozkurt.clink.resources.bp_loser_penalty
@@ -43,16 +44,19 @@ import com.mehmetbozkurt.clink.resources.bp_rim_out
 import com.mehmetbozkurt.clink.resources.bp_score
 import com.mehmetbozkurt.clink.resources.bp_win
 import com.mehmetbozkurt.clink.resources.continue_button
-import com.mehmetbozkurt.clink.resources.end
 import com.mehmetbozkurt.clink.resources.notice_no_penalty
 import com.mehmetbozkurt.clink.resources.penalty_done
 import com.mehmetbozkurt.clink.resources.penalty_title
-import com.mehmetbozkurt.clink.resources.turn_of
-import com.mehmetbozkurt.clink.ui.components.Poster
+import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.ui.components.cardTextStyle
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
 import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
+import com.mehmetbozkurt.clink.ui.components.SlapPoster
+import com.mehmetbozkurt.clink.ui.components.TopBar
+import com.mehmetbozkurt.clink.ui.components.TopBarNav
+import com.mehmetbozkurt.clink.ui.components.TurnBadge
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -126,21 +130,21 @@ fun BeerPongScreen(players: List<String>, level: Level, onMatchOver: (winner: In
     }
     fun cupsLeft(player: Int) = if (player == defender) rack.size else state.cups[player].size
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(Res.string.turn_of, state.players[thrower]), color = ClinkColors.Paper, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    stringResource(Res.string.bp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)),
-                    color = ClinkColors.Muted,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            TextButton(onClick = { confirmEnd = true }) { Text(stringResource(Res.string.end), color = ClinkColors.Muted) }
+    val over = state.phase as? BpPhase.MatchOver
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        TopBar(navigation = TopBarNav.Close, onNavigate = { confirmEnd = true }) {
+            // No turn on match over: nobody throws any more.
+            if (over == null || shown != null) TurnBadge(name = state.players[thrower], index = thrower)
         }
+        Text(
+            text = stringResource(Res.string.bp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)).toUpperCase(Locale.current),
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            color = ClinkColors.Muted,
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+        )
         Spacer(Modifier.height(12.dp))
 
-        val over = state.phase as? BpPhase.MatchOver
         if (over != null && shown == null) {
             MatchOverPanel(
                 winner = state.players[over.winner],
@@ -184,28 +188,40 @@ private fun MatchOverPanel(
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)) {
-        Text(stringResource(Res.string.bp_win, winner), color = ClinkColors.Acid, style = MaterialTheme.typography.headlineMedium)
-        Poster(modifier = Modifier.fillMaxWidth()) {
-            LevelTag(level)
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(
+            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterVertically),
+        ) {
             Text(
-                stringResource(Res.string.penalty_title),
-                modifier = Modifier.padding(top = 12.dp),
-                color = ClinkColors.Ink,
-                style = MaterialTheme.typography.headlineSmall,
+                text = stringResource(Res.string.bp_win, winner).toUpperCase(Locale.current),
+                color = ClinkColors.Acid,
+                style = MaterialTheme.typography.displaySmall,
             )
-            Text(
-                stringResource(Res.string.bp_loser_penalty, loser),
-                modifier = Modifier.padding(top = 4.dp),
-                color = ClinkColors.InkMuted,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                text = penaltyText ?: stringResource(Res.string.notice_no_penalty),
-                modifier = Modifier.padding(top = 12.dp),
-                color = ClinkColors.Ink,
-                style = MaterialTheme.typography.titleLarge,
-            )
+            SlapPoster(key = loser, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
+                LevelTag(level)
+                if (penaltyText != null) {
+                    Text(
+                        stringResource(Res.string.penalty_title).toUpperCase(Locale.current),
+                        modifier = Modifier.padding(top = 12.dp),
+                        color = ClinkColors.Ink,
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    Text(
+                        stringResource(Res.string.bp_loser_penalty, loser),
+                        modifier = Modifier.padding(top = 4.dp),
+                        color = ClinkColors.InkMuted,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+                // With an empty penalty pool the poster says only that (carried-over copy fix).
+                Text(
+                    text = penaltyText ?: stringResource(Res.string.notice_no_penalty),
+                    modifier = Modifier.padding(top = 12.dp),
+                    color = ClinkColors.Ink,
+                    style = cardTextStyle(),
+                )
+            }
         }
         PrimaryButton(
             text = stringResource(if (penaltyText != null) Res.string.penalty_done else Res.string.continue_button),

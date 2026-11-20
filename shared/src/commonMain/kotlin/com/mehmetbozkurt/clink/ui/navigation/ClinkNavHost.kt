@@ -135,6 +135,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                         }
                     }
                 },
+                onBack = { entry.back() },
             )
         }
         composable<BeerPongRoute> { entry ->

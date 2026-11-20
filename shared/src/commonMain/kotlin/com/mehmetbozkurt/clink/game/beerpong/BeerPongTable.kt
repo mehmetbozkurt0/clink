@@ -6,15 +6,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.resources.tex_paper
+import com.mehmetbozkurt.clink.ui.components.rememberTiledBrush
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
+import org.jetbrains.compose.resources.imageResource
 import kotlin.math.hypot
 
 private const val TABLE_HALF_WIDTH = 20f
@@ -49,6 +56,7 @@ fun BeerPongTable(
     onFlick: (ThrowInput) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val grain = rememberTiledBrush(imageResource(Res.drawable.tex_paper))
     Canvas(
         modifier = modifier.pointerInput(flickEnabled) {
             if (!flickEnabled) return@pointerInput
@@ -76,7 +84,7 @@ fun BeerPongTable(
         },
     ) {
         val projection = TableProjection(size)
-        drawTable(projection)
+        drawTable(projection, grain)
         cups.sorted().forEach { drawCup(projection, BeerPongPhysics.cups[it]) }
         val hit = flight?.cupHit
         if (hit != null && splash > 0f) drawSplash(projection, BeerPongPhysics.cups[hit], splash)
@@ -84,7 +92,8 @@ fun BeerPongTable(
     }
 }
 
-private fun DrawScope.drawTable(projection: TableProjection) {
+/** A plywood board on the wall (design §4): tape-colored with a faint paper grain, an ink border and an ink center line. */
+private fun DrawScope.drawTable(projection: TableProjection, grain: Brush) {
     val corners = listOf(
         TablePoint(-TABLE_HALF_WIDTH, 0f), TablePoint(TABLE_HALF_WIDTH, 0f),
         TablePoint(TABLE_HALF_WIDTH, TABLE_LENGTH), TablePoint(-TABLE_HALF_WIDTH, TABLE_LENGTH),
@@ -94,32 +103,32 @@ private fun DrawScope.drawTable(projection: TableProjection) {
         corners.drop(1).forEach { lineTo(it.x, it.y) }
         close()
     }
-    drawPath(path, ClinkColors.WallRaised)
-    drawPath(path, ClinkColors.WallRaised, style = Stroke(width = 3f))
+    drawPath(path, ClinkColors.Tape)
+    drawPath(path, grain, alpha = 0.12f)
     val midStart = projection.toScreen(TablePoint(0f, 0f))
     val midEnd = projection.toScreen(TablePoint(0f, TABLE_LENGTH))
-    drawLine(ClinkColors.WallRaised, midStart, midEnd, strokeWidth = 2f)
+    drawLine(ClinkColors.Ink.copy(alpha = 0.25f), midStart, midEnd, strokeWidth = 1.5.dp.toPx())
+    drawPath(path, ClinkColors.Ink, style = Stroke(width = 3.dp.toPx(), join = StrokeJoin.Round))
 }
 
-/** An empty cup seen from above at an angle: an ellipse with an acid rim. */
+/** An empty cup seen from above at an angle: dark inside, an acid rim with an ink edge so it reads on the light board. */
 private fun DrawScope.drawCup(projection: TableProjection, center: TablePoint) {
     val c = projection.toScreen(center)
     val r = projection.length(BeerPongPhysics.CUP_RADIUS, center.y)
     val size = Size(r * 2f, r * 1.2f)
     val topLeft = Offset(c.x - r, c.y - r * 0.6f)
     drawOval(ClinkColors.WallRaised, topLeft, size)
-    drawOval(ClinkColors.Acid, topLeft, size, style = Stroke(width = r * 0.22f))
+    drawOval(ClinkColors.Ink, topLeft, size, style = Stroke(width = r * 0.36f))
+    drawOval(ClinkColors.Acid, topLeft, size, style = Stroke(width = r * 0.2f))
 }
 
 private fun DrawScope.drawSplash(projection: TableProjection, center: TablePoint, splash: Float) {
     val c = projection.toScreen(center)
     val r = projection.length(BeerPongPhysics.CUP_RADIUS, center.y) * (1f + splash * 1.2f)
-    drawOval(
-        color = ClinkColors.Acid.copy(alpha = 1f - splash),
-        topLeft = Offset(c.x - r, c.y - r * 0.6f),
-        size = Size(r * 2f, r * 1.2f),
-        style = Stroke(width = 6f),
-    )
+    val topLeft = Offset(c.x - r, c.y - r * 0.6f)
+    val size = Size(r * 2f, r * 1.2f)
+    drawOval(ClinkColors.Ink.copy(alpha = 1f - splash), topLeft, size, style = Stroke(width = 4.dp.toPx()))
+    drawOval(ClinkColors.Acid.copy(alpha = 1f - splash), topLeft, size, style = Stroke(width = 2.5.dp.toPx()))
 }
 
 /**
@@ -150,6 +159,9 @@ private data class Segment(val from: TablePoint, val to: TablePoint, val t: Floa
 private fun DrawScope.drawBallAt(projection: TableProjection, ground: TablePoint, lift: Float, color: Color) {
     val g = projection.toScreen(ground)
     val r = projection.length(BeerPongPhysics.BALL_RADIUS * 1.4f, ground.y) * (1f + lift / projection.height * 0.8f)
-    drawOval(Color.Black.copy(alpha = 0.35f), Offset(g.x - r, g.y - r * 0.4f), Size(r * 2f, r * 0.8f))
-    drawCircle(color, radius = r, center = Offset(g.x, g.y - r - lift))
+    // Hard shadow on the board (no blur), then the ball with an ink outline so it reads on the light board.
+    drawOval(ClinkColors.Ink.copy(alpha = 0.45f), Offset(g.x - r, g.y - r * 0.4f), Size(r * 2f, r * 0.8f))
+    val ball = Offset(g.x, g.y - r - lift)
+    drawCircle(color, radius = r, center = ball)
+    drawCircle(ClinkColors.Ink, radius = r, center = ball, style = Stroke(width = 2.dp.toPx()))
 }
