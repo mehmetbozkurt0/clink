@@ -108,7 +108,7 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = { confirmEnd = true }) {
-                    Text(stringResource(Res.string.end), color = ClinkColors.TextMuted)
+                    Text(stringResource(Res.string.end), color = ClinkColors.Muted)
                 }
             }
             val phase = state.phase
@@ -165,7 +165,7 @@ private fun PhasePanel(
             }
             Text(
                 text = stringResource(Res.string.spin_hint, state.players[state.spinner]),
-                color = ClinkColors.TextMuted,
+                color = ClinkColors.Muted,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
@@ -173,13 +173,13 @@ private fun PhasePanel(
         is SpinPhase.Asking -> {
             Text(
                 text = stringResource(Res.string.asks_answers, state.players[phase.asker], state.players[phase.answerer]),
-                color = ClinkColors.TextPrimary,
+                color = ClinkColors.Paper,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ClinkButton(stringResource(Res.string.answered), onAnswered, Modifier.weight(1f), true, ClinkColors.Mint, ClinkColors.OnPrimary)
-                ClinkButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f), true, ClinkColors.SurfaceRaised, ClinkColors.Primary)
+                ClinkButton(stringResource(Res.string.answered), onAnswered, Modifier.weight(1f), true, ClinkColors.Acid, ClinkColors.Ink)
+                ClinkButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f), true, ClinkColors.WallRaised, ClinkColors.Acid)
             }
         }
         is SpinPhase.ShowingPenalty -> {
@@ -188,13 +188,13 @@ private fun PhasePanel(
                 Text(
                     text = stringResource(Res.string.penalty_title),
                     modifier = Modifier.padding(top = 12.dp),
-                    color = ClinkColors.Primary,
+                    color = ClinkColors.Acid,
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 Text(
                     text = "${state.players[phase.answerer]}: ${penaltyText(phase.cardId)}",
                     modifier = Modifier.padding(top = 8.dp),
-                    color = ClinkColors.TextPrimary,
+                    color = ClinkColors.Paper,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }

@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 
 /**
- * Full-screen gradient with two soft glows (violet top-right, coral lower-left).
+ * Full-screen wall color with two soft glows (pink top-right, acid lower-left). Replaced by WallBackground in the next step.
  * Glows are radial gradients, not Modifier.blur, which does nothing below Android 12.
  * Content is kept clear of the status and navigation bars.
  */
@@ -26,11 +26,11 @@ fun ClinkBackground(content: @Composable BoxScope.() -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(ClinkColors.BackgroundTop, ClinkColors.Background)))
+            .background(Brush.verticalGradient(listOf(ClinkColors.Wall, ClinkColors.Wall)))
             .drawBehind {
                 val radius = size.minDimension * 0.6f
-                drawGlow(ClinkColors.Secondary, Offset(size.width * 0.9f, size.height * 0.08f), radius)
-                drawGlow(ClinkColors.Primary, Offset(size.width * 0.05f, size.height * 0.62f), radius)
+                drawGlow(ClinkColors.Pink, Offset(size.width * 0.9f, size.height * 0.08f), radius)
+                drawGlow(ClinkColors.Acid, Offset(size.width * 0.05f, size.height * 0.62f), radius)
             },
     ) {
         Box(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing), content = content)

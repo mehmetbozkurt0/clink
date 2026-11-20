@@ -100,11 +100,11 @@ fun TruthOrDareScreen(players: List<String>, level: Level, onEnd: () -> Unit) {
                 Text(
                     text = stringResource(Res.string.turn_of, state.players[state.currentPlayer]),
                     modifier = Modifier.weight(1f),
-                    color = ClinkColors.TextPrimary,
+                    color = ClinkColors.Paper,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 TextButton(onClick = { confirmEnd = true }) {
-                    Text(stringResource(Res.string.end), color = ClinkColors.TextMuted)
+                    Text(stringResource(Res.string.end), color = ClinkColors.Muted)
                 }
             }
             Spacer(Modifier.height(16.dp))
@@ -143,8 +143,8 @@ private fun TodNotice.message() = when (this) {
 @Composable
 private fun Choosing(onPick: (CardType) -> Unit) {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)) {
-        BigChoice(stringResource(Res.string.truth), ClinkColors.Secondary, ClinkColors.TextPrimary) { onPick(CardType.TRUTH) }
-        BigChoice(stringResource(Res.string.dare), ClinkColors.Primary, ClinkColors.OnPrimary) { onPick(CardType.DARE) }
+        BigChoice(stringResource(Res.string.truth), ClinkColors.Pink, ClinkColors.Paper) { onPick(CardType.TRUTH) }
+        BigChoice(stringResource(Res.string.dare), ClinkColors.Acid, ClinkColors.Ink) { onPick(CardType.DARE) }
     }
 }
 
@@ -178,8 +178,8 @@ private fun ShowingCard(
                 LevelTag(level)
                 Text(
                     text = stringResource(if (type == CardType.TRUTH) Res.string.truth else Res.string.dare),
-                    modifier = Modifier.background(ClinkColors.SurfaceRaised, CircleShape).padding(horizontal = 10.dp, vertical = 4.dp),
-                    color = ClinkColors.TextPrimary,
+                    modifier = Modifier.background(ClinkColors.WallRaised, CircleShape).padding(horizontal = 10.dp, vertical = 4.dp),
+                    color = ClinkColors.Paper,
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
@@ -187,8 +187,8 @@ private fun ShowingCard(
         }
         Spacer(Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            ClinkButton(stringResource(Res.string.done), onDone, Modifier.weight(1f), true, ClinkColors.Mint, ClinkColors.OnPrimary)
-            ClinkButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f), true, ClinkColors.SurfaceRaised, ClinkColors.Primary)
+            ClinkButton(stringResource(Res.string.done), onDone, Modifier.weight(1f), true, ClinkColors.Acid, ClinkColors.Ink)
+            ClinkButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f), true, ClinkColors.WallRaised, ClinkColors.Acid)
         }
     }
 }
@@ -199,7 +199,7 @@ private fun ShowingPenalty(level: Level, text: String, flipKey: Any, onDone: () 
         FlipCard(flipKey, Modifier.weight(1f)) {
             LevelTag(level)
             Spacer(Modifier.height(16.dp))
-            Text(text = stringResource(Res.string.penalty_title), color = ClinkColors.Primary, style = MaterialTheme.typography.headlineMedium)
+            Text(text = stringResource(Res.string.penalty_title), color = ClinkColors.Acid, style = MaterialTheme.typography.headlineMedium)
             CardText(text)
         }
         Spacer(Modifier.height(16.dp))
@@ -212,7 +212,7 @@ private fun CardText(text: String) {
     Text(
         text = text,
         modifier = Modifier.padding(top = 16.dp),
-        color = ClinkColors.TextPrimary,
+        color = ClinkColors.Paper,
         style = MaterialTheme.typography.titleLarge,
     )
 }

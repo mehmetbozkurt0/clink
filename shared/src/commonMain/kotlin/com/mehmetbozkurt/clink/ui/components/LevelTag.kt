@@ -22,7 +22,7 @@ fun LevelTag(level: Level, modifier: Modifier = Modifier) {
         modifier = modifier
             .background(level.color(), CircleShape)
             .padding(horizontal = 10.dp, vertical = 4.dp),
-        color = ClinkColors.OnPrimary,
+        color = ClinkColors.Ink,
         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = 0.6.sp),
     )
 }

@@ -38,8 +38,8 @@ fun GameOverScreen(game: GameId, level: Level, onPlayAgain: () -> Unit, onBackTo
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Spacer(Modifier.weight(1f))
-        Text(text = game.title(), color = ClinkColors.Primary, style = MaterialTheme.typography.labelLarge)
-        Text(text = stringResource(Res.string.game_over), color = ClinkColors.TextPrimary, style = MaterialTheme.typography.displaySmall)
+        Text(text = game.title(), color = ClinkColors.Acid, style = MaterialTheme.typography.labelLarge)
+        Text(text = stringResource(Res.string.game_over), color = ClinkColors.Paper, style = MaterialTheme.typography.displaySmall)
         Spacer(Modifier.weight(1f))
         PrimaryButton(
             text = stringResource(Res.string.play_again),

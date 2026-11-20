@@ -58,7 +58,7 @@ fun spinEndRotation(current: Float, targetAngle: Float, extraTurns: Int): Float 
 private fun normalized(degrees: Float) = ((degrees % 360f) + 360f) % 360f
 
 /**
- * Players' names on a circle with the bottle in the middle. The spinner is coral, the answerer mint.
+ * Players' names on a circle with the bottle in the middle. The spinner is acid, the answerer pink.
  * Flicking the bottle calls [onFlick] with the release speed in dp/s.
  */
 @Composable
@@ -76,9 +76,9 @@ fun BottleCircle(
         players.forEachIndexed { index, name ->
             val angle = playerAngleDegrees(index, players.size) * PI / 180.0
             val (container, content) = when (index) {
-                spinner -> ClinkColors.Primary to ClinkColors.OnPrimary
-                answerer -> ClinkColors.Mint to ClinkColors.OnPrimary
-                else -> ClinkColors.Surface to ClinkColors.TextPrimary
+                spinner -> ClinkColors.Acid to ClinkColors.Ink
+                answerer -> ClinkColors.Pink to ClinkColors.Ink
+                else -> ClinkColors.WallRaised to ClinkColors.Paper
             }
             Text(
                 text = name,

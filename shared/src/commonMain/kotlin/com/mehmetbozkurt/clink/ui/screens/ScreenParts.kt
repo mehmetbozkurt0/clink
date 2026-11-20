@@ -38,9 +38,9 @@ internal fun ScreenColumn(modifier: Modifier = Modifier, content: @Composable Co
 internal fun ScreenTitle(text: String, overline: String? = null) {
     Column(modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)) {
         if (overline != null) {
-            Text(text = overline, color = ClinkColors.Primary, style = MaterialTheme.typography.labelLarge)
+            Text(text = overline, color = ClinkColors.Acid, style = MaterialTheme.typography.labelLarge)
         }
-        Text(text = text, color = ClinkColors.TextPrimary, style = MaterialTheme.typography.headlineSmall)
+        Text(text = text, color = ClinkColors.Paper, style = MaterialTheme.typography.headlineSmall)
     }
 }
 

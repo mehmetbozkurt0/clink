@@ -80,11 +80,11 @@ fun PlayerSetupScreen(onContinue: (List<String>) -> Unit) {
                         shape = RoundedCornerShape(14.dp),
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = ClinkColors.Surface,
-                            unfocusedContainerColor = ClinkColors.Surface,
-                            focusedBorderColor = ClinkColors.Secondary,
-                            unfocusedBorderColor = ClinkColors.SurfaceRaised,
-                            cursorColor = ClinkColors.Primary,
+                            focusedContainerColor = ClinkColors.WallRaised,
+                            unfocusedContainerColor = ClinkColors.WallRaised,
+                            focusedBorderColor = ClinkColors.Pink,
+                            unfocusedBorderColor = ClinkColors.WallRaised,
+                            cursorColor = ClinkColors.Acid,
                         ),
                     )
                     RowAction("↑", enabled = index > 0) { swap(index, index - 1) }
@@ -126,7 +126,7 @@ fun PlayerSetupScreen(onContinue: (List<String>) -> Unit) {
 @Composable
 private fun RowAction(symbol: String, enabled: Boolean, onClick: () -> Unit) {
     IconButton(onClick = onClick, enabled = enabled, modifier = Modifier.focusProperties { canFocus = false }) {
-        Text(text = symbol, color = if (enabled) ClinkColors.TextMuted else ClinkColors.SurfaceRaised, style = MaterialTheme.typography.titleMedium)
+        Text(text = symbol, color = if (enabled) ClinkColors.Muted else ClinkColors.WallRaised, style = MaterialTheme.typography.titleMedium)
     }
 }
 

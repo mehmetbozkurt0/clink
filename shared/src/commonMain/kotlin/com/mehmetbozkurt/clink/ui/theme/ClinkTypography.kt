@@ -4,44 +4,55 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import com.mehmetbozkurt.clink.resources.Res
-import com.mehmetbozkurt.clink.resources.manrope_bold
-import com.mehmetbozkurt.clink.resources.manrope_medium
-import com.mehmetbozkurt.clink.resources.unbounded_extrabold
-import com.mehmetbozkurt.clink.resources.unbounded_semibold
+import com.mehmetbozkurt.clink.resources.anton_regular
+import com.mehmetbozkurt.clink.resources.archivo_variable
+import com.mehmetbozkurt.clink.resources.caveat_brush
+import com.mehmetbozkurt.clink.resources.rubik_spray_paint
 import org.jetbrains.compose.resources.Font
 
-/** Headings, titles and labels in Unbounded (600/800); body text in Manrope (500/700). */
+/** The two accent fonts (design §3.2): spray for the logo only, marker for tape labels and short notes. */
+object ClinkFonts {
+    val spray: FontFamily
+        @Composable get() = FontFamily(Font(Res.font.rubik_spray_paint))
+
+    val marker: FontFamily
+        @Composable get() = FontFamily(Font(Res.font.caveat_brush))
+}
+
+/**
+ * Headings, titles and labels in Anton (one heavy weight; no faux bold), everything people read in
+ * Archivo (variable font: 500 / 700 / 800).
+ */
 @Composable
 internal fun clinkTypography(): Typography {
-    val unbounded = FontFamily(
-        Font(Res.font.unbounded_semibold, FontWeight.SemiBold),
-        Font(Res.font.unbounded_extrabold, FontWeight.ExtraBold),
+    val anton = FontFamily(Font(Res.font.anton_regular, FontWeight.Normal))
+    val archivo = FontFamily(
+        Font(Res.font.archivo_variable, FontWeight.Medium),
+        Font(Res.font.archivo_variable, FontWeight.Bold),
+        Font(Res.font.archivo_variable, FontWeight.ExtraBold),
     )
-    val manrope = FontFamily(
-        Font(Res.font.manrope_medium, FontWeight.Medium),
-        Font(Res.font.manrope_bold, FontWeight.Bold),
-    )
-    fun TextStyle.unbounded(weight: FontWeight) = copy(fontFamily = unbounded, fontWeight = weight)
-    fun TextStyle.manrope() = copy(fontFamily = manrope, fontWeight = FontWeight.Medium)
+    fun TextStyle.anton() = copy(fontFamily = anton, fontWeight = FontWeight.Normal, fontSynthesis = FontSynthesis.None)
+    fun TextStyle.archivo() = copy(fontFamily = archivo, fontWeight = FontWeight.Medium)
 
     val base = Typography()
     return Typography(
-        displayLarge = base.displayLarge.unbounded(FontWeight.ExtraBold),
-        displayMedium = base.displayMedium.unbounded(FontWeight.ExtraBold),
-        displaySmall = base.displaySmall.unbounded(FontWeight.ExtraBold),
-        headlineLarge = base.headlineLarge.unbounded(FontWeight.ExtraBold),
-        headlineMedium = base.headlineMedium.unbounded(FontWeight.ExtraBold),
-        headlineSmall = base.headlineSmall.unbounded(FontWeight.ExtraBold),
-        titleLarge = base.titleLarge.unbounded(FontWeight.SemiBold),
-        titleMedium = base.titleMedium.unbounded(FontWeight.SemiBold),
-        titleSmall = base.titleSmall.unbounded(FontWeight.SemiBold),
-        labelLarge = base.labelLarge.unbounded(FontWeight.SemiBold),
-        labelMedium = base.labelMedium.unbounded(FontWeight.SemiBold),
-        labelSmall = base.labelSmall.unbounded(FontWeight.SemiBold),
-        bodyLarge = base.bodyLarge.manrope(),
-        bodyMedium = base.bodyMedium.manrope(),
-        bodySmall = base.bodySmall.manrope(),
+        displayLarge = base.displayLarge.anton(),
+        displayMedium = base.displayMedium.anton(),
+        displaySmall = base.displaySmall.anton(),
+        headlineLarge = base.headlineLarge.anton(),
+        headlineMedium = base.headlineMedium.anton(),
+        headlineSmall = base.headlineSmall.anton(),
+        titleLarge = base.titleLarge.anton(),
+        titleMedium = base.titleMedium.anton(),
+        titleSmall = base.titleSmall.anton(),
+        labelLarge = base.labelLarge.anton(),
+        labelMedium = base.labelMedium.anton(),
+        labelSmall = base.labelSmall.anton(),
+        bodyLarge = base.bodyLarge.archivo(),
+        bodyMedium = base.bodyMedium.archivo(),
+        bodySmall = base.bodySmall.archivo(),
     )
 }

@@ -34,19 +34,19 @@ fun WelcomeScreen(onPlay: () -> Unit) {
         Text(
             text = buildAnnotatedString {
                 append("clink")
-                withStyle(SpanStyle(color = ClinkColors.Primary)) { append(".") }
+                withStyle(SpanStyle(color = ClinkColors.Acid)) { append(".") }
             },
-            color = ClinkColors.TextPrimary,
+            color = ClinkColors.Paper,
             style = MaterialTheme.typography.displayLarge.copy(letterSpacing = (-0.02).em),
         )
-        Text(text = stringResource(Res.string.tagline), color = ClinkColors.TextMuted, style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(Res.string.tagline), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(24.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             GameId.entries.forEach { game ->
                 Text(
                     text = game.title(),
-                    modifier = Modifier.background(ClinkColors.Surface, CircleShape).padding(horizontal = 14.dp, vertical = 8.dp),
-                    color = ClinkColors.TextPrimary,
+                    modifier = Modifier.background(ClinkColors.WallRaised, CircleShape).padding(horizontal = 14.dp, vertical = 8.dp),
+                    color = ClinkColors.Paper,
                     style = MaterialTheme.typography.labelMedium,
                 )
             }

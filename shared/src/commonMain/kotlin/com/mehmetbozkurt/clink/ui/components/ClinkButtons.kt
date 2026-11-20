@@ -16,19 +16,19 @@ import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 private val ButtonShape = RoundedCornerShape(14.dp)
 private val ButtonPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
 
-/** Main action: coral with dark text, Unbounded 800. */
+/** Main action: acid with ink text, Anton. */
 @Composable
 fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-    ClinkButton(text, onClick, modifier, enabled, ClinkColors.Primary, ClinkColors.OnPrimary)
+    ClinkButton(text, onClick, modifier, enabled, ClinkColors.Acid, ClinkColors.Ink)
 }
 
 /** Secondary action on a raised surface. */
 @Composable
 fun SecondaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-    ClinkButton(text, onClick, modifier, enabled, ClinkColors.SurfaceRaised, ClinkColors.TextPrimary)
+    ClinkButton(text, onClick, modifier, enabled, ClinkColors.WallRaised, ClinkColors.Paper)
 }
 
-/** A button in any color pair, for game actions such as "Done" (mint) or "Take penalty" (coral text). */
+/** A button in any color pair, for game actions such as "Done" or "Take penalty". */
 @Composable
 internal fun ClinkButton(
     text: String,

@@ -23,10 +23,10 @@ fun AdultConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         title = { Text(stringResource(Res.string.adult_title)) },
         text = { Text(stringResource(Res.string.adult_body)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.adult_yes), color = ClinkColors.Primary) }
+            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.adult_yes), color = ClinkColors.Acid) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel), color = ClinkColors.TextMuted) }
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel), color = ClinkColors.Muted) }
         },
     )
 }

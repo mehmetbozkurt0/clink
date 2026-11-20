@@ -45,7 +45,7 @@ fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinne
 
     ScreenColumn {
         ScreenTitle(stringResource(Res.string.bp_setup_title))
-        Text(stringResource(Res.string.bp_setup_hint), color = ClinkColors.TextMuted, style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(Res.string.bp_setup_hint), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyLarge)
         // Scrolls, so 12 long names or a large font never push "Start match" off the screen.
         FlowRow(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
@@ -58,7 +58,7 @@ fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinne
                     text = name,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(if (isSelected) ClinkColors.Primary else ClinkColors.Surface)
+                        .background(if (isSelected) ClinkColors.Acid else ClinkColors.WallRaised)
                         .clickable {
                             when {
                                 isSelected -> selected.remove(index)
@@ -70,7 +70,7 @@ fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinne
                             }
                         }
                         .padding(horizontal = 16.dp, vertical = 10.dp),
-                    color = if (isSelected) ClinkColors.OnPrimary else ClinkColors.TextPrimary,
+                    color = if (isSelected) ClinkColors.Ink else ClinkColors.Paper,
                     style = MaterialTheme.typography.labelLarge,
                 )
             }

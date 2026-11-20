@@ -94,28 +94,28 @@ private fun DrawScope.drawTable(projection: TableProjection) {
         corners.drop(1).forEach { lineTo(it.x, it.y) }
         close()
     }
-    drawPath(path, ClinkColors.Surface)
-    drawPath(path, ClinkColors.SurfaceRaised, style = Stroke(width = 3f))
+    drawPath(path, ClinkColors.WallRaised)
+    drawPath(path, ClinkColors.WallRaised, style = Stroke(width = 3f))
     val midStart = projection.toScreen(TablePoint(0f, 0f))
     val midEnd = projection.toScreen(TablePoint(0f, TABLE_LENGTH))
-    drawLine(ClinkColors.SurfaceRaised, midStart, midEnd, strokeWidth = 2f)
+    drawLine(ClinkColors.WallRaised, midStart, midEnd, strokeWidth = 2f)
 }
 
-/** An empty cup seen from above at an angle: an ellipse with a coral rim. */
+/** An empty cup seen from above at an angle: an ellipse with an acid rim. */
 private fun DrawScope.drawCup(projection: TableProjection, center: TablePoint) {
     val c = projection.toScreen(center)
     val r = projection.length(BeerPongPhysics.CUP_RADIUS, center.y)
     val size = Size(r * 2f, r * 1.2f)
     val topLeft = Offset(c.x - r, c.y - r * 0.6f)
-    drawOval(ClinkColors.SurfaceRaised, topLeft, size)
-    drawOval(ClinkColors.Primary, topLeft, size, style = Stroke(width = r * 0.22f))
+    drawOval(ClinkColors.WallRaised, topLeft, size)
+    drawOval(ClinkColors.Acid, topLeft, size, style = Stroke(width = r * 0.22f))
 }
 
 private fun DrawScope.drawSplash(projection: TableProjection, center: TablePoint, splash: Float) {
     val c = projection.toScreen(center)
     val r = projection.length(BeerPongPhysics.CUP_RADIUS, center.y) * (1f + splash * 1.2f)
     drawOval(
-        color = ClinkColors.Mint.copy(alpha = 1f - splash),
+        color = ClinkColors.Acid.copy(alpha = 1f - splash),
         topLeft = Offset(c.x - r, c.y - r * 0.6f),
         size = Size(r * 2f, r * 1.2f),
         style = Stroke(width = 6f),
@@ -128,7 +128,7 @@ private fun DrawScope.drawSplash(projection: TableProjection, center: TablePoint
  */
 private fun DrawScope.drawBall(projection: TableProjection, flight: ThrowResult?, progress: Float) {
     val launch = TablePoint(0f, 0f)
-    val ballColor = ClinkColors.TextPrimary
+    val ballColor = ClinkColors.Paper
     if (flight == null) {
         drawBallAt(projection, launch, lift = 0f, color = ballColor)
         return

@@ -15,7 +15,7 @@ fun GameListScreen(onGame: (GameId) -> Unit) {
         ScreenTitle(stringResource(Res.string.games_title))
         GameId.entries.forEach { game ->
             ChoiceCard(onClick = { onGame(game) }) {
-                Text(text = game.title(), color = ClinkColors.TextPrimary, style = MaterialTheme.typography.titleLarge)
+                Text(text = game.title(), color = ClinkColors.Paper, style = MaterialTheme.typography.titleLarge)
             }
         }
     }

@@ -129,14 +129,14 @@ fun BeerPongScreen(players: List<String>, level: Level, onMatchOver: (winner: In
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(Res.string.turn_of, state.players[thrower]), color = ClinkColors.TextPrimary, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(Res.string.turn_of, state.players[thrower]), color = ClinkColors.Paper, style = MaterialTheme.typography.titleMedium)
                 Text(
                     stringResource(Res.string.bp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)),
-                    color = ClinkColors.TextMuted,
+                    color = ClinkColors.Muted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            TextButton(onClick = { confirmEnd = true }) { Text(stringResource(Res.string.end), color = ClinkColors.TextMuted) }
+            TextButton(onClick = { confirmEnd = true }) { Text(stringResource(Res.string.end), color = ClinkColors.Muted) }
         }
         Spacer(Modifier.height(12.dp))
 
@@ -163,7 +163,7 @@ fun BeerPongScreen(players: List<String>, level: Level, onMatchOver: (winner: In
             Text(
                 text = stringResource(outcome ?: Res.string.bp_hint),
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                color = if (outcome == Res.string.bp_hit) ClinkColors.Mint else ClinkColors.TextMuted,
+                color = if (outcome == Res.string.bp_hit) ClinkColors.Acid else ClinkColors.Muted,
                 style = if (outcome != null) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
@@ -185,25 +185,25 @@ private fun MatchOverPanel(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)) {
-        Text(stringResource(Res.string.bp_win, winner), color = ClinkColors.Mint, style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(Res.string.bp_win, winner), color = ClinkColors.Acid, style = MaterialTheme.typography.headlineMedium)
         ClinkCard(modifier = Modifier.fillMaxWidth()) {
             LevelTag(level)
             Text(
                 stringResource(Res.string.penalty_title),
                 modifier = Modifier.padding(top = 12.dp),
-                color = ClinkColors.Primary,
+                color = ClinkColors.Acid,
                 style = MaterialTheme.typography.headlineSmall,
             )
             Text(
                 stringResource(Res.string.bp_loser_penalty, loser),
                 modifier = Modifier.padding(top = 4.dp),
-                color = ClinkColors.TextMuted,
+                color = ClinkColors.Muted,
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
                 text = penaltyText ?: stringResource(Res.string.notice_no_penalty),
                 modifier = Modifier.padding(top = 12.dp),
-                color = ClinkColors.TextPrimary,
+                color = ClinkColors.Paper,
                 style = MaterialTheme.typography.titleLarge,
             )
         }

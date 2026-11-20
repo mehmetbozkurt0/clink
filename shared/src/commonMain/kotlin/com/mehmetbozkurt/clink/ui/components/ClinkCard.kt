@@ -14,7 +14,7 @@ import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 fun ClinkCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = modifier
-            .background(ClinkColors.Surface, RoundedCornerShape(16.dp))
+            .background(ClinkColors.WallRaised, RoundedCornerShape(16.dp))
             .padding(20.dp),
         content = content,
     )

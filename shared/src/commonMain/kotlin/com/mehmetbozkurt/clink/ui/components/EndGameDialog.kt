@@ -18,10 +18,10 @@ fun EndGameDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.end_confirm)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.end), color = ClinkColors.Primary) }
+            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.end), color = ClinkColors.Acid) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel), color = ClinkColors.TextMuted) }
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel), color = ClinkColors.Muted) }
         },
     )
 }
