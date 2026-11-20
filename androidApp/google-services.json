@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "500817114014",
+    "project_id": "clink-1872d",
+    "storage_bucket": "clink-1872d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500817114014:android:4a4d1f6a86ffb5384c5c8f",
+        "android_client_info": {
+          "package_name": "com.mehmetbozkurt.clink"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "500817114014-agg9am4p11su7u79l5ol0hrlkhcbiai9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmgv_S47mQt9QFrax6cjrLFkRDaZ4-Tqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "500817114014-agg9am4p11su7u79l5ol0hrlkhcbiai9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

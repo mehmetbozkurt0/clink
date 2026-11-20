@@ -12,7 +12,14 @@ Konsol: https://console.firebase.google.com
 ## 2. Blaze planı ve bütçe uyarısı
 
 1. Sol alttaki plan rozetinden **Blaze**'e (kullandıkça öde) geç. Ücretsiz kotalar Spark ile aynı; Plan 4'teki gerçek zamanlı lobiler ve Plan 5'teki temizlik işleri için gerekiyor.
-2. Google Cloud faturalandırma ekranında bir **bütçe uyarısı** ekle (ör. aylık 5 $, %50 / %90 / %100 e-posta uyarısı). Bu ödemeyi durdurmaz, sadece haber verir.
+2. **Bütçe uyarısı** (ödemeyi durdurmaz, sadece e-postayla haber verir):
+   1. Firebase konsolunda sol üstteki **dişli** → **Kullanım ve faturalandırma** (Usage and billing) → **Ayrıntılar ve ayarlar** (Details & settings) sekmesi.
+   2. **Bütçeler ve uyarılar** (Budgets & alerts) kartında **İlk bütçeyi oluştur** (Create first budget). Bu seni Google Cloud konsolundaki bütçe sayfasına götürür.
+      - Bu bağlantı yoksa: https://console.cloud.google.com/billing → faturalandırma hesabını seç → soldan **Bütçeler ve uyarılar** → **Bütçe oluştur**.
+   3. **Kapsam:** ad `clink-aylik`, zaman aralığı **Aylık**, projeler **clink**, hizmetler **Tüm hizmetler** → İleri.
+   4. **Tutar:** "Belirtilen tutar", ör. **5 USD** (hesabın para birimi TL ise ~200 TL) → İleri.
+   5. **İşlemler:** eşikler **%50, %90, %100** (gerçekleşen harcama); **"Faturalandırma yöneticilerine ve kullanıcılarına e-posta uyarısı gönder"** işaretli → **Bitir**.
+   - Bütçe ekranı açılmıyor ya da "izin yok" diyorsa: faturalandırma hesabında **Billing Account Administrator** rolün olmalı. Faturalandırma hesabını sen açtıysan bu rol zaten sende.
 
 ## 3. Giriş yöntemleri
 
@@ -22,9 +29,12 @@ Konsol: https://console.firebase.google.com
 
 ## 4. Firestore
 
-**Firestore Database → Veritabanı oluştur**:
-1. **Üretim modu** (production mode). Güvenlik kurallarını Görev 2'de birlikte yazıp yapıştıracağız.
-2. Konum: **eur3 (Europe)**. Konum sonradan değiştirilemez.
+Sol menü → **Derleme** (Build) → **Firestore Database** → **Veritabanı oluştur** (Create database / Add database). Sihirbazda sırayla:
+1. **Sürüm (edition): Standard.** Enterprise seçme; o daha pahalı ve bize gereken özellikleri farklı.
+2. **Veritabanı kimliği (Database ID): boş bırak** ya da `(default)` kalsın. Uygulama varsayılan veritabanını kullanır; başka bir ad verirsen bağlanamaz.
+3. **Konum: `eur3 (Europe)`** (çok bölgeli Avrupa). Listede yoksa `europe-west1 (Belgium)` seç. Konum sonradan **değiştirilemez**.
+4. **Güvenlik kuralları: Üretim modu** (production mode / "Start in production mode"). Bu, uygulamadan gelen tüm okuma ve yazmaları şimdilik kapatır; kuralları Görev 2'de birlikte yazıp yapıştıracağız. "Test modu"nu seçme: herkese 30 gün boyunca okuma ve yazma izni verir.
+5. **Oluştur** (Create). Birkaç saniye sürer; sonunda boş bir "Veri" (Data) sekmesi görürsün. Koleksiyon ekleme, onları içerik aracı oluşturacak.
 
 ## 5. Android uygulaması
 
