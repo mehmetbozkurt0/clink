@@ -55,32 +55,47 @@ class BeerPongPhysicsTest {
         assertEquals(1, r.touchdowns.size)
     }
 
+    /** A flick whose whole drag points [degrees] off vertical (positive = right), released at [speed] dp/s. */
+    private fun flick(degrees: Float, speed: Float = 1000f): ThrowInput? {
+        val radians = degrees * PI.toFloat() / 180f
+        return flickToThrow(dragDx = kotlin.math.sin(radians) * 100f, dragDy = -kotlin.math.cos(radians) * 100f, speedDpPerSec = speed)
+    }
+
     @Test
-    fun weakFlickIsNotAThrow() = assertNull(flickToThrow(0f, -299f))
+    fun weakFlickIsNotAThrow() = assertNull(flick(0f, speed = 299f))
 
     @Test
     fun downwardOrSidewaysFlickIsNotAThrow() {
-        assertNull(flickToThrow(0f, 1000f))
-        assertNull(flickToThrow(1000f, 0f))
+        assertNull(flickToThrow(dragDx = 0f, dragDy = 100f, speedDpPerSec = 1000f))
+        assertNull(flickToThrow(dragDx = 100f, dragDy = 0f, speedDpPerSec = 1000f))
     }
-
-    @Test
-    fun straightUpFlickAimsStraight() = assertEquals(0f, flickToThrow(0f, -1000f)!!.angleDegrees, 0.001f)
-
-    @Test
-    fun rangeFollowsSpeedAndIsClamped() {
-        assertEquals(60f, flickToThrow(0f, -300f)!!.range, 0.01f)
-        assertEquals(110f, flickToThrow(0f, -3000f)!!.range, 0.01f)
-        assertEquals(110f, flickToThrow(0f, -6000f)!!.range, 0.01f)
-    }
-
-    @Test
-    fun angleIsClamped() = assertEquals(-30f, flickToThrow(-1000f, -1000f)!!.angleDegrees, 0.001f)
 
     @Test
     fun nearlySidewaysFlickIsNotAThrow() {
-        // A real sideways swipe always has a little upward speed; more than 60° off vertical is not a throw.
-        assertNull(flickToThrow(1000f, -100f))
-        assertNull(flickToThrow(-1000f, -500f))
+        // A real sideways swipe always has a little upward movement; more than 60° off vertical is not a throw.
+        assertNull(flick(61f))
+        assertNull(flick(-75f))
+    }
+
+    @Test
+    fun straightUpFlickAimsStraight() = assertEquals(0f, flick(0f)!!.angleDegrees, 0.001f)
+
+    @Test
+    fun aimIsDampenedSoAWobblyFingerStillHits() {
+        assertEquals(5f, flick(20f)!!.angleDegrees, 0.01f)
+        assertEquals(-15f, flick(-60f)!!.angleDegrees, 0.01f)
+    }
+
+    @Test
+    fun rangeFollowsSpeedAndIsClamped() {
+        assertEquals(70f, flick(0f, speed = 300f)!!.range, 0.01f)
+        assertEquals(100f, flick(0f, speed = 3500f)!!.range, 0.01f)
+        assertEquals(100f, flick(0f, speed = 7000f)!!.range, 0.01f)
+    }
+
+    @Test
+    fun everyCupIsReachable() {
+        // The widest cups (back corners) need about 16° of drag, well inside the 60° limit; the back row's range fits too.
+        assertEquals(0, simulateThrow(flick(-15.76f, speed = 300f + (hypot(6.2f, 90f) - 70f) / 30f * 3200f)!!, all).cupHit)
     }
 }

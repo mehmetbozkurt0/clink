@@ -27,10 +27,10 @@ object BeerPongPhysics {
     const val BALL_RADIUS = 1f
     const val RIM_BOUNCE = 4f
     const val MIN_FLICK = 300f // dp/s
-    const val MAX_FLICK = 3000f // dp/s
-    const val MIN_RANGE = 60f
-    const val MAX_RANGE = 110f
-    const val MAX_ANGLE = 30f
+    const val MAX_FLICK = 3500f // dp/s
+    const val MIN_RANGE = 70f
+    const val MAX_RANGE = 100f
+    const val AIM_SCALE = 0.25f // a 20° wobble of the finger turns the throw by only 5°
     const val MAX_FLICK_TILT = 60f // a flick further than this from vertical is a sideways swipe, not a throw
 
     /** Cup centers by id: back row 0-1-2, middle row 3-4, front cup 5 (a 3-2-1 triangle pointing at the thrower). */
@@ -44,18 +44,17 @@ object BeerPongPhysics {
 }
 
 /**
- * Turns a flick's release velocity on screen (dp/s, vy < 0 is up toward the rack) into a throw.
+ * Turns a flick into a throw. The direction comes from the whole drag ([dragDx], [dragDy] on screen, dy < 0 is up
+ * toward the rack), which is steadier than the release velocity's direction; it is scaled down by
+ * [BeerPongPhysics.AIM_SCALE]. The release speed sets the range.
  * Too weak, downward or more than [BeerPongPhysics.MAX_FLICK_TILT] off vertical → null: not a throw.
  */
-fun flickToThrow(vxDpPerSec: Float, vyDpPerSec: Float): ThrowInput? = with(BeerPongPhysics) {
-    if (vyDpPerSec >= 0f) return null
-    val speed = hypot(vxDpPerSec, vyDpPerSec)
-    if (speed < MIN_FLICK) return null
-    val tilt = atan2(vxDpPerSec, -vyDpPerSec) * 180f / PI.toFloat()
+fun flickToThrow(dragDx: Float, dragDy: Float, speedDpPerSec: Float): ThrowInput? = with(BeerPongPhysics) {
+    if (dragDy >= 0f || speedDpPerSec < MIN_FLICK) return null
+    val tilt = atan2(dragDx, -dragDy) * 180f / PI.toFloat()
     if (abs(tilt) > MAX_FLICK_TILT) return null
-    val angle = tilt.coerceIn(-MAX_ANGLE, MAX_ANGLE)
-    val t = ((speed - MIN_FLICK) / (MAX_FLICK - MIN_FLICK)).coerceIn(0f, 1f)
-    ThrowInput(angle, MIN_RANGE + t * (MAX_RANGE - MIN_RANGE))
+    val t = ((speedDpPerSec - MIN_FLICK) / (MAX_FLICK - MIN_FLICK)).coerceIn(0f, 1f)
+    ThrowInput(tilt * AIM_SCALE, MIN_RANGE + t * (MAX_RANGE - MIN_RANGE))
 }
 
 /**

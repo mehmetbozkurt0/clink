@@ -12,8 +12,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.util.lerp
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
+import kotlin.math.hypot
 
 private const val TABLE_HALF_WIDTH = 20f
 private const val TABLE_LENGTH = 100f
@@ -52,16 +54,22 @@ fun BeerPongTable(
             if (!flickEnabled) return@pointerInput
             val tracker = VelocityTracker()
             var fromBallArea = false
+            var drag = Offset.Zero
             detectDragGestures(
                 onDragStart = { start ->
                     tracker.resetTracking()
+                    drag = Offset.Zero
                     fromBallArea = start.y > size.height * 0.55f
                 },
-                onDrag = { change, _ -> tracker.addPosition(change.uptimeMillis, change.position) },
+                onDrag = { change, dragAmount ->
+                    tracker.addPointerInputChange(change)
+                    drag += dragAmount
+                },
                 onDragEnd = {
                     if (fromBallArea) {
                         val velocity = tracker.calculateVelocity()
-                        flickToThrow(velocity.x / density, velocity.y / density)?.let(onFlick)
+                        val speed = hypot(velocity.x, velocity.y) / density
+                        flickToThrow(drag.x, drag.y, speed)?.let(onFlick)
                     }
                 },
             )
