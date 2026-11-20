@@ -4,10 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +46,12 @@ fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinne
     ScreenColumn {
         ScreenTitle(stringResource(Res.string.bp_setup_title))
         Text(stringResource(Res.string.bp_setup_hint), color = ClinkColors.TextMuted, style = MaterialTheme.typography.bodyLarge)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Scrolls, so 12 long names or a large font never push "Start match" off the screen.
+        FlowRow(
+            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             players.forEachIndexed { index, name ->
                 val isSelected = index in selected
                 Text(
@@ -69,10 +75,10 @@ fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinne
                 )
             }
         }
-        Spacer(Modifier.weight(1f))
         PrimaryButton(
             text = stringResource(Res.string.bp_start_match),
-            onClick = { onStart(matchupFromSelection(selected.toList(), previousWinner)) },
+            // Re-checked here: `enabled` only updates on the next frame.
+            onClick = { if (selected.size == 2) onStart(matchupFromSelection(selected.toList(), previousWinner)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = selected.size == 2,
         )
