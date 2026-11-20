@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder (design §7) until the commissioned illustration arrives: three empty cups and a ball. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Back cup -->
+    <path
+        android:fillColor="#FF2E88"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M42,48 L78,48 L73,86 L47,86 Z" />
+    <path
+        android:fillColor="#26262A"
+        android:strokeColor="#C6FF00"
+        android:strokeWidth="3"
+        android:pathData="M42,48 A18,5 0 1,0 78,48 A18,5 0 1,0 42,48 Z" />
+    <!-- Front cups -->
+    <path
+        android:fillColor="#FF2E88"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M20,62 L56,62 L51,100 L25,100 Z M64,62 L100,62 L95,100 L69,100 Z" />
+    <path
+        android:fillColor="#26262A"
+        android:strokeColor="#C6FF00"
+        android:strokeWidth="3"
+        android:pathData="M20,62 A18,5 0 1,0 56,62 A18,5 0 1,0 20,62 Z M64,62 A18,5 0 1,0 100,62 A18,5 0 1,0 64,62 Z" />
+    <!-- Ball with motion lines -->
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M76,16 L90,12 M78,24 L94,24" />
+    <path
+        android:fillColor="#F4EFE3"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:pathData="M58,20 A8,8 0 1,0 74,20 A8,8 0 1,0 58,20 Z" />
+</vector>

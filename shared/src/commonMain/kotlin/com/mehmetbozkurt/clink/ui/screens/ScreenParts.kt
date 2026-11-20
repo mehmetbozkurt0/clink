@@ -21,6 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.resources.art_pong
+import com.mehmetbozkurt.clink.resources.art_spin
+import com.mehmetbozkurt.clink.resources.art_tod
 import com.mehmetbozkurt.clink.resources.game_beerpong
 import com.mehmetbozkurt.clink.resources.game_pong_meta
 import com.mehmetbozkurt.clink.resources.game_spin
@@ -73,6 +76,13 @@ internal fun GameId.icon(): DrawableResource = when (this) {
     GameId.TRUTH_OR_DARE -> Res.drawable.ic_game_tod
     GameId.SPIN_THE_BOTTLE -> Res.drawable.ic_game_spin
     GameId.BEER_PONG -> Res.drawable.ic_game_pong
+}
+
+/** The game's illustration on its poster (design §7; placeholders until the commissioned art arrives). */
+internal fun GameId.art(): DrawableResource = when (this) {
+    GameId.TRUTH_OR_DARE -> Res.drawable.art_tod
+    GameId.SPIN_THE_BOTTLE -> Res.drawable.art_spin
+    GameId.BEER_PONG -> Res.drawable.art_pong
 }
 
 /** Players and a one-line rule, e.g. "2–12 kişi · Kart çek, yap ya da ceza". */

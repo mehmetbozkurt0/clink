@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
@@ -32,7 +31,7 @@ import org.jetbrains.compose.resources.stringResource
 /** Slight, fixed tilts so the posters look pasted by hand. */
 internal val PosterTilts = listOf(-1f, 1f, -0.5f)
 
-/** Game list (design §4): one poster per game with its icon, name, players and a one-line rule. */
+/** Game list (design §4): one poster per game with its illustration, name, players and a one-line rule. */
 @Composable
 fun GameListScreen(onGame: (GameId) -> Unit, onBack: () -> Unit) {
     ScreenColumn {
@@ -41,7 +40,7 @@ fun GameListScreen(onGame: (GameId) -> Unit, onBack: () -> Unit) {
         Column(modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
             GameId.entries.forEachIndexed { index, game ->
                 ChoiceCard(onClick = { onGame(game) }, rotation = PosterTilts[index % PosterTilts.size]) {
-                    Row(verticalAlignment = Alignment.Top) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = game.title().toUpperCase(Locale.current),
@@ -57,10 +56,9 @@ fun GameListScreen(onGame: (GameId) -> Unit, onBack: () -> Unit) {
                         }
                         Spacer(Modifier.width(12.dp))
                         Image(
-                            painter = painterResource(game.icon()),
+                            painter = painterResource(game.art()),
                             contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            colorFilter = ColorFilter.tint(ClinkColors.Ink),
+                            modifier = Modifier.size(76.dp),
                         )
                     }
                 }

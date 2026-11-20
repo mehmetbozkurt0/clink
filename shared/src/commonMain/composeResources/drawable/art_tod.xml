@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder (design §7) until the commissioned illustration arrives: two fanned cards, "?" and "!". -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Pink card with "?" -->
+    <group android:rotation="-12" android:pivotX="48" android:pivotY="62">
+        <path
+            android:fillColor="#FF2E88"
+            android:strokeColor="#141414"
+            android:strokeWidth="2.5"
+            android:pathData="M32,31 H64 A6,6 0 0 1 70,37 V87 A6,6 0 0 1 64,93 H32 A6,6 0 0 1 26,87 V37 A6,6 0 0 1 32,31 Z" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="5"
+            android:strokeLineCap="round"
+            android:pathData="M40,52 C40,43 56,43 56,52 C56,58 48,58 48,66" />
+        <path
+            android:fillColor="#141414"
+            android:pathData="M45,75 A3,3 0 1,0 51,75 A3,3 0 1,0 45,75 Z" />
+    </group>
+    <!-- Acid card with "!" -->
+    <group android:rotation="12" android:pivotX="72" android:pivotY="60">
+        <path
+            android:fillColor="#C6FF00"
+            android:strokeColor="#141414"
+            android:strokeWidth="2.5"
+            android:pathData="M56,29 H88 A6,6 0 0 1 94,35 V85 A6,6 0 0 1 88,91 H56 A6,6 0 0 1 50,85 V35 A6,6 0 0 1 56,29 Z" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="5"
+            android:strokeLineCap="round"
+            android:pathData="M72,44 L72,63" />
+        <path
+            android:fillColor="#141414"
+            android:pathData="M69,73 A3,3 0 1,0 75,73 A3,3 0 1,0 69,73 Z" />
+    </group>
+</vector>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher foreground (design §6): a sprayed acid "c" with a pink dot and two drips, inside the 66 dp safe zone.
+     Also used as the monochrome layer for themed icons (Android 13+): there only its shape counts. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- The "c": an arc open to the right -->
+    <path
+        android:strokeColor="#C6FF00"
+        android:strokeWidth="11"
+        android:strokeLineCap="round"
+        android:pathData="M61.3,40.7 A16,16 0 1,0 61.3,63.3" />
+    <!-- Drips -->
+    <path
+        android:strokeColor="#C6FF00"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M44,66 L44,77 M53,68 L53,73" />
+    <path
+        android:fillColor="#C6FF00"
+        android:pathData="M41,80 A3,3 0 1,0 47,80 A3,3 0 1,0 41,80 Z M50.5,76 A2.5,2.5 0 1,0 55.5,76 A2.5,2.5 0 1,0 50.5,76 Z" />
+    <!-- The dot -->
+    <path
+        android:fillColor="#FF2E88"
+        android:pathData="M68,63 A5,5 0 1,0 78,63 A5,5 0 1,0 68,63 Z" />
+</vector>
