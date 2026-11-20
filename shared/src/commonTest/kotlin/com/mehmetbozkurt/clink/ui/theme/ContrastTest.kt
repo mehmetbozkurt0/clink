@@ -15,7 +15,7 @@ class ContrastTest {
         val pairs = listOf(
             ClinkColors.Paper to ClinkColors.Wall, ClinkColors.Paper to ClinkColors.WallRaised,
             ClinkColors.Muted to ClinkColors.Wall, ClinkColors.Muted to ClinkColors.WallRaised,
-            ClinkColors.Ink to ClinkColors.Paper, ClinkColors.Ink to ClinkColors.Tape,
+            ClinkColors.Ink to ClinkColors.Paper, ClinkColors.InkMuted to ClinkColors.Paper, ClinkColors.Ink to ClinkColors.Tape,
             ClinkColors.Ink to ClinkColors.Acid, ClinkColors.Ink to ClinkColors.Pink, ClinkColors.Ink to ClinkColors.Amber,
             ClinkColors.Acid to ClinkColors.Wall, ClinkColors.Amber to ClinkColors.Wall,
         )

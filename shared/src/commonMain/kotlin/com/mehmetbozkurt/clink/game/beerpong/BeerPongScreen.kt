@@ -48,7 +48,7 @@ import com.mehmetbozkurt.clink.resources.notice_no_penalty
 import com.mehmetbozkurt.clink.resources.penalty_done
 import com.mehmetbozkurt.clink.resources.penalty_title
 import com.mehmetbozkurt.clink.resources.turn_of
-import com.mehmetbozkurt.clink.ui.components.ClinkCard
+import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
@@ -186,24 +186,24 @@ private fun MatchOverPanel(
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)) {
         Text(stringResource(Res.string.bp_win, winner), color = ClinkColors.Acid, style = MaterialTheme.typography.headlineMedium)
-        ClinkCard(modifier = Modifier.fillMaxWidth()) {
+        Poster(modifier = Modifier.fillMaxWidth()) {
             LevelTag(level)
             Text(
                 stringResource(Res.string.penalty_title),
                 modifier = Modifier.padding(top = 12.dp),
-                color = ClinkColors.Acid,
+                color = ClinkColors.Ink,
                 style = MaterialTheme.typography.headlineSmall,
             )
             Text(
                 stringResource(Res.string.bp_loser_penalty, loser),
                 modifier = Modifier.padding(top = 4.dp),
-                color = ClinkColors.Muted,
+                color = ClinkColors.InkMuted,
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
                 text = penaltyText ?: stringResource(Res.string.notice_no_penalty),
                 modifier = Modifier.padding(top = 12.dp),
-                color = ClinkColors.Paper,
+                color = ClinkColors.Ink,
                 style = MaterialTheme.typography.titleLarge,
             )
         }

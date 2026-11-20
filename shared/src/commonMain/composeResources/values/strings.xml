@@ -54,4 +54,6 @@
     <string name="bp_setup_title">Who plays this match?</string>
     <string name="bp_setup_hint">Pick two players</string>
     <string name="bp_start_match">Start match</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_close">Close</string>
 </resources>

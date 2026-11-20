@@ -7,20 +7,18 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.game_beerpong
 import com.mehmetbozkurt.clink.resources.game_spin
 import com.mehmetbozkurt.clink.resources.game_tod
-import com.mehmetbozkurt.clink.ui.components.ClinkCard
+import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -44,19 +42,20 @@ internal fun ScreenTitle(text: String, overline: String? = null) {
     }
 }
 
-/** A tappable card; disabled cards are dimmed and ignore taps. */
+/** A tappable poster; disabled ones are dimmed and ignore taps. Text inside defaults to ink. */
 @Composable
 internal fun ChoiceCard(
     onClick: () -> Unit,
     enabled: Boolean = true,
+    rotation: Float = 0f,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    ClinkCard(
+    Poster(
         modifier = Modifier
             .fillMaxWidth()
             .alpha(if (enabled) 1f else 0.5f)
-            .clip(RoundedCornerShape(16.dp))
             .clickable(enabled = enabled, onClick = onClick),
+        rotation = rotation,
         content = content,
     )
 }

@@ -58,7 +58,7 @@ import com.mehmetbozkurt.clink.resources.take_penalty
 import com.mehmetbozkurt.clink.resources.truth
 import com.mehmetbozkurt.clink.resources.turn_of
 import com.mehmetbozkurt.clink.ui.components.ClinkButton
-import com.mehmetbozkurt.clink.ui.components.ClinkCard
+import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
@@ -199,7 +199,7 @@ private fun ShowingPenalty(level: Level, text: String, flipKey: Any, onDone: () 
         FlipCard(flipKey, Modifier.weight(1f)) {
             LevelTag(level)
             Spacer(Modifier.height(16.dp))
-            Text(text = stringResource(Res.string.penalty_title), color = ClinkColors.Acid, style = MaterialTheme.typography.headlineMedium)
+            Text(text = stringResource(Res.string.penalty_title), color = ClinkColors.Ink, style = MaterialTheme.typography.headlineMedium)
             CardText(text)
         }
         Spacer(Modifier.height(16.dp))
@@ -212,7 +212,7 @@ private fun CardText(text: String) {
     Text(
         text = text,
         modifier = Modifier.padding(top = 16.dp),
-        color = ClinkColors.Paper,
+        color = ClinkColors.Ink,
         style = MaterialTheme.typography.titleLarge,
     )
 }
@@ -222,7 +222,7 @@ private fun CardText(text: String) {
 private fun FlipCard(key: Any, modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {
     val rotation = remember(key) { Animatable(90f) }
     LaunchedEffect(key) { rotation.animateTo(0f, tween(durationMillis = 250)) }
-    ClinkCard(
+    Poster(
         modifier = modifier.fillMaxWidth().graphicsLayer {
             rotationY = rotation.value
             cameraDistance = 12f * density

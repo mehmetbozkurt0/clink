@@ -16,6 +16,9 @@ object ClinkColors {
     /** Text on paper and on neon buttons. */
     val Ink = Color(0xFF141414)
 
+    /** Secondary text on paper (posters). */
+    val InkMuted = Color(0xFF5A564D)
+
     /** Secondary text, hints, inactive icons on the wall. */
     val Muted = Color(0xFFA8A49A)
 

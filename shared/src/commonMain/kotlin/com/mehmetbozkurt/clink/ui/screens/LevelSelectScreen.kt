@@ -34,7 +34,7 @@ fun LevelSelectScreen(onLevel: (Level) -> Unit) {
             ChoiceCard(onClick = { if (level.needsAdultConfirmation()) askAdult = true else onLevel(level) }) {
                 LevelTag(level)
                 Spacer(Modifier.height(8.dp))
-                Text(text = level.description(), color = ClinkColors.Paper, style = MaterialTheme.typography.bodyLarge)
+                Text(text = level.description(), color = ClinkColors.Ink, style = MaterialTheme.typography.bodyLarge)
             }
         }
     }

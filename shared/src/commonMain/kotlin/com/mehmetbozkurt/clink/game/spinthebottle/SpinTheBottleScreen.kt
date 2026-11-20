@@ -49,7 +49,7 @@ import com.mehmetbozkurt.clink.resources.penalty_title
 import com.mehmetbozkurt.clink.resources.spin_hint
 import com.mehmetbozkurt.clink.resources.take_penalty
 import com.mehmetbozkurt.clink.ui.components.ClinkButton
-import com.mehmetbozkurt.clink.ui.components.ClinkCard
+import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
@@ -183,18 +183,18 @@ private fun PhasePanel(
             }
         }
         is SpinPhase.ShowingPenalty -> {
-            ClinkCard(modifier = Modifier.fillMaxWidth()) {
+            Poster(modifier = Modifier.fillMaxWidth()) {
                 LevelTag(state.level)
                 Text(
                     text = stringResource(Res.string.penalty_title),
                     modifier = Modifier.padding(top = 12.dp),
-                    color = ClinkColors.Acid,
+                    color = ClinkColors.Ink,
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 Text(
                     text = "${state.players[phase.answerer]}: ${penaltyText(phase.cardId)}",
                     modifier = Modifier.padding(top = 8.dp),
-                    color = ClinkColors.Paper,
+                    color = ClinkColors.Ink,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }

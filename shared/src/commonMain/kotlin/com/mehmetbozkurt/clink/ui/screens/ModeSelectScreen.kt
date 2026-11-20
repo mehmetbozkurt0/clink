@@ -19,12 +19,12 @@ fun ModeSelectScreen(game: GameId, onLocal: () -> Unit) {
     ScreenColumn {
         ScreenTitle(stringResource(Res.string.mode_title), overline = game.title())
         ChoiceCard(onClick = onLocal) {
-            Text(text = stringResource(Res.string.mode_local), color = ClinkColors.Paper, style = MaterialTheme.typography.titleLarge)
-            Text(text = stringResource(Res.string.mode_local_sub), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyMedium)
+            Text(text = stringResource(Res.string.mode_local), color = ClinkColors.Ink, style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(Res.string.mode_local_sub), color = ClinkColors.InkMuted, style = MaterialTheme.typography.bodyMedium)
         }
         ChoiceCard(onClick = {}, enabled = false) {
-            Text(text = stringResource(Res.string.mode_online), color = ClinkColors.Paper, style = MaterialTheme.typography.titleLarge)
-            Text(text = stringResource(Res.string.coming_soon), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyMedium)
+            Text(text = stringResource(Res.string.mode_online), color = ClinkColors.Ink, style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(Res.string.coming_soon), color = ClinkColors.InkMuted, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
