@@ -41,12 +41,12 @@ Sol menü → **Derleme** (Build) → **Firestore Database** → **Veritabanı o
 **Proje ayarları (dişli) → Genel → Uygulamalarınız → Android simgesi**:
 1. Android paket adı: `com.mehmetbozkurt.clink`
 2. Uygulama takma adı: `Clink`
-3. **Hata ayıklama imzalama sertifikası SHA-1** (bu bilgisayarın debug anahtarı):
-   `46:B7:AC:1D:F7:3A:80:6A:0F:3C:20:EC:D9:E5:67:CF:F3:6C:1D:F5`
+3. **Hata ayıklama imzalama sertifikası SHA-1** (Clink'in kendi debug anahtarı, `secrets/clink-debug.keystore`):
+   `2E:A7:5D:CC:95:61:A9:C6:50:BB:1F:05:93:E9:27:1C:56:CA:E0:60`
 4. **Uygulamayı kaydet** → `google-services.json` dosyasını indir → repo içinde `androidApp/google-services.json` olarak kaydet.
 5. Konsolun sonraki "SDK ekle" adımlarını atla; onları ben yapıyorum.
 
-Bu dosya commit'lenebilir: içinde gizli bilgi yok, Firebase onu paket adı ve SHA-1 ile sınırlar.
+Bu dosya **git'e girmez** (`.gitignore`'da): içindeki Android API anahtarı GitHub'da görünmesin diye. Başka bir bilgisayarda derlemek için dosyayı elle kopyala.
 
 ## 6. Yönetici anahtarı (içerik aktarma aracı için)
 
