@@ -1,6 +1,12 @@
 package com.mehmetbozkurt.clink.ui.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
@@ -20,6 +26,8 @@ import com.mehmetbozkurt.clink.ui.screens.LevelSelectScreen
 import com.mehmetbozkurt.clink.ui.screens.ModeSelectScreen
 import com.mehmetbozkurt.clink.ui.screens.PlayerSetupScreen
 import com.mehmetbozkurt.clink.ui.screens.WelcomeScreen
+
+private const val TransitionMillis = 250
 
 @Composable
 fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
@@ -45,17 +53,32 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         navController.navigate(route, options)
     }
 
+    // The on-screen ‹ does exactly what system back does: pop this screen.
+    fun NavBackStackEntry.back() = ifResumed { navController.popBackStack() }
+
     // Every navigation goes through entry.ifResumed, so a double tap can't open the same screen twice.
-    NavHost(navController = navController, startDestination = WelcomeRoute) {
+    // Short slide + fade between screens (design §3.4); going back reverses it.
+    NavHost(
+        navController = navController,
+        startDestination = WelcomeRoute,
+        enterTransition = { slideInHorizontally(tween(TransitionMillis)) { it / 8 } + fadeIn(tween(TransitionMillis)) },
+        exitTransition = { slideOutHorizontally(tween(TransitionMillis)) { -it / 8 } + fadeOut(tween(TransitionMillis)) },
+        popEnterTransition = { slideInHorizontally(tween(TransitionMillis)) { -it / 8 } + fadeIn(tween(TransitionMillis)) },
+        popExitTransition = { slideOutHorizontally(tween(TransitionMillis)) { it / 8 } + fadeOut(tween(TransitionMillis)) },
+    ) {
         composable<WelcomeRoute> { entry ->
             WelcomeScreen(onPlay = { entry.ifResumed { navController.navigate(GameListRoute) } })
         }
         composable<GameListRoute> { entry ->
-            GameListScreen(onGame = { game -> entry.ifResumed { navController.navigate(ModeRoute(game)) } })
+            GameListScreen(onGame = { game -> entry.ifResumed { navController.navigate(ModeRoute(game)) } }, onBack = { entry.back() })
         }
         composable<ModeRoute> { entry ->
             val route = entry.toRoute<ModeRoute>()
-            ModeSelectScreen(game = route.game, onLocal = { entry.ifResumed { navController.navigate(PlayersRoute(route.game)) } })
+            ModeSelectScreen(
+                game = route.game,
+                onLocal = { entry.ifResumed { navController.navigate(PlayersRoute(route.game)) } },
+                onBack = { entry.back() },
+            )
         }
         composable<PlayersRoute> { entry ->
             val route = entry.toRoute<PlayersRoute>()
@@ -63,7 +86,10 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable<LevelRoute> { entry ->
             val route = entry.toRoute<LevelRoute>()
-            LevelSelectScreen(onLevel = { level -> entry.ifResumed { startGame(route.game, route.players, level) } })
+            LevelSelectScreen(
+                onLevel = { level -> entry.ifResumed { startGame(route.game, route.players, level) } },
+                onBack = { entry.back() },
+            )
         }
         composable<TruthOrDareRoute> { entry ->
             val route = entry.toRoute<TruthOrDareRoute>()

@@ -12,12 +12,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.game_beerpong
+import com.mehmetbozkurt.clink.resources.game_pong_meta
 import com.mehmetbozkurt.clink.resources.game_spin
+import com.mehmetbozkurt.clink.resources.game_spin_meta
 import com.mehmetbozkurt.clink.resources.game_tod
+import com.mehmetbozkurt.clink.resources.game_tod_meta
+import com.mehmetbozkurt.clink.resources.ic_game_pong
+import com.mehmetbozkurt.clink.resources.ic_game_spin
+import com.mehmetbozkurt.clink.resources.ic_game_tod
+import org.jetbrains.compose.resources.DrawableResource
 import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.stringResource
@@ -26,21 +39,51 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ScreenColumn(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Column(
-        modifier = modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
         content = content,
     )
 }
 
+/**
+ * A poster-style screen title (design §4): Anton, upper case for the current language, last word in acid
+ * ("NE OYNUYORUZ?"). [overline] is an optional small acid line above it.
+ */
 @Composable
 internal fun ScreenTitle(text: String, overline: String? = null) {
-    Column(modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)) {
+    val upper = text.toUpperCase(Locale.current)
+    val split = upper.lastIndexOf(' ')
+    Column(modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)) {
         if (overline != null) {
-            Text(text = overline, color = ClinkColors.Acid, style = MaterialTheme.typography.labelLarge)
+            Text(text = overline.toUpperCase(Locale.current), color = ClinkColors.Acid, style = MaterialTheme.typography.labelLarge)
         }
-        Text(text = text, color = ClinkColors.Paper, style = MaterialTheme.typography.headlineSmall)
+        Text(
+            text = buildAnnotatedString {
+                append(if (split > 0) upper.substring(0, split + 1) else "")
+                withStyle(SpanStyle(color = ClinkColors.Acid)) { append(if (split > 0) upper.substring(split + 1) else upper) }
+            },
+            color = ClinkColors.Paper,
+            style = MaterialTheme.typography.headlineLarge.copy(lineHeight = 38.sp),
+        )
     }
 }
+
+@Composable
+internal fun GameId.icon(): DrawableResource = when (this) {
+    GameId.TRUTH_OR_DARE -> Res.drawable.ic_game_tod
+    GameId.SPIN_THE_BOTTLE -> Res.drawable.ic_game_spin
+    GameId.BEER_PONG -> Res.drawable.ic_game_pong
+}
+
+/** Players and a one-line rule, e.g. "2–12 kişi · Kart çek, yap ya da ceza". */
+@Composable
+internal fun GameId.meta(): String = stringResource(
+    when (this) {
+        GameId.TRUTH_OR_DARE -> Res.string.game_tod_meta
+        GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_meta
+        GameId.BEER_PONG -> Res.string.game_pong_meta
+    },
+)
 
 /** A tappable poster; disabled ones are dimmed and ignore taps. Text inside defaults to ink. */
 @Composable

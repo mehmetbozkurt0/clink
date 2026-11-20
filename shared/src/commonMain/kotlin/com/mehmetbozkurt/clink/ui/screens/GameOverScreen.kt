@@ -14,7 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
@@ -25,6 +28,7 @@ import com.mehmetbozkurt.clink.ui.components.AdultConfirmDialog
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
 import com.mehmetbozkurt.clink.ui.components.needsAdultConfirmation
 import com.mehmetbozkurt.clink.ui.components.SecondaryButton
+import com.mehmetbozkurt.clink.ui.components.TapeLabel
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.stringResource
 
@@ -33,13 +37,18 @@ import org.jetbrains.compose.resources.stringResource
 fun GameOverScreen(game: GameId, level: Level, onPlayAgain: () -> Unit, onBackToGames: () -> Unit) {
     var askAdult by remember { mutableStateOf(false) }
 
+    // No top bar (design §6): the two buttons are the only ways on.
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Spacer(Modifier.weight(1f))
-        Text(text = game.title(), color = ClinkColors.Acid, style = MaterialTheme.typography.labelLarge)
-        Text(text = stringResource(Res.string.game_over), color = ClinkColors.Paper, style = MaterialTheme.typography.displaySmall)
+        TapeLabel(game.title())
+        Text(
+            text = stringResource(Res.string.game_over).toUpperCase(Locale.current),
+            color = ClinkColors.Paper,
+            style = MaterialTheme.typography.displayLarge.copy(lineHeight = 64.sp),
+        )
         Spacer(Modifier.weight(1f))
         PrimaryButton(
             text = stringResource(Res.string.play_again),

@@ -1,7 +1,7 @@
 <resources>
     <string name="tagline">Masadaki herkes için.</string>
     <string name="play">OYNA</string>
-    <string name="games_title">Oyun seç</string>
+    <string name="games_title">Ne oynuyoruz?</string>
     <string name="game_tod">Doğruluk mu Cesaret mi</string>
     <string name="game_spin">Şişe Çevirmece</string>
     <string name="game_beerpong">Beer Pong</string>
@@ -54,6 +54,9 @@
     <string name="bp_setup_title">Bu maçı kim oynuyor?</string>
     <string name="bp_setup_hint">İki oyuncu seç</string>
     <string name="bp_start_match">Maçı başlat</string>
+    <string name="game_tod_meta">2–12 kişi · Kart çek, yap ya da ceza</string>
+    <string name="game_spin_meta">2–12 kişi · Şişe kimi gösterirse</string>
+    <string name="game_pong_meta">1'e 1 · Topu bardağa fırlat</string>
     <string name="cd_back">Geri</string>
     <string name="cd_close">Kapat</string>
 </resources>

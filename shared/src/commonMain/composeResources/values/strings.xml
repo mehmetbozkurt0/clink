@@ -1,7 +1,7 @@
 <resources>
     <string name="tagline">For everyone at the table.</string>
     <string name="play">PLAY</string>
-    <string name="games_title">Pick a game</string>
+    <string name="games_title">What are we playing?</string>
     <string name="game_tod">Truth or Dare</string>
     <string name="game_spin">Spin the Bottle</string>
     <string name="game_beerpong">Beer Pong</string>
@@ -54,6 +54,9 @@
     <string name="bp_setup_title">Who plays this match?</string>
     <string name="bp_setup_hint">Pick two players</string>
     <string name="bp_start_match">Start match</string>
+    <string name="game_tod_meta">2–12 players · Draw a card, do it or take a penalty</string>
+    <string name="game_spin_meta">2–12 players · Whoever the bottle picks</string>
+    <string name="game_pong_meta">1v1 · Flick the ball into the cups</string>
     <string name="cd_back">Back</string>
     <string name="cd_close">Close</string>
 </resources>
