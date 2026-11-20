@@ -82,7 +82,10 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable<PlayersRoute> { entry ->
             val route = entry.toRoute<PlayersRoute>()
-            PlayerSetupScreen(onContinue = { players -> entry.ifResumed { navController.navigate(LevelRoute(route.game, players)) } })
+            PlayerSetupScreen(
+                onContinue = { players -> entry.ifResumed { navController.navigate(LevelRoute(route.game, players)) } },
+                onBack = { entry.back() },
+            )
         }
         composable<LevelRoute> { entry ->
             val route = entry.toRoute<LevelRoute>()
