@@ -1,6 +1,9 @@
 # Superpowers visual companion (brainstorm mockups)
 .superpowers/
 
+# Firebase Admin SDK key and other secrets (never committed)
+secrets/
+
 # Gradle / Kotlin / Android
 build/
 .gradle/
