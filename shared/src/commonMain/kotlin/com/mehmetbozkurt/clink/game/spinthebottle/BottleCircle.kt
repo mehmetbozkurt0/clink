@@ -1,7 +1,6 @@
 package com.mehmetbozkurt.clink.game.spinthebottle
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -9,22 +8,18 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.bottle
+import com.mehmetbozkurt.clink.ui.components.WallChip
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.PI
@@ -75,23 +70,14 @@ fun BottleCircle(
         val radiusPx = constraints.maxWidth / 2f * 0.8f
         players.forEachIndexed { index, name ->
             val angle = playerAngleDegrees(index, players.size) * PI / 180.0
-            val (container, content) = when (index) {
-                spinner -> ClinkColors.Acid to ClinkColors.Ink
-                answerer -> ClinkColors.Pink to ClinkColors.Ink
-                else -> ClinkColors.WallRaised to ClinkColors.Paper
-            }
-            Text(
+            WallChip(
                 text = name,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .offset { IntOffset((cos(angle) * radiusPx).roundToInt(), (sin(angle) * radiusPx).roundToInt()) }
-                    .widthIn(max = 96.dp)
-                    .background(container, CircleShape)
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                color = content,
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                    .widthIn(max = 104.dp),
+                selected = index == spinner || index == answerer,
+                color = if (index == spinner) ClinkColors.Acid else ClinkColors.Pink,
             )
         }
         Box(

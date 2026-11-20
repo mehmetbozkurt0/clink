@@ -64,4 +64,6 @@
     <string name="cd_remove">Oyuncuyu çıkar</string>
     <string name="move_up">Yukarı taşı</string>
     <string name="move_down">Aşağı taşı</string>
+    <string name="tod_hint">Cevap ver ya da ceza çek</string>
+    <string name="tod_hint_dare">Yap ya da ceza çek</string>
 </resources>

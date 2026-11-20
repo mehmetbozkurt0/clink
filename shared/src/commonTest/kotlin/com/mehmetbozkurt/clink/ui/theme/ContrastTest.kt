@@ -18,6 +18,7 @@ class ContrastTest {
             ClinkColors.Ink to ClinkColors.Paper, ClinkColors.InkMuted to ClinkColors.Paper, ClinkColors.Ink to ClinkColors.Tape,
             ClinkColors.Ink to ClinkColors.Acid, ClinkColors.Ink to ClinkColors.Pink, ClinkColors.Ink to ClinkColors.Amber,
             ClinkColors.Acid to ClinkColors.Wall, ClinkColors.Amber to ClinkColors.Wall,
+            ClinkColors.Paper to ClinkColors.Ink,
         )
         pairs.forEach { (fg, bg) -> assertTrue(contrastRatio(fg, bg) >= 4.5, "$fg on $bg: ${contrastRatio(fg, bg)}") }
     }

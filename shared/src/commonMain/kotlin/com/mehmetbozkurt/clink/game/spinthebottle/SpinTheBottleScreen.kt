@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +30,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigationevent.NavigationEventInfo
@@ -41,18 +41,21 @@ import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.answered
 import com.mehmetbozkurt.clink.resources.asks_answers
-import com.mehmetbozkurt.clink.resources.end
 import com.mehmetbozkurt.clink.resources.landed_on_self
 import com.mehmetbozkurt.clink.resources.notice_no_penalty
 import com.mehmetbozkurt.clink.resources.penalty_done
 import com.mehmetbozkurt.clink.resources.penalty_title
 import com.mehmetbozkurt.clink.resources.spin_hint
 import com.mehmetbozkurt.clink.resources.take_penalty
-import com.mehmetbozkurt.clink.ui.components.ClinkButton
-import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.components.EndGameDialog
 import com.mehmetbozkurt.clink.ui.components.LevelTag
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
+import com.mehmetbozkurt.clink.ui.components.SecondaryButton
+import com.mehmetbozkurt.clink.ui.components.SlapPoster
+import com.mehmetbozkurt.clink.ui.components.TopBar
+import com.mehmetbozkurt.clink.ui.components.TopBarNav
+import com.mehmetbozkurt.clink.ui.components.TurnBadge
+import com.mehmetbozkurt.clink.ui.components.cardTextStyle
 import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import kotlinx.coroutines.launch
@@ -90,9 +93,12 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
 
     val tapGuard = rememberPhaseTapGuard(state.phase)
 
-    // The notice reacts to the tap, so it doesn't repeat after a configuration change.
+    // The notice and the haptic react to the tap, so they don't repeat after a configuration change.
     fun act(action: SpinAction) = tapGuard {
         viewModel.onAction(action)
+        if (action == SpinAction.Refuse && viewModel.state.value.phase is SpinPhase.ShowingPenalty) {
+            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
         if (viewModel.state.value.notice == SpinNotice.NO_PENALTY_CARDS) {
             scope.launch { snackbar.showSnackbar(getString(Res.string.notice_no_penalty)) }
         }
@@ -104,12 +110,9 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.weight(1f))
-                TextButton(onClick = { confirmEnd = true }) {
-                    Text(stringResource(Res.string.end), color = ClinkColors.Muted)
-                }
+        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
+            TopBar(navigation = TopBarNav.Close, onNavigate = { confirmEnd = true }) {
+                TurnBadge(name = state.players[state.spinner], index = state.spinner)
             }
             val phase = state.phase
             // The circle takes whatever space the bottom panel leaves (the largest square that fits),
@@ -178,15 +181,15 @@ private fun PhasePanel(
                 textAlign = TextAlign.Center,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ClinkButton(stringResource(Res.string.answered), onAnswered, Modifier.weight(1f), true, ClinkColors.Acid, ClinkColors.Ink)
-                ClinkButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f), true, ClinkColors.WallRaised, ClinkColors.Acid)
+                PrimaryButton(stringResource(Res.string.answered), onAnswered, Modifier.weight(1f))
+                SecondaryButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f))
             }
         }
         is SpinPhase.ShowingPenalty -> {
-            Poster(modifier = Modifier.fillMaxWidth()) {
+            SlapPoster(key = phase, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
                 LevelTag(state.level)
                 Text(
-                    text = stringResource(Res.string.penalty_title),
+                    text = stringResource(Res.string.penalty_title).toUpperCase(Locale.current),
                     modifier = Modifier.padding(top = 12.dp),
                     color = ClinkColors.Ink,
                     style = MaterialTheme.typography.headlineSmall,
@@ -195,7 +198,7 @@ private fun PhasePanel(
                     text = "${state.players[phase.answerer]}: ${penaltyText(phase.cardId)}",
                     modifier = Modifier.padding(top = 8.dp),
                     color = ClinkColors.Ink,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = cardTextStyle(),
                 )
             }
             PrimaryButton(text = stringResource(Res.string.penalty_done), onClick = onPenaltyDone, modifier = Modifier.fillMaxWidth())
