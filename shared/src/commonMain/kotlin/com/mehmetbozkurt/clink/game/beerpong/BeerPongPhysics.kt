@@ -2,6 +2,7 @@ package com.mehmetbozkurt.clink.game.beerpong
 
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
@@ -30,6 +31,7 @@ object BeerPongPhysics {
     const val MIN_RANGE = 60f
     const val MAX_RANGE = 110f
     const val MAX_ANGLE = 30f
+    const val MAX_FLICK_TILT = 60f // a flick further than this from vertical is a sideways swipe, not a throw
 
     /** Cup centers by id: back row 0-1-2, middle row 3-4, front cup 5 (a 3-2-1 triangle pointing at the thrower). */
     val cups: List<TablePoint> = listOf(
@@ -43,13 +45,15 @@ object BeerPongPhysics {
 
 /**
  * Turns a flick's release velocity on screen (dp/s, vy < 0 is up toward the rack) into a throw.
- * Too weak, sideways or downward → null: not a throw.
+ * Too weak, downward or more than [BeerPongPhysics.MAX_FLICK_TILT] off vertical → null: not a throw.
  */
 fun flickToThrow(vxDpPerSec: Float, vyDpPerSec: Float): ThrowInput? = with(BeerPongPhysics) {
     if (vyDpPerSec >= 0f) return null
     val speed = hypot(vxDpPerSec, vyDpPerSec)
     if (speed < MIN_FLICK) return null
-    val angle = (atan2(vxDpPerSec, -vyDpPerSec) * 180f / PI.toFloat()).coerceIn(-MAX_ANGLE, MAX_ANGLE)
+    val tilt = atan2(vxDpPerSec, -vyDpPerSec) * 180f / PI.toFloat()
+    if (abs(tilt) > MAX_FLICK_TILT) return null
+    val angle = tilt.coerceIn(-MAX_ANGLE, MAX_ANGLE)
     val t = ((speed - MIN_FLICK) / (MAX_FLICK - MIN_FLICK)).coerceIn(0f, 1f)
     ThrowInput(angle, MIN_RANGE + t * (MAX_RANGE - MIN_RANGE))
 }

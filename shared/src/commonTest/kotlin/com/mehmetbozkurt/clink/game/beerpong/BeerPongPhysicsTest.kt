@@ -75,5 +75,12 @@ class BeerPongPhysicsTest {
     }
 
     @Test
-    fun angleIsClamped() = assertEquals(-30f, flickToThrow(-1000f, -100f)!!.angleDegrees, 0.001f)
+    fun angleIsClamped() = assertEquals(-30f, flickToThrow(-1000f, -1000f)!!.angleDegrees, 0.001f)
+
+    @Test
+    fun nearlySidewaysFlickIsNotAThrow() {
+        // A real sideways swipe always has a little upward speed; more than 60° off vertical is not a throw.
+        assertNull(flickToThrow(1000f, -100f))
+        assertNull(flickToThrow(-1000f, -500f))
+    }
 }

@@ -51,4 +51,7 @@
     <string name="bp_miss">Miss</string>
     <string name="bp_win">%1$s wins!</string>
     <string name="bp_loser_penalty">%1$s takes a penalty</string>
+    <string name="bp_setup_title">Who plays this match?</string>
+    <string name="bp_setup_hint">Pick two players</string>
+    <string name="bp_start_match">Start match</string>
 </resources>
