@@ -9,7 +9,7 @@ data class Matchup(val first: Int, val second: Int)
 /**
  * The next match. No previous match → the first two players. Otherwise the winner stays on and the next
  * player after the loser (wrapping, never the winner) challenges; the challenger throws first.
- * With two players this is a rematch with the first throw swapped.
+ * With two players this is a rematch in which the loser throws first (Mehmet's call).
  */
 fun suggestedMatchup(playerCount: Int, previousWinner: Int?, previousLoser: Int?): Matchup {
     if (previousWinner == null || previousLoser == null) return Matchup(0, 1)

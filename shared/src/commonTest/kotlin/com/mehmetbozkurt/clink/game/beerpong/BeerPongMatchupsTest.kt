@@ -8,7 +8,7 @@ class BeerPongMatchupsTest {
     fun firstMatchIsTheFirstTwoPlayers() = assertEquals(Matchup(0, 1), suggestedMatchup(5, null, null))
 
     @Test
-    fun twoPlayersRematchSwapsTheFirstThrow() {
+    fun twoPlayersRematchLetsTheLoserThrowFirst() {
         assertEquals(Matchup(1, 0), suggestedMatchup(2, previousWinner = 0, previousLoser = 1))
         assertEquals(Matchup(0, 1), suggestedMatchup(2, previousWinner = 1, previousLoser = 0))
     }
