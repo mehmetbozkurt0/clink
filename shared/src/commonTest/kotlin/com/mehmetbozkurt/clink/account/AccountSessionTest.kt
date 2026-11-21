@@ -1,7 +1,10 @@
 package com.mehmetbozkurt.clink.account
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -85,6 +88,52 @@ class AccountSessionTest {
         val session = AccountSession(FakeAuth(host), OfflineProfiles())
         session.save(cat)
         assertEquals(cat, session.profile)
+    }
+
+    /** Fails the first load (e.g. offline), then works. */
+    private class FlakyProfiles(val stored: Profile) : ProfileRepository {
+        var loads = 0
+        override suspend fun load(uid: String): Profile? {
+            loads++
+            if (loads == 1) error("offline")
+            return stored
+        }
+        override suspend fun save(uid: String, profile: Profile) = Unit
+        override suspend fun delete(uid: String) = Unit
+    }
+
+    // A failed read must not stick: otherwise the host is sent to setup and overwrites their real profile.
+    @Test
+    fun failedLoadIsRetriedNextTime() = runTest {
+        val session = AccountSession(FakeAuth(host), FlakyProfiles(cat))
+        assertEquals(PlayGate.SetUpProfile, session.gate())
+        assertEquals(PlayGate.Play, session.gate())
+        assertEquals(cat, session.profile)
+    }
+
+    /** A load that finishes only when [release] completes. */
+    private class SlowProfiles(val release: CompletableDeferred<Unit>) : ProfileRepository {
+        override suspend fun load(uid: String): Profile? {
+            release.await()
+            return null
+        }
+        override suspend fun save(uid: String, profile: Profile) = Unit
+        override suspend fun delete(uid: String) = Unit
+    }
+
+    @Test
+    fun slowLoadDoesNotOverwriteASave() = runTest {
+        val release = CompletableDeferred<Unit>()
+        val session = AccountSession(FakeAuth(host), SlowProfiles(release))
+        val loading = launch { session.gate() }
+        runCurrent()
+        val saving = launch { session.save(cat) }
+        runCurrent()
+        release.complete(Unit)
+        loading.join()
+        saving.join()
+        assertEquals(cat, session.profile)
+        assertEquals(PlayGate.Play, session.gate())
     }
 
     @Test

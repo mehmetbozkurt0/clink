@@ -9,5 +9,6 @@ sealed interface GoogleIdToken {
     data class Ok(val idToken: String) : GoogleIdToken
     data object Cancelled : GoogleIdToken
     data object NoAccount : GoogleIdToken
+    data object NoNetwork : GoogleIdToken
     data class Failed(val message: String) : GoogleIdToken
 }

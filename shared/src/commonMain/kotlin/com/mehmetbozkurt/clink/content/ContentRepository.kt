@@ -19,7 +19,8 @@ class ContentRepository(
     suspend fun refresh() {
         try {
             val remoteVersion = remote.version()
-            if (remoteVersion <= (validCache()?.version ?: 0)) return
+            // Any other version means new content: it can also go down, e.g. after the Firebase project is recreated.
+            if (remoteVersion == validCache()?.version) return
             val packs = remote.packs()
             if (!isUsable(packs)) return
             cache.write(encode(CachedContent(remoteVersion, packs)))

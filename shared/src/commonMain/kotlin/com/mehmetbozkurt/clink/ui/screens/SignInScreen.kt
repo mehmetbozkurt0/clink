@@ -82,6 +82,7 @@ private suspend fun signIn(tokens: GoogleIdTokenProvider, auth: AuthService): Si
     when (val token = tokens.request()) {
         GoogleIdToken.Cancelled -> SignInResult.Cancelled
         GoogleIdToken.NoAccount -> SignInResult.Failed(Res.string.err_no_google_account)
+        GoogleIdToken.NoNetwork -> SignInResult.Failed(Res.string.err_network)
         is GoogleIdToken.Failed -> SignInResult.Failed(Res.string.err_signin_failed)
         is GoogleIdToken.Ok -> try {
             auth.signInWithGoogle(token.idToken)

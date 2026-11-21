@@ -11,8 +11,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withTimeoutOrNull
 
 /** [AuthService] on Firebase Authentication (GitLive SDK). The session survives restarts, so signing in is needed once. */
 class FirebaseAuthService(scope: CoroutineScope, private val auth: FirebaseAuth = Firebase.auth) : AuthService {
@@ -21,7 +23,9 @@ class FirebaseAuthService(scope: CoroutineScope, private val auth: FirebaseAuth 
         auth.authStateChanged.map { it?.toAuthUser() }.stateIn(scope, SharingStarted.Eagerly, auth.currentUser?.toAuthUser())
 
     override suspend fun signInWithGoogle(idToken: String) = guarded {
-        auth.signInWithCredential(GoogleAuthProvider.credential(idToken, null))
+        val uid = auth.signInWithCredential(GoogleAuthProvider.credential(idToken, null)).user?.uid
+        // [user] follows Firebase's auth events, which arrive a moment later; wait so the caller sees the new user.
+        withTimeoutOrNull(USER_WAIT_MILLIS) { user.first { it?.uid == uid } }
     }
 
     override suspend fun signInAnonymously() = guarded { auth.signInAnonymously() }
@@ -57,5 +61,7 @@ class FirebaseAuthService(scope: CoroutineScope, private val auth: FirebaseAuth 
         }
     }
 }
+
+private const val USER_WAIT_MILLIS = 5_000L
 
 private fun FirebaseUser.toAuthUser() = AuthUser(uid = uid, isAnonymous = isAnonymous, googleName = displayName)

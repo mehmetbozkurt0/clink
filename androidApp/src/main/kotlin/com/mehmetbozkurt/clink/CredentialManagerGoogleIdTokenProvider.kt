@@ -1,13 +1,15 @@
 package com.mehmetbozkurt.clink
 
 import android.app.Activity
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.mehmetbozkurt.clink.account.GoogleIdToken
@@ -20,10 +22,11 @@ import com.mehmetbozkurt.clink.account.GoogleIdTokenProvider
 class CredentialManagerGoogleIdTokenProvider(private val activity: Activity) : GoogleIdTokenProvider {
 
     override suspend fun request(): GoogleIdToken {
-        val option = GetGoogleIdOption.Builder()
-            .setServerClientId(activity.getString(R.string.default_web_client_id))
-            .setFilterByAuthorizedAccounts(false)
-            .build()
+        // Offline, Credential Manager fails before Firebase is reached and often says "no account"; check first.
+        if (!isOnline()) return GoogleIdToken.NoNetwork
+        // The option meant for an explicit "Continue with Google" button: no cooldown after cancels, and a user
+        // without a Google account on the phone can add one from the dialog.
+        val option = GetSignInWithGoogleOption.Builder(activity.getString(R.string.default_web_client_id)).build()
         val request = GetCredentialRequest.Builder().addCredentialOption(option).build()
         return try {
             val credential = CredentialManager.create(activity).getCredential(activity, request).credential
@@ -41,5 +44,11 @@ class CredentialManagerGoogleIdTokenProvider(private val activity: Activity) : G
         } catch (e: GoogleIdTokenParsingException) {
             GoogleIdToken.Failed(e.message ?: "Could not read the Google ID token")
         }
+    }
+
+    private fun isOnline(): Boolean {
+        val connectivity = activity.getSystemService(ConnectivityManager::class.java) ?: return true
+        val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }

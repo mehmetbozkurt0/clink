@@ -3,33 +3,38 @@ package com.mehmetbozkurt.clink.account
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * The signed-in host and their profile for the screens: decides where Play leads ([gate]) and keeps the profile
- * the Welcome badge and the account screen show. The profile is loaded once per user; a profile that can't be read
- * counts as missing, so the host sets one up again instead of being stuck.
+ * the Welcome badge and the account screen show. The profile is loaded once per user. A profile that can't be read
+ * sends the host to setup this time and is read again next time, so a passing network error never makes them
+ * overwrite their real profile. Loads and saves run one at a time, so a slow load can't undo a save.
  */
 class AccountSession(private val auth: AuthService, private val profiles: ProfileRepository) {
     var profile: Profile? by mutableStateOf(null)
         private set
     private var loadedFor: String? = null
+    private val lock = Mutex()
 
-    suspend fun gate(): PlayGate {
+    suspend fun gate(): PlayGate = lock.withLock {
         val user = auth.user.value
         if (user == null || user.isAnonymous) {
             forget()
         } else if (loadedFor != user.uid) {
-            profile = try {
-                profiles.load(user.uid)
-            } catch (e: kotlinx.coroutines.CancellationException) {
+            try {
+                profile = profiles.load(user.uid)
+                loadedFor = user.uid
+            } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
-                null
+                profile = null
             }
-            loadedFor = user.uid
         }
-        return playGate(user, profile)
+        playGate(user, profile)
     }
 
     /**
@@ -37,7 +42,7 @@ class AccountSession(private val auth: AuthService, private val profiles: Profil
      * write on the phone at once but only reports it done when the server answers; offline that can take forever, so
      * after [SERVER_WAIT_MILLIS] the save counts as done and Firestore sends it once the phone is back online.
      */
-    suspend fun save(newProfile: Profile) {
+    suspend fun save(newProfile: Profile) = lock.withLock {
         val user = auth.user.value ?: throw AuthException(AuthFailure.OTHER)
         withTimeoutOrNull(SERVER_WAIT_MILLIS) { profiles.save(user.uid, newProfile) }
         profile = newProfile
@@ -46,8 +51,11 @@ class AccountSession(private val auth: AuthService, private val profiles: Profil
 
     suspend fun signOut() {
         auth.signOut()
-        forget()
+        lock.withLock { forget() }
     }
+
+    /** Forgets the profile so the next [gate] reads it again (after a delete that may or may not have reached the server). */
+    fun reset() = forget()
 
     private fun forget() {
         profile = null

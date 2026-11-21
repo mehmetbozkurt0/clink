@@ -67,6 +67,14 @@ class ContentRepositoryTest {
         assertEquals(CachedContent(2, listOf(pack("new"))), ContentRepository.decode(cache.text!!))
     }
 
+    // The version can go down when the Firebase project is recreated; phones must not keep stale content forever.
+    @Test
+    fun refreshTakesAResetRemoteVersion() = runTest {
+        val cache = FakeCache(cached(5, pack("old")))
+        repository(cache, FakeRemote(1, listOf(pack("new")))).refresh()
+        assertEquals(CachedContent(1, listOf(pack("new"))), ContentRepository.decode(cache.text!!))
+    }
+
     @Test
     fun refreshSkipsSameVersion() = runTest {
         val remote = FakeRemote(2, listOf(pack("new")))

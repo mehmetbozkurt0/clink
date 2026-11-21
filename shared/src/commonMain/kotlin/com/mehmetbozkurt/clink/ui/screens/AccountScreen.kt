@@ -24,6 +24,7 @@ import com.mehmetbozkurt.clink.LocalAppContainer
 import com.mehmetbozkurt.clink.account.AccountSession
 import com.mehmetbozkurt.clink.account.DeleteResult
 import com.mehmetbozkurt.clink.account.GoogleIdToken
+import com.mehmetbozkurt.clink.account.ReauthResult
 import com.mehmetbozkurt.clink.account.deleteAccount
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.account_delete
@@ -48,7 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The host's account: profile on a poster, edit, sign out, and delete (spec §4: in-app deletion). Deleting asks
- * first; if Firebase wants a fresh sign-in, the Google account picker opens once more.
+ * first, then the user confirms by picking their Google account again; cancelling deletes nothing.
  */
 @Composable
 fun AccountScreen(
@@ -124,14 +125,23 @@ fun AccountScreen(
                 deleteFailed = false
                 scope.launch {
                     val result = deleteAccount(container.auth, container.profiles) {
-                        val token = container.googleIdTokens.request()
-                        token is GoogleIdToken.Ok && runCatching { container.auth.reauthenticateWithGoogle(token.idToken) }.isSuccess
+                        when (val token = container.googleIdTokens.request()) {
+                            is GoogleIdToken.Ok ->
+                                if (runCatching { container.auth.reauthenticateWithGoogle(token.idToken) }.isSuccess) ReauthResult.DONE
+                                else ReauthResult.FAILED
+                            GoogleIdToken.Cancelled -> ReauthResult.CANCELLED
+                            else -> ReauthResult.FAILED
+                        }
                     }
                     busy = false
                     when (result) {
                         DeleteResult.DELETED -> onDeleted()
                         DeleteResult.CANCELLED -> Unit
-                        DeleteResult.FAILED -> deleteFailed = true
+                        DeleteResult.FAILED -> {
+                            deleteFailed = true
+                            // A delete that timed out may still reach the server; reload the profile on the next Play.
+                            session.reset()
+                        }
                     }
                 }
             },
