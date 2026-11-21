@@ -7,6 +7,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object WelcomeRoute
 
+/** Google sign-in for the host (Plan 3). */
+@Serializable
+data object SignInRoute
+
+/** First profile setup ([editing] false) or editing it from the account screen. */
+@Serializable
+data class ProfileSetupRoute(val editing: Boolean)
+
+@Serializable
+data object AccountRoute
+
 @Serializable
 data object GameListRoute
 

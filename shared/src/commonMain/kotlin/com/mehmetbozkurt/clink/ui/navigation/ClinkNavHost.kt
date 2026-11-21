@@ -6,6 +6,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
@@ -13,6 +20,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.mehmetbozkurt.clink.LocalAppContainer
+import com.mehmetbozkurt.clink.account.AccountSession
+import com.mehmetbozkurt.clink.account.Avatars
+import com.mehmetbozkurt.clink.account.PlayGate
+import com.mehmetbozkurt.clink.account.suggestedName
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.game.beerpong.BeerPongScreen
@@ -20,12 +32,17 @@ import com.mehmetbozkurt.clink.game.beerpong.BeerPongSetupScreen
 import com.mehmetbozkurt.clink.game.beerpong.suggestedMatchup
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleScreen
 import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareScreen
+import com.mehmetbozkurt.clink.ui.screens.AccountScreen
 import com.mehmetbozkurt.clink.ui.screens.GameListScreen
 import com.mehmetbozkurt.clink.ui.screens.GameOverScreen
 import com.mehmetbozkurt.clink.ui.screens.LevelSelectScreen
 import com.mehmetbozkurt.clink.ui.screens.ModeSelectScreen
 import com.mehmetbozkurt.clink.ui.screens.PlayerSetupScreen
+import com.mehmetbozkurt.clink.ui.screens.ProfileSetupScreen
+import com.mehmetbozkurt.clink.ui.screens.SignInScreen
 import com.mehmetbozkurt.clink.ui.screens.WelcomeScreen
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TransitionMillis = 250
 
@@ -56,6 +73,27 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
     // The on-screen ‹ does exactly what system back does: pop this screen.
     fun NavBackStackEntry.back() = ifResumed { navController.popBackStack() }
 
+    // The host and their profile (spec §4: the host needs an account). Loaded when the user changes, so the
+    // Welcome badge shows up; Play asks the session where to go.
+    val container = LocalAppContainer.current
+    val session = remember(container) { AccountSession(container.auth, container.profiles) }
+    val scope = rememberCoroutineScope()
+    val user by container.auth.user.collectAsState()
+    LaunchedEffect(user?.uid) { session.gate() }
+    var gating by remember { mutableStateOf<Job?>(null) }
+
+    /** Opens what [AccountSession.gate] decides; [popUpTo] removes the screen that asked (sign-in, setup). */
+    fun goByGate(popUpTo: (NavOptionsBuilder.() -> Unit) = {}) {
+        if (gating?.isActive == true) return
+        gating = scope.launch {
+            when (session.gate()) {
+                PlayGate.SignIn -> navController.navigate(SignInRoute, popUpTo)
+                PlayGate.SetUpProfile -> navController.navigate(ProfileSetupRoute(editing = false), popUpTo)
+                PlayGate.Play -> navController.navigate(GameListRoute, popUpTo)
+            }
+        }
+    }
+
     // Every navigation goes through entry.ifResumed, so a double tap can't open the same screen twice.
     // Short slide + fade between screens (design §3.4); going back reverses it.
     NavHost(
@@ -67,7 +105,44 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         popExitTransition = { slideOutHorizontally(tween(TransitionMillis)) { it / 8 } + fadeOut(tween(TransitionMillis)) },
     ) {
         composable<WelcomeRoute> { entry ->
-            WelcomeScreen(onPlay = { entry.ifResumed { navController.navigate(GameListRoute) } })
+            WelcomeScreen(
+                profile = session.profile,
+                onPlay = { entry.ifResumed { goByGate() } },
+                onAccount = { entry.ifResumed { navController.navigate(AccountRoute) } },
+            )
+        }
+        composable<SignInRoute> { entry ->
+            SignInScreen(
+                onSignedIn = { goByGate { popUpTo<SignInRoute> { inclusive = true } } },
+                onBack = { entry.back() },
+            )
+        }
+        composable<ProfileSetupRoute> { entry ->
+            val editing = entry.toRoute<ProfileSetupRoute>().editing
+            val current = session.profile
+            ProfileSetupScreen(
+                session = session,
+                initialName = if (editing && current != null) current.displayName else suggestedName(user?.googleName),
+                initialAvatar = current?.avatarId ?: Avatars.ids.first(),
+                onSaved = {
+                    entry.ifResumed {
+                        if (editing) {
+                            navController.popBackStack()
+                        } else {
+                            navController.navigate(GameListRoute) { popUpTo<ProfileSetupRoute> { inclusive = true } }
+                        }
+                    }
+                },
+                onBack = { entry.back() },
+            )
+        }
+        composable<AccountRoute> { entry ->
+            AccountScreen(
+                session = session,
+                onEdit = { entry.ifResumed { navController.navigate(ProfileSetupRoute(editing = true)) } },
+                onSignedOut = { navController.popBackStack(WelcomeRoute, inclusive = false) },
+                onBack = { entry.back() },
+            )
         }
         composable<GameListRoute> { entry ->
             GameListScreen(onGame = { game -> entry.ifResumed { navController.navigate(ModeRoute(game)) } }, onBack = { entry.back() })

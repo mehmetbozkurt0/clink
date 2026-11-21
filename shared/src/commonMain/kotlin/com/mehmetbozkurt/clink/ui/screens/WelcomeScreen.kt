@@ -1,6 +1,7 @@
 package com.mehmetbozkurt.clink.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,22 +13,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mehmetbozkurt.clink.account.Profile
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.resources.cd_account
 import com.mehmetbozkurt.clink.resources.play
 import com.mehmetbozkurt.clink.resources.tagline
+import com.mehmetbozkurt.clink.ui.components.AvatarBadge
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
 import com.mehmetbozkurt.clink.ui.components.TapeLabel
 import com.mehmetbozkurt.clink.ui.components.WallChip
@@ -41,12 +51,30 @@ private val GameIconTints = mapOf(
     GameId.BEER_PONG to ClinkColors.Amber,
 )
 
-/** Welcome (design §4): spray logo with drips, tape tagline, the games as stickers, PLAY at the bottom. No top bar. */
+/**
+ * Welcome (design §4): spray logo with drips, tape tagline, the games as stickers, PLAY at the bottom. No top bar;
+ * once the host has a profile, their avatar sits top-right and opens the account screen.
+ */
 @Composable
-fun WelcomeScreen(onPlay: () -> Unit) {
+fun WelcomeScreen(profile: Profile?, onPlay: () -> Unit, onAccount: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        Box(modifier = Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.CenterEnd) {
+            if (profile != null) {
+                val label = stringResource(Res.string.cd_account)
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable(role = Role.Button, onClick = onAccount)
+                        .semantics { contentDescription = label },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    AvatarBadge(avatarId = profile.avatarId, name = profile.displayName, size = 40.dp)
+                }
+            }
+        }
         Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            Spacer(Modifier.height(56.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 text = buildAnnotatedString {
                     append("clink")
