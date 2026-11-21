@@ -12,7 +12,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
-import com.mehmetbozkurt.clink.content.loadBundledContent
+import com.mehmetbozkurt.clink.content.ContentRepository
+import com.mehmetbozkurt.clink.content.FirestoreContentRemote
+import com.mehmetbozkurt.clink.content.loadBundledPacks
 import com.mehmetbozkurt.clink.ui.components.WallBackground
 import com.mehmetbozkurt.clink.ui.navigation.ClinkNavHost
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
@@ -20,15 +22,18 @@ import com.mehmetbozkurt.clink.ui.theme.ClinkFonts
 import com.mehmetbozkurt.clink.ui.theme.ClinkTheme
 
 @Composable
-fun App() {
+fun App(platform: Platform) {
     ClinkTheme {
         WallBackground {
             val container by produceState<AppContainer?>(initialValue = null) {
-                value = AppContainer(loadBundledContent())
+                val content = ContentRepository(platform.contentCache, FirestoreContentRemote(), ::loadBundledPacks)
+                value = AppContainer(content.load())
+                // Newer content is downloaded in the background and used from the next start on.
+                content.refresh()
             }
             val loaded = container
             if (loaded == null) {
-                // While the bundled content loads, show the logo instead of an empty wall.
+                // While the content loads, show the logo instead of an empty wall.
                 Text(
                     text = buildAnnotatedString {
                         append("clink")

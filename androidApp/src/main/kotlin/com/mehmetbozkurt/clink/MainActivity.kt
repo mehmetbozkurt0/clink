@@ -15,6 +15,7 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
         )
         super.onCreate(savedInstanceState)
-        setContent { App() }
+        val platform = Platform(contentCache = FileContentCache(applicationContext))
+        setContent { App(platform) }
     }
 }
