@@ -141,6 +141,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 session = session,
                 onEdit = { entry.ifResumed { navController.navigate(ProfileSetupRoute(editing = true)) } },
                 onSignedOut = { navController.popBackStack(WelcomeRoute, inclusive = false) },
+                onDeleted = { navController.popBackStack(WelcomeRoute, inclusive = false) },
                 onBack = { entry.back() },
             )
         }

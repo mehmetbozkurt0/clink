@@ -94,4 +94,9 @@
     <string name="avatar_rocket">Roket</string>
     <string name="avatar_crown">Taç</string>
     <string name="avatar_cactus">Kaktüs</string>
+    <string name="account_delete">Hesabımı sil</string>
+    <string name="delete_title">Hesabın silinsin mi?</string>
+    <string name="delete_body">Profilin ve hesabın kalıcı olarak silinir. Bu geri alınamaz.</string>
+    <string name="delete_confirm">Sil</string>
+    <string name="err_delete_failed">Silinemedi. Bağlantını kontrol edip tekrar dene.</string>
 </resources>

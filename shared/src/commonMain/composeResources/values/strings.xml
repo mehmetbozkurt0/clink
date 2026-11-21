@@ -94,4 +94,9 @@
     <string name="avatar_rocket">Rocket</string>
     <string name="avatar_crown">Crown</string>
     <string name="avatar_cactus">Cactus</string>
+    <string name="account_delete">Delete my account</string>
+    <string name="delete_title">Delete your account?</string>
+    <string name="delete_body">Your profile and account are deleted for good. This can’t be undone.</string>
+    <string name="delete_confirm">Delete</string>
+    <string name="err_delete_failed">Couldn’t delete. Check your connection and try again.</string>
 </resources>

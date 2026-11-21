@@ -3,6 +3,7 @@ package com.mehmetbozkurt.clink.account
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * The signed-in host and their profile for the screens: decides where Play leads ([gate]) and keeps the profile
@@ -31,10 +32,14 @@ class AccountSession(private val auth: AuthService, private val profiles: Profil
         return playGate(user, profile)
     }
 
-    /** Saves the signed-in host's profile; throws if there is no host or the write fails. */
+    /**
+     * Saves the signed-in host's profile; throws if there is no host or the write is refused. Firestore applies the
+     * write on the phone at once but only reports it done when the server answers; offline that can take forever, so
+     * after [SERVER_WAIT_MILLIS] the save counts as done and Firestore sends it once the phone is back online.
+     */
     suspend fun save(newProfile: Profile) {
         val user = auth.user.value ?: throw AuthException(AuthFailure.OTHER)
-        profiles.save(user.uid, newProfile)
+        withTimeoutOrNull(SERVER_WAIT_MILLIS) { profiles.save(user.uid, newProfile) }
         profile = newProfile
         loadedFor = user.uid
     }
@@ -47,5 +52,9 @@ class AccountSession(private val auth: AuthService, private val profiles: Profil
     private fun forget() {
         profile = null
         loadedFor = null
+    }
+
+    private companion object {
+        const val SERVER_WAIT_MILLIS = 5_000L
     }
 }

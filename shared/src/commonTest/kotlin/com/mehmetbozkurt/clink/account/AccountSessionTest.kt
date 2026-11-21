@@ -1,5 +1,6 @@
 package com.mehmetbozkurt.clink.account
 
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -70,6 +71,20 @@ class AccountSessionTest {
         session.save(cat)
         assertEquals(cat, profiles.stored["u1"])
         assertEquals(PlayGate.Play, session.gate())
+    }
+
+    /** Offline, Firestore keeps the write and only confirms it when the server answers, which may be never. */
+    private class OfflineProfiles : ProfileRepository {
+        override suspend fun load(uid: String): Profile? = null
+        override suspend fun save(uid: String, profile: Profile) = awaitCancellation()
+        override suspend fun delete(uid: String) = Unit
+    }
+
+    @Test
+    fun savingOfflineDoesNotWaitForever() = runTest {
+        val session = AccountSession(FakeAuth(host), OfflineProfiles())
+        session.save(cat)
+        assertEquals(cat, session.profile)
     }
 
     @Test
