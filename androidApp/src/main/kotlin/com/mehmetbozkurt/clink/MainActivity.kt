@@ -15,7 +15,10 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
         )
         super.onCreate(savedInstanceState)
-        val platform = Platform(contentCache = FileContentCache(applicationContext))
+        val platform = Platform(
+            contentCache = FileContentCache(applicationContext),
+            googleIdTokens = CredentialManagerGoogleIdTokenProvider(this),
+        )
         setContent { App(platform) }
     }
 }

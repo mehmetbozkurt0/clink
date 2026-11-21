@@ -12,6 +12,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import com.mehmetbozkurt.clink.account.FirebaseAuthService
+import com.mehmetbozkurt.clink.account.FirestoreProfileRepository
 import com.mehmetbozkurt.clink.content.ContentRepository
 import com.mehmetbozkurt.clink.content.FirestoreContentRemote
 import com.mehmetbozkurt.clink.content.loadBundledPacks
@@ -27,7 +29,12 @@ fun App(platform: Platform) {
         WallBackground {
             val container by produceState<AppContainer?>(initialValue = null) {
                 val content = ContentRepository(platform.contentCache, FirestoreContentRemote(), ::loadBundledPacks)
-                value = AppContainer(content.load())
+                value = AppContainer(
+                    library = content.load(),
+                    auth = FirebaseAuthService(scope = this),
+                    profiles = FirestoreProfileRepository(),
+                    googleIdTokens = platform.googleIdTokens,
+                )
                 // Newer content is downloaded in the background and used from the next start on.
                 content.refresh()
             }
