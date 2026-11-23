@@ -1,0 +1,39 @@
+{
+  "rules": {
+    "codes": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && newData.child('hostUid').val() === auth.uid) || (data.exists() && data.child('hostUid').val() === auth.uid && (!newData.exists() || (newData.child('hostUid').val() === auth.uid && newData.child('lobbyId').val() === data.child('lobbyId').val()))))",
+        ".validate": "newData.hasChildren(['lobbyId', 'game', 'level', 'hostName', 'hostUid'])"
+      }
+    },
+    "lobbies": {
+      "$lobbyId": {
+        ".read": "auth != null && (data.child('meta/hostUid').val() === auth.uid || data.child('members/' + auth.uid).exists())",
+        ".write": "auth != null && data.child('meta/hostUid').val() === auth.uid",
+        "meta": {
+          ".write": "auth != null && !data.exists() && newData.child('hostUid').val() === auth.uid"
+        },
+        "members": {
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "auth != null && auth.uid === $uid && !root.child('lobbies/' + $lobbyId + '/removed/' + $uid).exists() && root.child('lobbies/' + $lobbyId + '/meta').exists() && root.child('lobbies/' + $lobbyId + '/meta/status').val() !== 'closed'",
+            ".validate": "!newData.exists() || (newData.hasChildren(['name', 'avatarId', 'joinedAt']) && newData.child('name').isString() && newData.child('name').val().length >= 1 && newData.child('name').val().length <= 20)"
+          }
+        },
+        "actions": {
+          "$action": {
+            ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && root.child('lobbies/' + $lobbyId + '/members/' + auth.uid).exists()",
+            ".validate": "newData.hasChildren(['uid', 'json']) && newData.child('json').isString() && newData.child('json').val().length <= 2000"
+          }
+        },
+        "chat": {
+          "$message": {
+            ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && root.child('lobbies/' + $lobbyId + '/members/' + auth.uid).exists()",
+            ".validate": "newData.hasChildren(['uid', 'name', 'text', 'at']) && newData.child('text').isString() && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 300"
+          }
+        }
+      }
+    }
+  }
+}

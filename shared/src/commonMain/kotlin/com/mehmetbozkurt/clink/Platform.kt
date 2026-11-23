@@ -2,6 +2,31 @@ package com.mehmetbozkurt.clink
 
 import com.mehmetbozkurt.clink.account.GoogleIdTokenProvider
 import com.mehmetbozkurt.clink.content.ContentCache
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-/** What only the platform can provide (file storage, the Google account picker), passed in by MainActivity. */
-class Platform(val contentCache: ContentCache, val googleIdTokens: GoogleIdTokenProvider)
+/**
+ * What only the platform can provide, passed in by MainActivity: file storage, the Google account picker, the share
+ * sheet, and invite links that opened the app.
+ */
+class Platform(
+    val contentCache: ContentCache,
+    val googleIdTokens: GoogleIdTokenProvider,
+    val share: (String) -> Unit,
+    val incomingLinks: IncomingLinks,
+)
+
+/** The latest invite link the app was opened with, until the app has acted on it. */
+class IncomingLinks {
+    private val _link = MutableStateFlow<String?>(null)
+    val link: StateFlow<String?> = _link.asStateFlow()
+
+    fun receive(url: String?) {
+        if (url != null) _link.value = url
+    }
+
+    fun consume() {
+        _link.value = null
+    }
+}

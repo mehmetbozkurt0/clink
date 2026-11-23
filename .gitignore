@@ -19,3 +19,7 @@ captures/
 *.iml
 docs/firebase-setup.md
 docs/firebase-setup.md
+
+# Firebase CLI project link and the app-link fingerprint file: kept local, deployed from this machine
+.firebaserc
+hosting/public/.well-known/assetlinks.json

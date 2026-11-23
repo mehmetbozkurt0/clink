@@ -1,0 +1,21 @@
+{
+  "database": {
+    "rules": "firebase/database.rules.json"
+  },
+  "firestore": {
+    "rules": "firebase/firestore.rules"
+  },
+  "hosting": {
+    "public": "hosting/public",
+    "ignore": ["firebase.json", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "/join/**", "destination": "/join/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "/.well-known/assetlinks.json",
+        "headers": [{ "key": "Content-Type", "value": "application/json" }]
+      }
+    ]
+  }
+}

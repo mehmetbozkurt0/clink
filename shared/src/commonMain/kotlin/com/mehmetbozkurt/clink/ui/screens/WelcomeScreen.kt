@@ -37,8 +37,10 @@ import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.cd_account
 import com.mehmetbozkurt.clink.resources.play
 import com.mehmetbozkurt.clink.resources.tagline
+import com.mehmetbozkurt.clink.resources.welcome_join
 import com.mehmetbozkurt.clink.ui.components.AvatarBadge
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
+import com.mehmetbozkurt.clink.ui.components.SecondaryButton
 import com.mehmetbozkurt.clink.ui.components.TapeLabel
 import com.mehmetbozkurt.clink.ui.components.WallChip
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
@@ -56,7 +58,7 @@ private val GameIconTints = mapOf(
  * once the host has a profile, their avatar sits top-right and opens the account screen.
  */
 @Composable
-fun WelcomeScreen(profile: Profile?, onPlay: () -> Unit, onAccount: () -> Unit) {
+fun WelcomeScreen(profile: Profile?, onPlay: () -> Unit, onJoin: () -> Unit, onAccount: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
         Box(modifier = Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.CenterEnd) {
             if (profile != null) {
@@ -105,6 +107,12 @@ fun WelcomeScreen(profile: Profile?, onPlay: () -> Unit, onAccount: () -> Unit) 
             Spacer(Modifier.height(24.dp))
         }
         PrimaryButton(text = stringResource(Res.string.play), onClick = onPlay, modifier = Modifier.fillMaxWidth())
+        // Guests with an invite code start here (spec §5.1); no account needed.
+        SecondaryButton(
+            text = stringResource(Res.string.welcome_join),
+            onClick = onJoin,
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+        )
     }
 }
 

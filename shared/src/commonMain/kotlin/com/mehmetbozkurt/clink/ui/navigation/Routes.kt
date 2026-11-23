@@ -27,6 +27,18 @@ data class ModeRoute(val game: GameId)
 @Serializable
 data class PlayersRoute(val game: GameId)
 
+/** Online (Plan 4): the host picks the level, then the lobby is created. */
+@Serializable
+data class OnlineLevelRoute(val game: GameId)
+
+/** The lobby this phone is in ([com.mehmetbozkurt.clink.online.LobbyLauncher.active]) and its games. */
+@Serializable
+data object OnlineRoomRoute
+
+/** Joining with a code; [code] is filled in when an invite link opened the app. */
+@Serializable
+data class JoinRoute(val code: String? = null)
+
 @Serializable
 data class LevelRoute(val game: GameId, val players: List<String>)
 

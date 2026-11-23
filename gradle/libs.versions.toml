@@ -30,6 +30,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 gitlive-firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "gitliveFirebase" }
 gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitliveFirebase" }
+gitlive-firebase-database = { module = "dev.gitlive:firebase-database", version.ref = "gitliveFirebase" }
 firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidxCredentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidxCredentials" }

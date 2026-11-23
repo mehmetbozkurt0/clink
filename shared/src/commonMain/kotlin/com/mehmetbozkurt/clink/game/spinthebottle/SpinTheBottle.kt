@@ -1,11 +1,13 @@
 package com.mehmetbozkurt.clink.game.spinthebottle
 
+import kotlinx.serialization.Serializable
 import com.mehmetbozkurt.clink.content.CardType
 import com.mehmetbozkurt.clink.content.ContentLibrary
 import com.mehmetbozkurt.clink.content.Deck
 import com.mehmetbozkurt.clink.content.Level
 
 /** The UI animates the bottle toward [lastTarget] whenever [spinCount] changes. */
+@Serializable
 data class SpinState(
     val players: List<String>,
     val level: Level,
@@ -17,18 +19,28 @@ data class SpinState(
     val notice: SpinNotice?,
 )
 
+@Serializable
 sealed interface SpinPhase {
+    @Serializable
     data class ReadyToSpin(val landedOnSelf: Boolean) : SpinPhase
+    @Serializable
     data class Asking(val asker: Int, val answerer: Int) : SpinPhase
+    @Serializable
     data class ShowingPenalty(val answerer: Int, val cardId: String) : SpinPhase
 }
 
+@Serializable
 enum class SpinNotice { NO_PENALTY_CARDS }
 
+@Serializable
 sealed interface SpinAction {
+    @Serializable
     data object Spin : SpinAction
+    @Serializable
     data object Answered : SpinAction
+    @Serializable
     data object Refuse : SpinAction
+    @Serializable
     data object PenaltyDone : SpinAction
 }
 

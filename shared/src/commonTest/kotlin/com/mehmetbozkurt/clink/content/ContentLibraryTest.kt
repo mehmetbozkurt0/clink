@@ -3,6 +3,7 @@ package com.mehmetbozkurt.clink.content
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class ContentLibraryTest {
     private val lib = ContentLibrary(
@@ -39,4 +40,11 @@ class ContentLibraryTest {
     fun text_unknownIdThrows() {
         assertFailsWith<IllegalArgumentException> { lib.text("nope", "en") }
     }
+
+    // Online, the host may have newer content than a guest: an unknown card must not crash the guest.
+    @Test
+    fun textOrNull_unknownIdIsNull() = assertNull(lib.textOrNull("nope", "en"))
+
+    @Test
+    fun textOrNull_knownIdIsTheText() = assertEquals("Soru", lib.textOrNull("t1", "tr"))
 }

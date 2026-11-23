@@ -12,4 +12,7 @@ class ContentLibrary(private val packs: List<Pack>) {
         val card = requireNotNull(cardsById[cardId]) { "Unknown card id: $cardId" }
         return card.text[language] ?: card.text["en"] ?: card.text.values.first()
     }
+
+    /** Like [text], but null for a card this phone doesn't have (online, the host's content may be newer). */
+    fun textOrNull(cardId: String, language: String): String? = if (cardId in cardsById) text(cardId, language) else null
 }

@@ -70,6 +70,7 @@ import com.mehmetbozkurt.clink.ui.components.TopBar
 import com.mehmetbozkurt.clink.ui.components.TopBarNav
 import com.mehmetbozkurt.clink.ui.components.TurnBadge
 import com.mehmetbozkurt.clink.ui.components.TypePill
+import com.mehmetbozkurt.clink.ui.components.WaitingLabel
 import com.mehmetbozkurt.clink.ui.components.cardTextStyle
 import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.screens.ScreenColumn
@@ -136,7 +137,7 @@ fun TruthOrDareScreen(players: List<String>, level: Level, onEnd: () -> Unit) {
     }
 }
 
-private fun TodNotice.message() = when (this) {
+internal fun TodNotice.message() = when (this) {
     TodNotice.NO_TRUTH_CARDS -> Res.string.notice_no_truth
     TodNotice.NO_DARE_CARDS -> Res.string.notice_no_dare
     TodNotice.NO_PENALTY_CARDS -> Res.string.notice_no_penalty
@@ -144,7 +145,7 @@ private fun TodNotice.message() = when (this) {
 
 /** Two large neon panels (design §4): Truth acid, Dare pink. */
 @Composable
-private fun ColumnScope.Choosing(onPick: (CardType) -> Unit) {
+internal fun ColumnScope.Choosing(onPick: (CardType) -> Unit) {
     Column(modifier = Modifier.weight(1f).padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
         NeonPanel(stringResource(Res.string.truth), ClinkColors.Acid, ClinkColors.Pink) { onPick(CardType.TRUTH) }
         NeonPanel(stringResource(Res.string.dare), ClinkColors.Pink, ClinkColors.Acid) { onPick(CardType.DARE) }
@@ -179,13 +180,14 @@ private fun ColumnScope.NeonPanel(text: String, container: Color, shadow: Color,
 }
 
 @Composable
-private fun ColumnScope.ShowingCard(
+internal fun ColumnScope.ShowingCard(
     level: Level,
     type: CardType,
     text: String,
     slapKey: Any,
     onDone: () -> Unit,
     onRefuse: () -> Unit,
+    waitingFor: String? = null,
 ) {
     CardArea {
         SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = 1f) {
@@ -202,14 +204,19 @@ private fun ColumnScope.ShowingCard(
             )
         }
     }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        PrimaryButton(stringResource(Res.string.done), onDone, Modifier.weight(1f))
-        SecondaryButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f))
+    // Online, only the player whose turn it is gets the buttons.
+    if (waitingFor != null) {
+        WaitingLabel(waitingFor)
+    } else {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PrimaryButton(stringResource(Res.string.done), onDone, Modifier.weight(1f))
+            SecondaryButton(stringResource(Res.string.take_penalty), onRefuse, Modifier.weight(1f))
+        }
     }
 }
 
 @Composable
-private fun ColumnScope.ShowingPenalty(level: Level, text: String, slapKey: Any, onDone: () -> Unit) {
+internal fun ColumnScope.ShowingPenalty(level: Level, text: String, slapKey: Any, onDone: () -> Unit, waitingFor: String? = null) {
     CardArea {
         SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
             LevelTag(level)
@@ -222,7 +229,11 @@ private fun ColumnScope.ShowingPenalty(level: Level, text: String, slapKey: Any,
             Text(text = text, modifier = Modifier.padding(top = 8.dp), color = ClinkColors.Ink, style = cardTextStyle())
         }
     }
-    PrimaryButton(text = stringResource(Res.string.penalty_done), onClick = onDone, modifier = Modifier.fillMaxWidth())
+    if (waitingFor != null) {
+        WaitingLabel(waitingFor)
+    } else {
+        PrimaryButton(text = stringResource(Res.string.penalty_done), onClick = onDone, modifier = Modifier.fillMaxWidth())
+    }
 }
 
 /** The card sits in the middle of the free space at its own height (design §4); a long card scrolls. */

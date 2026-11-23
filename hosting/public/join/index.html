@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clink lobisine katıl</title>
+  <style>
+    :root { --wall: #1C1C1F; --raised: #26262A; --paper: #F4EFE3; --acid: #C6FF00; --pink: #FF2E88; --muted: #A8A49A; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--wall); color: var(--paper); font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+    main { max-width: 420px; width: 100%; }
+    h1 { font-size: 40px; margin: 0 0 8px; color: var(--acid); }
+    .code { font-size: 44px; font-weight: 800; letter-spacing: 8px; background: var(--raised); border: 2px solid var(--acid); border-radius: 14px; padding: 16px; text-align: center; margin: 20px 0; word-break: break-all; }
+    p { line-height: 1.5; }
+    .muted { color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Lobiye katıl</h1>
+    <p>Clink yüklüyse bu link uygulamayı açar. Açmadıysa uygulamada <b>Kodla katıl</b>'a dokunup bu kodu yaz:</p>
+    <div class="code" id="code">······</div>
+    <p class="muted">Join the lobby: if Clink is installed, this link opens it. If not, tap <b>Join with code</b> in the app and type the code above.</p>
+    <p class="muted">Clink yakında Google Play'de. · Coming soon on Google Play.</p>
+  </main>
+  <script>
+    // The code is the last part of /join/<code>; only letters and digits are shown.
+    var part = location.pathname.split('/').filter(Boolean).pop() || '';
+    var code = part.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    if (code.length === 6) document.getElementById('code').textContent = code;
+  </script>
+</body>
+</html>

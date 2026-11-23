@@ -32,6 +32,15 @@ import com.mehmetbozkurt.clink.game.beerpong.BeerPongSetupScreen
 import com.mehmetbozkurt.clink.game.beerpong.suggestedMatchup
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleScreen
 import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareScreen
+import com.mehmetbozkurt.clink.online.Member
+import com.mehmetbozkurt.clink.online.codeFromLink
+import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.resources.cancel
+import com.mehmetbozkurt.clink.resources.err_lobby_create
+import com.mehmetbozkurt.clink.resources.try_again
+import com.mehmetbozkurt.clink.ui.components.PosterDialog
+import com.mehmetbozkurt.clink.ui.online.JoinScreen
+import com.mehmetbozkurt.clink.ui.online.OnlineRoomScreen
 import com.mehmetbozkurt.clink.ui.screens.AccountScreen
 import com.mehmetbozkurt.clink.ui.screens.GameListScreen
 import com.mehmetbozkurt.clink.ui.screens.GameOverScreen
@@ -43,6 +52,7 @@ import com.mehmetbozkurt.clink.ui.screens.SignInScreen
 import com.mehmetbozkurt.clink.ui.screens.WelcomeScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 private const val TransitionMillis = 250
 
@@ -82,6 +92,20 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
     LaunchedEffect(user?.uid) { session.gate() }
     var gating by remember { mutableStateOf<Job?>(null) }
 
+    // An invite link (spec §5.1) opens the join screen with its code, whatever screen is showing.
+    val link by container.incomingLinks.link.collectAsState()
+    LaunchedEffect(link) {
+        val url = link ?: return@LaunchedEffect
+        container.incomingLinks.consume()
+        val code = codeFromLink(url) ?: return@LaunchedEffect
+        // The link of the lobby this phone is already in just brings that lobby back.
+        if (code == container.lobbies.active.value?.code) {
+            navController.popBackStack(OnlineRoomRoute, inclusive = false)
+        } else {
+            navController.navigate(JoinRoute(code))
+        }
+    }
+
     /** Opens what [AccountSession.gate] decides; [popUpTo] removes the screen that asked (sign-in, setup). */
     fun goByGate(popUpTo: (NavOptionsBuilder.() -> Unit) = {}) {
         if (gating?.isActive == true) return
@@ -108,6 +132,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             WelcomeScreen(
                 profile = session.profile,
                 onPlay = { entry.ifResumed { goByGate() } },
+                onJoin = { entry.ifResumed { navController.navigate(JoinRoute()) } },
                 onAccount = { entry.ifResumed { navController.navigate(AccountRoute) } },
             )
         }
@@ -153,6 +178,52 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             ModeSelectScreen(
                 game = route.game,
                 onLocal = { entry.ifResumed { navController.navigate(PlayersRoute(route.game)) } },
+                onOnline = { entry.ifResumed { navController.navigate(OnlineLevelRoute(route.game)) } },
+                onBack = { entry.back() },
+            )
+        }
+        composable<OnlineLevelRoute> { entry ->
+            val route = entry.toRoute<OnlineLevelRoute>()
+            var creating by remember { mutableStateOf(false) }
+            var failedLevel by remember { mutableStateOf<Level?>(null) }
+            // The host is signed in with a profile here: the game list is behind the account gate.
+            fun create(level: Level) {
+                val uid = user?.uid
+                val profile = session.profile
+                if (creating || uid == null || profile == null) return
+                creating = true
+                scope.launch {
+                    val host = Member(uid, profile.displayName, profile.avatarId, joinedAt = 0)
+                    val lobby = container.lobbies.create(host, route.game, level)
+                    creating = false
+                    if (lobby == null) {
+                        failedLevel = level
+                    } else {
+                        entry.ifResumed { navController.navigate(OnlineRoomRoute) { popUpTo<OnlineLevelRoute> { inclusive = true } } }
+                    }
+                }
+            }
+            LevelSelectScreen(onLevel = { level -> entry.ifResumed { create(level) } }, onBack = { entry.back() })
+            failedLevel?.let { level ->
+                PosterDialog(
+                    title = stringResource(Res.string.err_lobby_create),
+                    confirmText = stringResource(Res.string.try_again),
+                    cancelText = stringResource(Res.string.cancel),
+                    onConfirm = { failedLevel = null; create(level) },
+                    onDismiss = { failedLevel = null },
+                )
+            }
+        }
+        composable<OnlineRoomRoute> { entry ->
+            // Not entry.ifResumed: the room can end while its enter transition still runs.
+            OnlineRoomScreen(onExit = { if (navController.currentBackStackEntry == entry) navController.popBackStack() })
+        }
+        composable<JoinRoute> { entry ->
+            val route = entry.toRoute<JoinRoute>()
+            JoinScreen(
+                initialCode = route.code,
+                profile = session.profile.takeIf { user?.isAnonymous == false },
+                onJoined = { entry.ifResumed { navController.navigate(OnlineRoomRoute) { popUpTo<JoinRoute> { inclusive = true } } } },
                 onBack = { entry.back() },
             )
         }

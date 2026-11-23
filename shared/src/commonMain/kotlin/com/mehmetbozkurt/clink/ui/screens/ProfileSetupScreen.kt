@@ -157,7 +157,7 @@ private fun NameField(name: String, onChange: (String) -> Unit) {
 }
 
 @Composable
-private fun AvatarGrid(selected: String, name: String, onSelect: (String) -> Unit) {
+internal fun AvatarGrid(selected: String, name: String, onSelect: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Avatars.ids.chunked(4).forEach { row ->
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

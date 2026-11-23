@@ -17,11 +17,18 @@ import com.mehmetbozkurt.clink.account.FirestoreProfileRepository
 import com.mehmetbozkurt.clink.content.ContentRepository
 import com.mehmetbozkurt.clink.content.FirestoreContentRemote
 import com.mehmetbozkurt.clink.content.loadBundledPacks
+import com.mehmetbozkurt.clink.online.LobbyLauncher
+import com.mehmetbozkurt.clink.online.RtdbLobbyRepository
 import com.mehmetbozkurt.clink.ui.components.WallBackground
 import com.mehmetbozkurt.clink.ui.navigation.ClinkNavHost
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import com.mehmetbozkurt.clink.ui.theme.ClinkFonts
 import com.mehmetbozkurt.clink.ui.theme.ClinkTheme
+import com.mehmetbozkurt.clink.content.ContentLibrary
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlin.random.Random
 
 @Composable
 fun App(platform: Platform) {
@@ -29,11 +36,15 @@ fun App(platform: Platform) {
         WallBackground {
             val container by produceState<AppContainer?>(initialValue = null) {
                 val content = ContentRepository(platform.contentCache, FirestoreContentRemote(), ::loadBundledPacks)
+                val library = content.load()
                 value = AppContainer(
-                    library = content.load(),
+                    library = library,
                     auth = FirebaseAuthService(scope = this),
                     profiles = FirestoreProfileRepository(),
                     googleIdTokens = platform.googleIdTokens,
+                    lobbies = OnlineProcess.launcher(library),
+                    share = platform.share,
+                    incomingLinks = platform.incomingLinks,
                 )
                 // Newer content is downloaded in the background and used from the next start on.
                 content.refresh()
@@ -55,4 +66,16 @@ fun App(platform: Platform) {
             }
         }
     }
+}
+
+/**
+ * One lobby launcher for the whole process. The Activity (and this composition) is rebuilt on a theme, language or
+ * font change; a running lobby must survive that, and leaving it must finish even after its screen is gone.
+ */
+private object OnlineProcess {
+    private var launcher: LobbyLauncher? = null
+
+    fun launcher(library: ContentLibrary): LobbyLauncher =
+        launcher ?: LobbyLauncher(RtdbLobbyRepository(), library, Random.Default, CoroutineScope(SupervisorJob() + Dispatchers.Main))
+            .also { launcher = it }
 }

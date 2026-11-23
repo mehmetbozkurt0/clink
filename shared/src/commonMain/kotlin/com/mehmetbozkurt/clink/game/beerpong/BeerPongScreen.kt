@@ -64,7 +64,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /** A throw being animated: drawn from the thrower's side, with the defender's cups as they were before it. */
-private data class Flight(val thrower: Int, val cupsBefore: Set<Int>, val result: ThrowResult)
+internal data class Flight(val thrower: Int, val cupsBefore: Set<Int>, val result: ThrowResult)
 
 /**
  * One Beer Pong match on one phone. [players] are the two match players in throwing order;
@@ -187,12 +187,12 @@ fun BeerPongScreen(
 }
 
 @Composable
-private fun MatchOverPanel(
+internal fun MatchOverPanel(
     winner: String,
     loser: String,
     level: Level,
     penaltyText: String?,
-    onDone: () -> Unit,
+    onDone: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -230,10 +230,13 @@ private fun MatchOverPanel(
                 )
             }
         }
-        PrimaryButton(
-            text = stringResource(if (penaltyText != null) Res.string.penalty_done else Res.string.continue_button),
-            onClick = onDone,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        // Online, only the host moves everyone on.
+        if (onDone != null) {
+            PrimaryButton(
+                text = stringResource(if (penaltyText != null) Res.string.penalty_done else Res.string.continue_button),
+                onClick = onDone,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }

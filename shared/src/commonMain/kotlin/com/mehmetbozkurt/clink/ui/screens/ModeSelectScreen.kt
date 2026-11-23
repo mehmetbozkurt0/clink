@@ -15,19 +15,19 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
-import com.mehmetbozkurt.clink.resources.coming_soon
 import com.mehmetbozkurt.clink.resources.mode_local
 import com.mehmetbozkurt.clink.resources.mode_local_sub
 import com.mehmetbozkurt.clink.resources.mode_online
+import com.mehmetbozkurt.clink.resources.mode_online_sub
 import com.mehmetbozkurt.clink.resources.mode_title
 import com.mehmetbozkurt.clink.ui.components.TopBar
 import com.mehmetbozkurt.clink.ui.components.TopBarNav
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import org.jetbrains.compose.resources.stringResource
 
-/** Mode (design §4): two posters; Online stays disabled until Plan 4. */
+/** Mode (design §4): two posters, one phone or online (everyone on their own phone). */
 @Composable
-fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onBack: () -> Unit) {
+fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onOnline: () -> Unit, onBack: () -> Unit) {
     ScreenColumn {
         TopBar(navigation = TopBarNav.Back, onNavigate = onBack)
         ScreenTitle(stringResource(Res.string.mode_title), overline = game.title())
@@ -39,8 +39,8 @@ fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onBack: () -> Unit) {
             ChoiceCard(onClick = onLocal, rotation = PosterTilts[0]) {
                 ModeText(stringResource(Res.string.mode_local), stringResource(Res.string.mode_local_sub))
             }
-            ChoiceCard(onClick = {}, enabled = false, rotation = PosterTilts[1]) {
-                ModeText(stringResource(Res.string.mode_online), stringResource(Res.string.coming_soon))
+            ChoiceCard(onClick = onOnline, rotation = PosterTilts[1]) {
+                ModeText(stringResource(Res.string.mode_online), stringResource(Res.string.mode_online_sub))
             }
         }
     }

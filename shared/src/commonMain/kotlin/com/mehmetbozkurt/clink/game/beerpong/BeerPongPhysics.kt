@@ -12,6 +12,7 @@ import kotlin.math.sin
  * A point on the table, in table units. The origin is the thrower's ball, +y points at the target rack
  * and +x to the thrower's right. The rack is always the defender's cups, seen from the thrower.
  */
+@Serializable
 data class TablePoint(val x: Float, val y: Float)
 
 /** What a throw is, independent of any screen: published as-is in online play so every phone replays it. */
@@ -19,6 +20,7 @@ data class TablePoint(val x: Float, val y: Float)
 data class ThrowInput(val angleDegrees: Float, val range: Float)
 
 /** One touchdown is a clean landing; two mean the ball hit a rim and bounced once. */
+@Serializable
 data class ThrowResult(val input: ThrowInput, val touchdowns: List<TablePoint>, val cupHit: Int?)
 
 /** Hand-written throw model (spec §7.3). The constants set the feel and may be tuned on a device. */

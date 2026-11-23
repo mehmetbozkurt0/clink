@@ -1,11 +1,13 @@
 package com.mehmetbozkurt.clink.content
 
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 /**
  * Draws every card once in random order, then starts over.
  * The card drawn right after a refill is never the same as the one before it (unless there is only one card).
  */
+@Serializable
 data class Deck(val all: List<String>, val remaining: List<String>, val last: String?) {
 
     fun draw(random: Random): Pair<String, Deck>? {

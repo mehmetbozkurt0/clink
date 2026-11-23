@@ -21,7 +21,7 @@ import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 internal fun PosterDialog(
     title: String,
     confirmText: String,
-    cancelText: String,
+    cancelText: String?,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     body: String? = null,
@@ -41,7 +41,7 @@ internal fun PosterDialog(
                 } else {
                     PrimaryButton(text = confirmText, onClick = onConfirm, modifier = Modifier.fillMaxWidth())
                 }
-                ClinkButton(cancelText, onDismiss, Modifier.fillMaxWidth(), true, ClinkColors.Paper, ClinkColors.Ink)
+                if (cancelText != null) ClinkButton(cancelText, onDismiss, Modifier.fillMaxWidth(), true, ClinkColors.Paper, ClinkColors.Ink)
             }
         }
     }
