@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +20,7 @@ import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 
 private val VirtualWidth = 360.dp
 private val VirtualHeight = 720.dp
+private val FrameInset = 8.dp
 private val FrameShape = RoundedCornerShape(24.dp)
 private val ScreenShape = RoundedCornerShape(16.dp)
 
@@ -30,16 +31,20 @@ private val ScreenShape = RoundedCornerShape(16.dp)
  */
 @Composable
 fun PhoneFrame(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(
-        modifier = modifier
-            .clip(FrameShape)
-            .background(ClinkColors.WallRaised)
-            .border(2.dp, ClinkColors.Paper.copy(alpha = 0.14f), FrameShape)
-            .padding(8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            val scale = minOf(maxWidth / VirtualWidth, maxHeight / VirtualHeight)
+    // The frame takes the screen's own 1:2 shape, sized to the space it gets, so the preview fills it edge to edge
+    // instead of leaving empty bands when that space is wider or taller than a phone.
+    BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
+        val scale = minOf((maxWidth - FrameInset * 2) / VirtualWidth, (maxHeight - FrameInset * 2) / VirtualHeight)
+            .coerceAtLeast(0f)
+        Box(
+            modifier = Modifier
+                .size(VirtualWidth * scale + FrameInset * 2, VirtualHeight * scale + FrameInset * 2)
+                .clip(FrameShape)
+                .background(ClinkColors.WallRaised)
+                .border(2.dp, ClinkColors.Paper.copy(alpha = 0.14f), FrameShape)
+                .padding(FrameInset),
+            contentAlignment = Alignment.Center,
+        ) {
             Box(
                 modifier = Modifier
                     .requiredSize(VirtualWidth, VirtualHeight)
