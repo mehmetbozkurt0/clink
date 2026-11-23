@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -45,6 +47,9 @@ sealed interface Peek {
 
 private const val CODE_ATTEMPTS = 5
 private const val WRITE_TIMEOUT_MILLIS = 10_000L
+
+/** A dropped connection shows the offline banner only after this long, so a blip doesn't flash it. */
+const val OFFLINE_BANNER_DELAY_MILLIS = 2_000L
 
 @OptIn(ExperimentalTime::class)
 private fun systemNow(): Long = Clock.System.now().toEpochMilliseconds()
@@ -152,6 +157,16 @@ class LobbySession internal constructor(
 
     val chat: StateFlow<List<ChatMessage>> =
         repo.chat(lobbyId).catch { }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    /** True once this phone has had no connection for [OFFLINE_BANNER_DELAY_MILLIS]; false again as soon as it's back. */
+    val offline: StateFlow<Boolean> = repo.connected().catch { }.transformLatest { connected ->
+        if (connected) {
+            emit(false)
+        } else {
+            delay(OFFLINE_BANNER_DELAY_MILLIS)
+            emit(true)
+        }
+    }.stateIn(scope, SharingStarted.Eagerly, false)
 
     /** Set once this phone is out of the lobby; a removed member loses read access, which also counts as removed. */
     val exit: StateFlow<LobbyExit?> = combine(snapshot, lostAccess, left) { snap, lost, gone ->

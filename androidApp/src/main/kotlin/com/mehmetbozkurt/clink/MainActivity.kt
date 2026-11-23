@@ -22,6 +22,7 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) incomingLinks.receive(intent?.dataString)
         val platform = Platform(
             contentCache = FileContentCache(applicationContext),
+            localStore = FileLocalStore(applicationContext),
             googleIdTokens = CredentialManagerGoogleIdTokenProvider(this),
             share = { text -> shareText(this, text) },
             incomingLinks = incomingLinks,

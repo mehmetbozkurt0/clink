@@ -70,3 +70,7 @@ data class GameOverRoute(
     val matchWinner: Int? = null,
     val matchLoser: Int? = null,
 )
+
+/** The Play onboarding tour (spec §5.4); [replay] when opened from "How to play?" rather than the first Play tap. */
+@Serializable
+data class PlayTourRoute(val replay: Boolean)

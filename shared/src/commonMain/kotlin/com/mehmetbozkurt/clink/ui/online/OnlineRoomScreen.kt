@@ -8,10 +8,11 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,6 +67,7 @@ import com.mehmetbozkurt.clink.online.playerOrder
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.cancel
 import com.mehmetbozkurt.clink.resources.host_reconnecting
+import com.mehmetbozkurt.clink.resources.lobby_alone_hint
 import com.mehmetbozkurt.clink.resources.lobby_close_body
 import com.mehmetbozkurt.clink.resources.lobby_close_confirm
 import com.mehmetbozkurt.clink.resources.lobby_close_title
@@ -86,6 +88,7 @@ import com.mehmetbozkurt.clink.resources.lobby_removed
 import com.mehmetbozkurt.clink.resources.lobby_start
 import com.mehmetbozkurt.clink.resources.lobby_title
 import com.mehmetbozkurt.clink.resources.lobby_waiting_start
+import com.mehmetbozkurt.clink.resources.offline_banner
 import com.mehmetbozkurt.clink.resources.ok
 import com.mehmetbozkurt.clink.ui.components.AdultConfirmDialog
 import com.mehmetbozkurt.clink.ui.components.AvatarBadge
@@ -128,6 +131,7 @@ fun OnlineRoomScreen(onExit: () -> Unit) {
 private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
     val snapshot by session.snapshot.collectAsState()
     val exit by session.exit.collectAsState()
+    val offline by session.offline.collectAsState()
     val messages by session.chat.collectAsState()
     val scope = rememberCoroutineScope()
     var chatOpen by rememberSaveable { mutableStateOf(false) }
@@ -206,17 +210,14 @@ private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
             else -> Lobby(session, snap, chatButton, onLeave = { confirmLeave = true })
         }
 
-        if (host is HostStatus.Reconnecting) {
-            Text(
-                text = stringResource(Res.string.host_reconnecting, host.secondsLeft),
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 64.dp)
-                    .background(ClinkColors.Amber, RoundedCornerShape(10.dp))
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                color = ClinkColors.Ink,
-                style = MaterialTheme.typography.labelLarge,
-            )
+        // Status chips stack under the top bar: this phone's connection first, then the host's.
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 64.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (offline) StatusChip(stringResource(Res.string.offline_banner))
+            if (host is HostStatus.Reconnecting) StatusChip(stringResource(Res.string.host_reconnecting, host.secondsLeft))
         }
 
         AnimatedVisibility(visible = chatOpen, enter = fadeIn() + slideInVertically { it / 3 }, exit = fadeOut() + slideOutVertically { it / 3 }) {
@@ -262,6 +263,17 @@ private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
 }
 
 @Composable
+private fun StatusChip(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier.background(ClinkColors.Amber, RoundedCornerShape(10.dp)).padding(horizontal = 14.dp, vertical = 8.dp),
+        color = ClinkColors.Ink,
+        style = MaterialTheme.typography.labelLarge,
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
 private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Composable RowScope.() -> Unit, onLeave: () -> Unit) {
     val container = LocalAppContainer.current
     val meta = snap.meta ?: return
@@ -286,9 +298,12 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            if (session.isHost && players.size == 1) {
+                Text(stringResource(Res.string.lobby_alone_hint), color = ClinkColors.Amber, style = MaterialTheme.typography.bodyMedium)
+            }
             CodeCard(code = session.code, onShare = { container.share(invite) })
             if (session.isHost) {
-                Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     GameId.entries.forEach { game ->
                         WallChip(
                             text = game.title(),
@@ -299,7 +314,7 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
                         )
                     }
                 }
-                Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Level.entries.forEach { level ->
                         WallChip(
                             text = level.name,
@@ -384,7 +399,7 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
 }
 
 @Composable
-private fun CodeCard(code: String, onShare: () -> Unit) {
+internal fun CodeCard(code: String, onShare: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -406,7 +421,7 @@ private fun CodeCard(code: String, onShare: () -> Unit) {
 }
 
 @Composable
-private fun MemberRow(
+internal fun MemberRow(
     member: Member,
     isHost: Boolean,
     isMe: Boolean,

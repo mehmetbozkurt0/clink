@@ -7,9 +7,9 @@
     <string name="game_beerpong">Beer Pong</string>
     <string name="coming_soon">Coming soon</string>
     <string name="mode_title">How are you playing?</string>
-    <string name="mode_local">With friends</string>
+    <string name="mode_local_title">WITH FRIENDS</string>
     <string name="mode_local_sub">One phone, take turns</string>
-    <string name="mode_online">Online</string>
+    <string name="mode_online_title">ONLINE</string>
     <string name="players_title">Who’s playing?</string>
     <string name="player_hint">Player %1$d</string>
     <string name="add_player">Add player</string>
@@ -101,6 +101,7 @@
     <string name="err_delete_failed">Couldn’t delete. Check your connection and try again.</string>
     <string name="mode_online_sub">Everyone on their own phone</string>
     <string name="welcome_join">Join with a code</string>
+    <string name="how_to_play">How to play</string>
     <string name="ok">OK</string>
     <string name="try_again">Try again</string>
     <string name="err_lobby_create">Couldn’t open the lobby. Check your connection.</string>
@@ -125,6 +126,8 @@
     <string name="lobby_removed">You were removed from the lobby.</string>
     <string name="lobby_host_gone">The host didn’t come back. The lobby is closed.</string>
     <string name="host_reconnecting">Host reconnecting · %1$d</string>
+    <string name="offline_banner">No connection, reconnecting…</string>
+    <string name="lobby_alone_hint">Send your friends the code or the invite</string>
     <string name="join_title">Join with a code</string>
     <string name="join_code_hint">6-character code</string>
     <string name="join_continue">Continue</string>
@@ -152,4 +155,25 @@
     <string name="spin_waiting_answer">%1$s is answering…</string>
     <string name="spin_question_label">Question</string>
     <string name="spin_answer_label">Answer</string>
+    <string name="skip_button">SKIP</string>
+    <string name="next_button">NEXT</string>
+    <string name="start_button">START</string>
+    <string name="done_button">DONE</string>
+    <string name="tour_play_1_title">Three games, one app</string>
+    <string name="tour_play_1_body">Truth or Dare, Spin the Bottle and Beer Pong.</string>
+    <string name="tour_play_2_title">One phone or online</string>
+    <string name="tour_play_2_body">Pass one phone around the table, or everyone joins from their own phone.</string>
+    <string name="tour_play_3_title">Pick a level</string>
+    <string name="tour_play_3_body">Casual, Hard or Spicy (18+).</string>
+    <string name="tour_play_4_title">The host has an account</string>
+    <string name="tour_play_4_body">You sign in with Google to host; your friends join without one.</string>
+    <string name="tour_sample_host">Alex</string>
+    <string name="tour_sample_guest">Sam</string>
+    <string name="tour_join_1_title">Everyone on their own phone</string>
+    <string name="tour_join_1_body">The host opens a lobby, you join it with a code.</string>
+    <string name="tour_join_2_title">The code comes from the host</string>
+    <string name="tour_join_2_body">Type the 6 characters or tap the invite link. No account needed.</string>
+    <string name="tour_join_3_title">Play when it’s your turn</string>
+    <string name="tour_join_3_body">Your buttons show up on your turn; the others see who they’re waiting for.</string>
+    <string name="join_how_it_works">How online works</string>
 </resources>

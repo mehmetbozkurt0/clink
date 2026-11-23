@@ -7,9 +7,9 @@
     <string name="game_beerpong">Beer Pong</string>
     <string name="coming_soon">Yakında</string>
     <string name="mode_title">Nasıl oynuyorsunuz?</string>
-    <string name="mode_local">Arkadaşlarla</string>
+    <string name="mode_local_title">ARKADAŞLARLA</string>
     <string name="mode_local_sub">Tek telefon, sırayla</string>
-    <string name="mode_online">Online</string>
+    <string name="mode_online_title">ONLINE</string>
     <string name="players_title">Kim oynuyor?</string>
     <string name="player_hint">Oyuncu %1$d</string>
     <string name="add_player">Oyuncu ekle</string>
@@ -101,6 +101,7 @@
     <string name="err_delete_failed">Silinemedi. Bağlantını kontrol edip tekrar dene.</string>
     <string name="mode_online_sub">Herkes kendi telefonundan</string>
     <string name="welcome_join">Kodla katıl</string>
+    <string name="how_to_play">Nasıl oynanır?</string>
     <string name="ok">Tamam</string>
     <string name="try_again">Tekrar dene</string>
     <string name="err_lobby_create">Lobi açılamadı. Bağlantını kontrol et.</string>
@@ -125,6 +126,8 @@
     <string name="lobby_removed">Lobiden çıkarıldın.</string>
     <string name="lobby_host_gone">Kurucu geri dönmedi, lobi kapandı.</string>
     <string name="host_reconnecting">Kurucu yeniden bağlanıyor · %1$d</string>
+    <string name="offline_banner">Bağlantı yok, yeniden bağlanılıyor…</string>
+    <string name="lobby_alone_hint">Arkadaşlarına kodu ya da daveti gönder</string>
     <string name="join_title">Kodla katıl</string>
     <string name="join_code_hint">6 karakterlik kod</string>
     <string name="join_continue">Devam</string>
@@ -152,4 +155,25 @@
     <string name="spin_waiting_answer">%1$s cevaplıyor…</string>
     <string name="spin_question_label">Soru</string>
     <string name="spin_answer_label">Cevap</string>
+    <string name="skip_button">GEÇ</string>
+    <string name="next_button">İLERİ</string>
+    <string name="start_button">BAŞLA</string>
+    <string name="done_button">TAMAM</string>
+    <string name="tour_play_1_title">Üç oyun, tek uygulama</string>
+    <string name="tour_play_1_body">Doğruluk mu Cesaret mi, Şişe Çevirmece ve Beer Pong.</string>
+    <string name="tour_play_2_title">Tek telefon ya da online</string>
+    <string name="tour_play_2_body">Telefonu masada elden ele dolaştır ya da herkes kendi telefonundan katılsın.</string>
+    <string name="tour_play_3_title">Seviyeni seç</string>
+    <string name="tour_play_3_body">Casual, Hard ya da Spicy (18+).</string>
+    <string name="tour_play_4_title">Kuranın hesabı olur</string>
+    <string name="tour_play_4_body">Oyunu kurmak için Google ile giriş yaparsın; arkadaşların hesapsız katılır.</string>
+    <string name="tour_sample_host">Ayşe</string>
+    <string name="tour_sample_guest">Mert</string>
+    <string name="tour_join_1_title">Herkes kendi telefonunda</string>
+    <string name="tour_join_1_body">Kurucu bir lobi açar, sen de kodla katılırsın.</string>
+    <string name="tour_join_2_title">Kod kurucudan gelir</string>
+    <string name="tour_join_2_body">6 karakteri yaz ya da davet bağlantısına dokun. Hesap gerekmez.</string>
+    <string name="tour_join_3_title">Sıra sende olunca oynarsın</string>
+    <string name="tour_join_3_body">Butonların sıra sende olunca çıkar; diğerleri kimi beklediklerini görür.</string>
+    <string name="join_how_it_works">Online nasıl işler?</string>
 </resources>

@@ -6,6 +6,7 @@ import com.mehmetbozkurt.clink.account.GoogleIdTokenProvider
 import com.mehmetbozkurt.clink.account.ProfileRepository
 import com.mehmetbozkurt.clink.content.ContentLibrary
 import com.mehmetbozkurt.clink.online.LobbyLauncher
+import com.mehmetbozkurt.clink.prefs.PrefsRepository
 import kotlin.random.Random
 
 /**
@@ -20,6 +21,7 @@ class AppContainer(
     val lobbies: LobbyLauncher,
     val share: (String) -> Unit,
     val incomingLinks: IncomingLinks,
+    val prefs: PrefsRepository,
     val random: Random = Random.Default,
 )
 

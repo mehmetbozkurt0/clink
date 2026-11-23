@@ -2,6 +2,7 @@ package com.mehmetbozkurt.clink
 
 import com.mehmetbozkurt.clink.account.GoogleIdTokenProvider
 import com.mehmetbozkurt.clink.content.ContentCache
+import com.mehmetbozkurt.clink.prefs.LocalStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 class Platform(
     val contentCache: ContentCache,
+    val localStore: LocalStore,
     val googleIdTokens: GoogleIdTokenProvider,
     val share: (String) -> Unit,
     val incomingLinks: IncomingLinks,

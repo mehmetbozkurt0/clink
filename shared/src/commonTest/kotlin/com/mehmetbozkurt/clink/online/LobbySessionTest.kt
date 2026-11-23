@@ -13,7 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.Test
@@ -293,5 +295,31 @@ class LobbySessionTest {
         assertIs<JoinResult.Joined>(hostLauncher.join("ABC234", host))
         advanceUntilIdle()
         assertEquals(LobbyStatus.LOBBY, repo.meta(hostSession.lobbyId)!!.status)
+    }
+    @Test
+    fun offlineBannerWaitsTwoSeconds() = runTest {
+        val repo = FakeLobbyRepository()
+        val session = assertNotNull(launcher(repo).create(host, GameId.TRUTH_OR_DARE, Level.CASUAL))
+        runCurrent()
+        repo.isConnected.value = false
+        runCurrent()
+        advanceTimeBy(OFFLINE_BANNER_DELAY_MILLIS - 1)
+        assertFalse(session.offline.value)
+        advanceTimeBy(2)
+        assertTrue(session.offline.value)
+    }
+
+    @Test
+    fun offlineBannerClearsOnReconnect() = runTest {
+        val repo = FakeLobbyRepository()
+        val session = assertNotNull(launcher(repo).create(host, GameId.TRUTH_OR_DARE, Level.CASUAL))
+        runCurrent()
+        repo.isConnected.value = false
+        runCurrent()
+        advanceTimeBy(OFFLINE_BANNER_DELAY_MILLIS + 1)
+        assertTrue(session.offline.value)
+        repo.isConnected.value = true
+        runCurrent()
+        assertFalse(session.offline.value)
     }
 }

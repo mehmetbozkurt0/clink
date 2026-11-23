@@ -36,11 +36,16 @@ import com.mehmetbozkurt.clink.online.Member
 import com.mehmetbozkurt.clink.online.codeFromLink
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.cancel
+import com.mehmetbozkurt.clink.resources.done_button
 import com.mehmetbozkurt.clink.resources.err_lobby_create
+import com.mehmetbozkurt.clink.resources.start_button
 import com.mehmetbozkurt.clink.resources.try_again
 import com.mehmetbozkurt.clink.ui.components.PosterDialog
 import com.mehmetbozkurt.clink.ui.online.JoinScreen
 import com.mehmetbozkurt.clink.ui.online.OnlineRoomScreen
+import com.mehmetbozkurt.clink.ui.onboarding.OnboardingPager
+import com.mehmetbozkurt.clink.ui.onboarding.TourExit
+import com.mehmetbozkurt.clink.ui.onboarding.playTourCards
 import com.mehmetbozkurt.clink.ui.screens.AccountScreen
 import com.mehmetbozkurt.clink.ui.screens.GameListScreen
 import com.mehmetbozkurt.clink.ui.screens.GameOverScreen
@@ -131,9 +136,33 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         composable<WelcomeRoute> { entry ->
             WelcomeScreen(
                 profile = session.profile,
-                onPlay = { entry.ifResumed { goByGate() } },
+                onPlay = {
+                    entry.ifResumed {
+                        if (container.prefs.prefs.value.playTourSeen) goByGate() else navController.navigate(PlayTourRoute(replay = false))
+                    }
+                },
                 onJoin = { entry.ifResumed { navController.navigate(JoinRoute()) } },
+                onHowToPlay = { entry.ifResumed { navController.navigate(PlayTourRoute(replay = true)) } },
                 onAccount = { entry.ifResumed { navController.navigate(AccountRoute) } },
+            )
+        }
+        composable<PlayTourRoute> { entry ->
+            val replay = entry.toRoute<PlayTourRoute>().replay
+            OnboardingPager(
+                cards = playTourCards(),
+                lastLabel = if (replay) Res.string.done_button else Res.string.start_button,
+                onExit = { exit ->
+                    // Skip, finish and back-out all mark the tour seen. After an Activity recreation onExit can fire
+                    // again, so only the entry that is still on top may navigate.
+                    scope.launch { container.prefs.update { it.copy(playTourSeen = true) } }
+                    if (navController.currentBackStackEntry == entry) {
+                        if (replay || exit == TourExit.BACKED_OUT) {
+                            navController.popBackStack()
+                        } else {
+                            goByGate { popUpTo<PlayTourRoute> { inclusive = true } }
+                        }
+                    }
+                },
             )
         }
         composable<SignInRoute> { entry ->

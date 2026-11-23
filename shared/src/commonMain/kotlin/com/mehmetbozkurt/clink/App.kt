@@ -19,6 +19,7 @@ import com.mehmetbozkurt.clink.content.FirestoreContentRemote
 import com.mehmetbozkurt.clink.content.loadBundledPacks
 import com.mehmetbozkurt.clink.online.LobbyLauncher
 import com.mehmetbozkurt.clink.online.RtdbLobbyRepository
+import com.mehmetbozkurt.clink.prefs.PrefsRepository
 import com.mehmetbozkurt.clink.ui.components.WallBackground
 import com.mehmetbozkurt.clink.ui.navigation.ClinkNavHost
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
@@ -37,6 +38,8 @@ fun App(platform: Platform) {
             val container by produceState<AppContainer?>(initialValue = null) {
                 val content = ContentRepository(platform.contentCache, FirestoreContentRemote(), ::loadBundledPacks)
                 val library = content.load()
+                // Loaded before the container is published, so screens never see default prefs by mistake.
+                val prefs = PrefsRepository(platform.localStore).also { it.load() }
                 value = AppContainer(
                     library = library,
                     auth = FirebaseAuthService(scope = this),
@@ -45,6 +48,7 @@ fun App(platform: Platform) {
                     lobbies = OnlineProcess.launcher(library),
                     share = platform.share,
                     incomingLinks = platform.incomingLinks,
+                    prefs = prefs,
                 )
                 // Newer content is downloaded in the background and used from the next start on.
                 content.refresh()

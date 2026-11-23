@@ -10,14 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
-import com.mehmetbozkurt.clink.resources.mode_local
+import com.mehmetbozkurt.clink.resources.mode_local_title
 import com.mehmetbozkurt.clink.resources.mode_local_sub
-import com.mehmetbozkurt.clink.resources.mode_online
+import com.mehmetbozkurt.clink.resources.mode_online_title
 import com.mehmetbozkurt.clink.resources.mode_online_sub
 import com.mehmetbozkurt.clink.resources.mode_title
 import com.mehmetbozkurt.clink.ui.components.TopBar
@@ -37,10 +35,10 @@ fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onOnline: () -> Unit, on
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             ChoiceCard(onClick = onLocal, rotation = PosterTilts[0]) {
-                ModeText(stringResource(Res.string.mode_local), stringResource(Res.string.mode_local_sub))
+                ModeText(stringResource(Res.string.mode_local_title), stringResource(Res.string.mode_local_sub))
             }
             ChoiceCard(onClick = onOnline, rotation = PosterTilts[1]) {
-                ModeText(stringResource(Res.string.mode_online), stringResource(Res.string.mode_online_sub))
+                ModeText(stringResource(Res.string.mode_online_title), stringResource(Res.string.mode_online_sub))
             }
         }
     }
@@ -48,7 +46,7 @@ fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onOnline: () -> Unit, on
 
 @Composable
 private fun ModeText(title: String, subtitle: String) {
-    Text(text = title.toUpperCase(Locale.current), color = ClinkColors.Ink, style = MaterialTheme.typography.headlineSmall)
+    Text(text = title, color = ClinkColors.Ink, style = MaterialTheme.typography.headlineSmall)
     Text(
         text = subtitle,
         modifier = Modifier.padding(top = 6.dp),
