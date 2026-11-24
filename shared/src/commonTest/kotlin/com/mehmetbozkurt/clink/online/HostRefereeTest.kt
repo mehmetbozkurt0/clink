@@ -184,4 +184,14 @@ class HostRefereeTest {
         val action = OnlineAction.Throw(ThrowInput(12f, 80f))
         assertEquals(action, decodeAction(encodeAction(action)))
     }
+    // A session published by the version before stop angles: no "lastAngle" field.
+    @Test
+    fun oldSessionWithoutAngleDecodes() {
+        val spun = assertNotNull(start(GameId.SPIN_THE_BOTTLE, a, b, c).act("a", OnlineAction.Spin(SpinAction.Spin)))
+        val oldJson = encodeSession(spun).replace(Regex(""","lastAngle":[^,}]+"""), "")
+        assertFalse("lastAngle" in oldJson)
+        val decoded = decodeSession(oldJson).spin!!
+        assertNull(decoded.lastAngle)
+        assertEquals(spun.spin!!.lastTarget, decoded.lastTarget)
+    }
 }

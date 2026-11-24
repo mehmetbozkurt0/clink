@@ -34,6 +34,16 @@ const val MAX_FLICK_DP_PER_SECOND = 3000f
 /** Where player [index] sits on the circle: 0° points right, clockwise, player 0 at the top. */
 fun playerAngleDegrees(index: Int, count: Int): Float = -90f + index * 360f / count
 
+/**
+ * The player whose sector [angleDegrees] (in [playerAngleDegrees] terms) falls into. Each sector is centred on its
+ * player and spans ±180°/[count]; an angle exactly on a border belongs to the next sector clockwise.
+ */
+fun sectorAt(angleDegrees: Float, count: Int): Int {
+    val sector = 360f / count
+    // Shift so sector 0 starts at 0°, then count whole sectors.
+    return (normalized(angleDegrees + 90f + sector / 2f) / sector).toInt() % count
+}
+
 data class SpinMotion(val turns: Int, val durationMillis: Int)
 
 /** A flick below [MIN_FLICK_DP_PER_SECOND] does nothing; faster flicks spin longer, linearly up to 8 turns and 3.2 s. */

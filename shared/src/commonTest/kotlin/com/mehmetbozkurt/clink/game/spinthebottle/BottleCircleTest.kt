@@ -36,5 +36,36 @@ class BottleCircleTest {
         }
     }
 
+    @Test
+    fun sectorCentresMapToTheirPlayer() {
+        for (i in 0 until 4) assertEquals(i, sectorAt(playerAngleDegrees(i, 4), 4))
+    }
+
+    @Test
+    fun sectorAtTwoPlayers() {
+        assertEquals(0, sectorAt(-90f, 2))
+        assertEquals(1, sectorAt(90f, 2))
+        assertEquals(0, sectorAt(-1f, 2))
+        assertEquals(1, sectorAt(1f, 2))
+    }
+
+    @Test
+    fun borderBelongsToNextSector() = assertEquals(1, sectorAt(-45f, 4))
+
+    @Test
+    fun wrapAroundTop() {
+        assertEquals(0, sectorAt(269.9f, 4))
+        assertEquals(0, sectorAt(-90f + 360f, 4))
+        assertEquals(3, sectorAt(224.9f, 4))
+    }
+
+    @Test
+    fun twelvePlayersCentresAndEdges() {
+        val centre = playerAngleDegrees(11, 12)
+        assertEquals(11, sectorAt(centre, 12))
+        assertEquals(11, sectorAt(centre + 14.9f, 12))
+        assertEquals(0, sectorAt(centre + 15f, 12))
+    }
+
     private fun normalized(degrees: Float) = ((degrees % 360f) + 360f) % 360f
 }

@@ -6,7 +6,10 @@ import com.mehmetbozkurt.clink.content.ContentLibrary
 import com.mehmetbozkurt.clink.content.Deck
 import com.mehmetbozkurt.clink.content.Level
 
-/** The UI animates the bottle toward [lastTarget] whenever [spinCount] changes. */
+/**
+ * The UI animates the bottle toward [lastAngle] (or [lastTarget]'s centre, for states from before stop angles)
+ * whenever [spinCount] changes. [lastTarget] is the player whose sector [lastAngle] falls into.
+ */
 @Serializable
 data class SpinState(
     val players: List<String>,
@@ -17,6 +20,7 @@ data class SpinState(
     val spinCount: Int,
     val lastTarget: Int?,
     val notice: SpinNotice?,
+    val lastAngle: Float? = null,
 )
 
 @Serializable

@@ -8,6 +8,8 @@ import kotlin.random.Random
  * Asking --Answered--> answerer spins next; Asking --Refuse--> ShowingPenalty --PenaltyDone--> answerer spins next.
  * Actions that don't fit the current phase leave the state unchanged.
  */
+private const val STOP_ANGLE_STEPS = 3600
+
 object SpinTheBottleReducer : Reducer<SpinState, SpinAction> {
 
     override fun reduce(state: SpinState, action: SpinAction, random: Random): SpinState {
@@ -21,9 +23,11 @@ object SpinTheBottleReducer : Reducer<SpinState, SpinAction> {
     }
 
     private fun spin(state: SpinState, random: Random): SpinState {
-        val target = random.nextInt(state.players.size)
+        // A truly random stop anywhere on the circle (0.1° steps); whoever's sector it points into answers.
+        val angle = random.nextInt(STOP_ANGLE_STEPS) / 10f
+        val target = sectorAt(angle, state.players.size)
         val phase = if (target == state.spinner) SpinPhase.ReadyToSpin(landedOnSelf = true) else SpinPhase.Asking(state.spinner, target)
-        return state.copy(phase = phase, spinCount = state.spinCount + 1, lastTarget = target, notice = null)
+        return state.copy(phase = phase, spinCount = state.spinCount + 1, lastTarget = target, lastAngle = angle, notice = null)
     }
 
     private fun refuse(state: SpinState, answerer: Int, random: Random): SpinState {
