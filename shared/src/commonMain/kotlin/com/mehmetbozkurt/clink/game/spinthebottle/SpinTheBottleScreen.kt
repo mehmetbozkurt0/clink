@@ -79,15 +79,15 @@ fun SpinTheBottleScreen(players: List<String>, level: Level, onEnd: () -> Unit) 
     var spinning by remember { mutableStateOf(false) }
     // After a configuration change the bottle starts out pointing at the last target again.
     val rotation = remember {
-        Animatable(state.lastTarget?.let { spinEndRotation(0f, playerAngleDegrees(it, players.size), 0) } ?: 0f)
+        Animatable(state.stopAngle()?.let { spinEndRotation(0f, it, 0) } ?: 0f)
     }
 
     fun flick(speedDpPerSecond: Float) {
         if (spinning || state.phase !is SpinPhase.ReadyToSpin) return
         val motion = flickToSpin(speedDpPerSecond) ?: return
         viewModel.onAction(SpinAction.Spin)
-        val target = viewModel.state.value.lastTarget ?: return
-        val end = spinEndRotation(rotation.value, playerAngleDegrees(target, players.size), motion.turns)
+        val stop = viewModel.state.value.stopAngle() ?: return
+        val end = spinEndRotation(rotation.value, stop, motion.turns)
         spinning = true
         scope.launch {
             rotation.animateTo(end, tween(durationMillis = motion.durationMillis, easing = EaseOutQuart))

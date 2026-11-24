@@ -50,7 +50,7 @@ import com.mehmetbozkurt.clink.game.spinthebottle.SpinMotion
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinNotice
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinPhase
 import com.mehmetbozkurt.clink.game.spinthebottle.flickToSpin
-import com.mehmetbozkurt.clink.game.spinthebottle.playerAngleDegrees
+import com.mehmetbozkurt.clink.game.spinthebottle.stopAngle
 import com.mehmetbozkurt.clink.game.spinthebottle.spinEndRotation
 import com.mehmetbozkurt.clink.game.truthordare.Choosing
 import com.mehmetbozkurt.clink.game.truthordare.ShowingCard
@@ -189,17 +189,17 @@ internal fun OnlineSpinTheBottle(
     // Between the flick and the host's answer the bottle can't be flicked again.
     var awaitingSpin by remember(state.spinCount) { mutableStateOf(false) }
     val rotation = remember {
-        Animatable(state.lastTarget?.let { spinEndRotation(0f, playerAngleDegrees(it, state.players.size), 0) } ?: 0f)
+        Animatable(state.stopAngle()?.let { spinEndRotation(0f, it, 0) } ?: 0f)
     }
     val tapGuard = rememberPhaseTapGuard(state.phase)
 
     LaunchedEffect(state.spinCount) {
         if (state.spinCount == shownSpins) return@LaunchedEffect
         shownSpins = state.spinCount
-        val target = state.lastTarget ?: return@LaunchedEffect
+        val stop = state.stopAngle() ?: return@LaunchedEffect
         spinning = true
         try {
-            val end = spinEndRotation(rotation.value, playerAngleDegrees(target, state.players.size), OnlineSpin.turns)
+            val end = spinEndRotation(rotation.value, stop, OnlineSpin.turns)
             rotation.animateTo(end, tween(durationMillis = OnlineSpin.durationMillis, easing = EaseOutQuart))
             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         } finally {

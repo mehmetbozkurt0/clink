@@ -114,4 +114,17 @@ class SpinTheBottleReducerTest {
         assertEquals(asking, asking.after(Random(0), SpinAction.Spin))
         assertEquals(asking, asking.after(Random(0), SpinAction.PenaltyDone))
     }
+    @Test
+    fun stopAngleIsTheDrawnAngle() {
+        val state = start.after(SequenceRandom(1300), SpinAction.Spin)
+        assertEquals(130f, state.stopAngle())
+    }
+
+    @Test
+    fun stopAngleFallsBackToTheTargetsCentre() {
+        // A state from before stop angles: only the picked player is known.
+        val old = start.copy(lastTarget = 2, lastAngle = null)
+        assertEquals(playerAngleDegrees(2, players.size), old.stopAngle())
+        assertNull(start.stopAngle())
+    }
 }

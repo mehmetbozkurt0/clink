@@ -1,5 +1,6 @@
 package com.mehmetbozkurt.clink.game.spinthebottle
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
@@ -78,6 +82,7 @@ fun BottleCircle(
 ) {
     BoxWithConstraints(modifier = modifier.aspectRatio(1f)) {
         val radiusPx = constraints.maxWidth / 2f * 0.8f
+        Sectors(count = players.size, spinner = spinner, answerer = answerer, modifier = Modifier.matchParentSize())
         players.forEachIndexed { index, name ->
             val angle = playerAngleDegrees(index, players.size) * PI / 180.0
             WallChip(
@@ -116,5 +121,43 @@ fun BottleCircle(
                 modifier = Modifier.fillMaxHeight(0.9f).aspectRatio(1f / 3f).graphicsLayer { rotationZ = rotation },
             )
         }
+    }
+}
+
+/**
+ * One wedge per player, centred on their name: two alternating light tones (a third for the last wedge when the count
+ * is odd, so no neighbours match), thin dividers and an outer ring. The spinner's wedge is tinted acid, the answerer's pink.
+ */
+@Composable
+private fun Sectors(count: Int, spinner: Int, answerer: Int?, modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val radius = size.minDimension / 2f * 0.92f
+        val topLeft = Offset(center.x - radius, center.y - radius)
+        val arcSize = Size(radius * 2f, radius * 2f)
+        val sweep = 360f / count
+        val line = ClinkColors.Paper.copy(alpha = 0.22f)
+        for (i in 0 until count) {
+            val start = playerAngleDegrees(i, count) - sweep / 2f
+            val base = when {
+                count % 2 == 1 && i == count - 1 -> ClinkColors.Paper.copy(alpha = 0.07f)
+                i % 2 == 0 -> ClinkColors.Paper.copy(alpha = 0.10f)
+                // Paper over the wall, not wall tones: the screen behind is ClinkColors.Wall, so wall-coloured wedges would vanish.
+                else -> ClinkColors.Paper.copy(alpha = 0.04f)
+            }
+            drawArc(base, start, sweep, useCenter = true, topLeft = topLeft, size = arcSize)
+            val tint = when (i) {
+                spinner -> ClinkColors.Acid.copy(alpha = 0.22f)
+                answerer -> ClinkColors.Pink.copy(alpha = 0.28f)
+                else -> null
+            }
+            if (tint != null) drawArc(tint, start, sweep, useCenter = true, topLeft = topLeft, size = arcSize)
+        }
+        if (count > 1) {
+            for (i in 0 until count) {
+                val border = (playerAngleDegrees(i, count) - sweep / 2f) * PI.toFloat() / 180f
+                drawLine(line, center, center + Offset(cos(border) * radius, sin(border) * radius), strokeWidth = 1.5.dp.toPx())
+            }
+        }
+        drawCircle(line, radius, center, style = Stroke(width = 1.5.dp.toPx()))
     }
 }

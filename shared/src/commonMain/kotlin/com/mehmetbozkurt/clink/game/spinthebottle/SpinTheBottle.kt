@@ -48,6 +48,9 @@ sealed interface SpinAction {
     data object PenaltyDone : SpinAction
 }
 
+/** Where the bottle points after the last spin; states from before stop angles point at the picked player's centre. */
+fun SpinState.stopAngle(): Float? = lastAngle ?: lastTarget?.let { playerAngleDegrees(it, players.size) }
+
 fun initialSpinState(players: List<String>, level: Level, library: ContentLibrary) = SpinState(
     players = players,
     level = level,

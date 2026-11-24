@@ -188,6 +188,7 @@ class HostRefereeTest {
     @Test
     fun oldSessionWithoutAngleDecodes() {
         val spun = assertNotNull(start(GameId.SPIN_THE_BOTTLE, a, b, c).act("a", OnlineAction.Spin(SpinAction.Spin)))
+        assertTrue("lastAngle" in encodeSession(spun))
         val oldJson = encodeSession(spun).replace(Regex(""","lastAngle":[^,}]+"""), "")
         assertFalse("lastAngle" in oldJson)
         val decoded = decodeSession(oldJson).spin!!
