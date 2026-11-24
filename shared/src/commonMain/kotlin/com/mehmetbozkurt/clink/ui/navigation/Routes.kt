@@ -15,8 +15,17 @@ data object SignInRoute
 @Serializable
 data class ProfileSetupRoute(val editing: Boolean)
 
+/** Settings (spec 2026-11-24-home-and-settings §5), from the home screen's gear. */
 @Serializable
-data object AccountRoute
+data object SettingsRoute
+
+/** A guest's name and avatar, edited from settings and kept on this phone. */
+@Serializable
+data object GuestProfileRoute
+
+/** The Join tour on its own, replayed from settings. */
+@Serializable
+data object JoinTourRoute
 
 @Serializable
 data object GameListRoute

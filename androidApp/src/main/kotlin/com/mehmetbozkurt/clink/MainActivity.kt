@@ -1,8 +1,10 @@
 package com.mehmetbozkurt.clink
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -26,8 +28,17 @@ class MainActivity : ComponentActivity() {
             googleIdTokens = CredentialManagerGoogleIdTokenProvider(this),
             share = { text -> shareText(this, text) },
             incomingLinks = incomingLinks,
+            language = AndroidLanguageSetting(this),
+            versionName = packageManager.getPackageInfo(packageName, 0).versionName.orEmpty(),
+            // "Remove animations" in the phone's accessibility settings sets this scale to 0.
+            reduceMotion = Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f,
         )
         setContent { App(platform) }
+    }
+
+    // Below Android 13 the app's own language is applied here (Android 13+ does it itself).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AndroidLanguageSetting.wrap(newBase))
     }
 
     // An invite link opened while the app is already running (launchMode singleTop).

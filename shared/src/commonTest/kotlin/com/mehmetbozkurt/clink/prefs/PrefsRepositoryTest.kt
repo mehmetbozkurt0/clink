@@ -28,6 +28,14 @@ class PrefsRepositoryTest {
     }
 
     @Test
+    fun oldFileWithoutHapticsKeepsThemOn() = runTest {
+        val repository = PrefsRepository(FakeStore("""{"joinTourSeen":true,"guestName":"Ayşe"}"""))
+        repository.load()
+        assertTrue(repository.prefs.value.hapticsOn)
+        assertEquals("Ayşe", repository.prefs.value.guestName)
+    }
+
+    @Test
     fun updateIsSavedAndReloaded() = runTest {
         val store = FakeStore()
         PrefsRepository(store).update { it.copy(joinTourSeen = true, guestName = "Ayşe") }

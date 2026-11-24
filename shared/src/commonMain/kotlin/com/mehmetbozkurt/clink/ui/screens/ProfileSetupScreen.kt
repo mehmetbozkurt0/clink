@@ -39,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import com.mehmetbozkurt.clink.account.AccountSession
 import com.mehmetbozkurt.clink.account.Avatars
 import com.mehmetbozkurt.clink.account.Profile
 import com.mehmetbozkurt.clink.account.ProfileInput
@@ -68,7 +67,8 @@ private val FieldShape = RoundedCornerShape(12.dp)
 /** Profile setup and editing (spec §4): a name (prefilled) and one of the preset avatars in a 4 × 3 grid. */
 @Composable
 fun ProfileSetupScreen(
-    session: AccountSession,
+    // The host's profile, or a guest's identity on this phone; the name is checked before it is called.
+    onSave: suspend (Profile) -> Unit,
     initialName: String,
     initialAvatar: String,
     onSaved: () -> Unit,
@@ -104,7 +104,7 @@ fun ProfileSetupScreen(
                         busy = true
                         scope.launch {
                             val saved = try {
-                                session.save(Profile(result.name, avatar))
+                                onSave(Profile(result.name, avatar))
                                 true
                             } catch (e: CancellationException) {
                                 throw e

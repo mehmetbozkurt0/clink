@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalHapticFeedback
+import com.mehmetbozkurt.clink.ui.components.SwitchableHaptics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -49,6 +52,9 @@ fun App(platform: Platform) {
                     share = platform.share,
                     incomingLinks = platform.incomingLinks,
                     prefs = prefs,
+                    language = platform.language,
+                    versionName = platform.versionName,
+                    reduceMotion = platform.reduceMotion,
                 )
                 // Newer content is downloaded in the background and used from the next start on.
                 content.refresh()
@@ -66,7 +72,10 @@ fun App(platform: Platform) {
                     style = TextStyle(fontFamily = ClinkFonts.spray, fontSize = 56.sp),
                 )
             } else {
-                CompositionLocalProvider(LocalAppContainer provides loaded) { ClinkNavHost() }
+                // The settings switch sits in front of the phone's haptics for every screen.
+                val platformHaptics = LocalHapticFeedback.current
+                val haptics = remember(platformHaptics, loaded) { SwitchableHaptics(platformHaptics) { loaded.prefs.prefs.value.hapticsOn } }
+                CompositionLocalProvider(LocalAppContainer provides loaded, LocalHapticFeedback provides haptics) { ClinkNavHost() }
             }
         }
     }

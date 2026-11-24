@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A pencil for "edit profile", drawn for Clink. Tinted in code. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M36,220 L50,166 L164,52 L204,92 L90,206 Z M176,40 L196,20 L236,60 L216,80 Z" />
+</vector>

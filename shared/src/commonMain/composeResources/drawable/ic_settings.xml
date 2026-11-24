@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A gear for Settings, drawn for Clink (eight teeth, a hole in the middle). Tinted in code. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M207.45,95.09 L211.07,105.74 L236.33,108.9 L236.33,147.1 L211.07,150.26 L207.45,160.91 L202.48,171 L218.11,191.09 L191.09,218.11 L171,202.48 L160.91,207.45 L150.26,211.07 L147.1,236.33 L108.9,236.33 L105.74,211.07 L95.09,207.45 L85,202.48 L64.91,218.11 L37.89,191.09 L53.52,171 L48.55,160.91 L44.93,150.26 L19.67,147.1 L19.67,108.9 L44.93,105.74 L48.55,95.09 L53.52,85 L37.89,64.91 L64.91,37.89 L85,53.52 L95.09,48.55 L105.74,44.93 L108.9,19.67 L147.1,19.67 L150.26,44.93 L160.91,48.55 L171,53.52 L191.09,37.89 L218.11,64.91 L202.48,85 Z M92,128 a36,36 0 1,0 72,0 a36,36 0 1,0 -72,0 Z" />
+</vector>

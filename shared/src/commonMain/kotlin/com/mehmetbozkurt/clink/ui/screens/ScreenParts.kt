@@ -26,10 +26,13 @@ import com.mehmetbozkurt.clink.resources.art_spin
 import com.mehmetbozkurt.clink.resources.art_tod
 import com.mehmetbozkurt.clink.resources.game_beerpong
 import com.mehmetbozkurt.clink.resources.game_pong_meta
+import com.mehmetbozkurt.clink.resources.game_pong_players
 import com.mehmetbozkurt.clink.resources.game_spin
 import com.mehmetbozkurt.clink.resources.game_spin_meta
+import com.mehmetbozkurt.clink.resources.game_spin_players
 import com.mehmetbozkurt.clink.resources.game_tod
 import com.mehmetbozkurt.clink.resources.game_tod_meta
+import com.mehmetbozkurt.clink.resources.game_tod_players
 import com.mehmetbozkurt.clink.resources.ic_game_pong
 import com.mehmetbozkurt.clink.resources.ic_game_spin
 import com.mehmetbozkurt.clink.resources.ic_game_tod
@@ -92,6 +95,16 @@ internal fun GameId.meta(): String = stringResource(
         GameId.TRUTH_OR_DARE -> Res.string.game_tod_meta
         GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_meta
         GameId.BEER_PONG -> Res.string.game_pong_meta
+    },
+)
+
+/** Just the players, for the home screen's posters, e.g. "2–12 kişi". */
+@Composable
+internal fun GameId.players(): String = stringResource(
+    when (this) {
+        GameId.TRUTH_OR_DARE -> Res.string.game_tod_players
+        GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_players
+        GameId.BEER_PONG -> Res.string.game_pong_players
     },
 )
 

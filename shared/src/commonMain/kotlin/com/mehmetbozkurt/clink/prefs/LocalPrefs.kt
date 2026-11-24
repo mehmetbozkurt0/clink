@@ -13,13 +13,14 @@ interface LocalStore {
     suspend fun write(text: String)
 }
 
-/** Things the app remembers on this phone only: which tours were seen, and the guest's name and avatar. */
+/** Things the app remembers on this phone only: which tours were seen, the guest's name and avatar, and haptics on/off. */
 @Serializable
 data class LocalPrefs(
     val joinTourSeen: Boolean = false,
     val playTourSeen: Boolean = false,
     val guestName: String? = null,
     val guestAvatar: String? = null,
+    val hapticsOn: Boolean = true,
 )
 
 /** Holds [LocalPrefs] in memory for the UI and saves every change; a missing or broken file simply means defaults. */

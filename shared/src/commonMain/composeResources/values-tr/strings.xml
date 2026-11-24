@@ -78,10 +78,8 @@
     <string name="profile_save">Kaydet</string>
     <string name="err_profile_name_blank">Bir isim yaz</string>
     <string name="err_profile_save_failed">Kaydedilemedi, bağlantını kontrol et.</string>
-    <string name="account_title">Hesabın</string>
     <string name="account_edit">Profili düzenle</string>
     <string name="account_sign_out">Çıkış yap</string>
-    <string name="cd_account">Hesabın</string>
     <string name="avatar_cat">Kedi</string>
     <string name="avatar_dog">Köpek</string>
     <string name="avatar_bird">Kuş</string>
@@ -176,4 +174,25 @@
     <string name="tour_join_3_title">Sıra sende olunca oynarsın</string>
     <string name="tour_join_3_body">Butonların sıra sende olunca çıkar; diğerleri kimi beklediklerini görür.</string>
     <string name="join_how_it_works">Online nasıl işler?</string>
-</resources>
+    <!-- Settings (Plan 6) -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="cd_settings">Ayarlar</string>
+    <string name="cd_edit_profile">Profili düzenle</string>
+    <string name="settings_signed_in_google">Google hesabıyla giriş</string>
+    <string name="settings_guest">Misafir · bu telefonda</string>
+    <string name="settings_guest_name">Misafir</string>
+    <string name="settings_section_game">OYUN</string>
+    <string name="settings_language">Dil</string>
+    <string name="language_system">Sistem</string>
+    <string name="language_tr">Türkçe</string>
+    <string name="language_en">English</string>
+    <string name="settings_haptics">Titreşim</string>
+    <string name="settings_section_help">YARDIM</string>
+    <string name="settings_how_to_join">Kodla katılma nasıl?</string>
+    <string name="settings_section_account">HESAP</string>
+    <string name="settings_version">Clink · sürüm %1$s</string>    <!-- Home (Plan 6) -->
+    <string name="home_game_count">tüm oyunlar: %1$d</string>
+    <string name="game_tod_players">2–12 kişi</string>
+    <string name="game_spin_players">2–12 kişi</string>
+    <string name="game_pong_players">1'e 1</string>
+    <string name="cd_home_posters">Oyunlar: %1$s</string></resources>

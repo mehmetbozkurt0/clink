@@ -24,6 +24,7 @@ import com.mehmetbozkurt.clink.LocalAppContainer
 import com.mehmetbozkurt.clink.account.AccountSession
 import com.mehmetbozkurt.clink.account.Avatars
 import com.mehmetbozkurt.clink.account.PlayGate
+import com.mehmetbozkurt.clink.account.saveGuestProfile
 import com.mehmetbozkurt.clink.account.suggestedName
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
@@ -45,8 +46,9 @@ import com.mehmetbozkurt.clink.ui.online.JoinScreen
 import com.mehmetbozkurt.clink.ui.online.OnlineRoomScreen
 import com.mehmetbozkurt.clink.ui.onboarding.OnboardingPager
 import com.mehmetbozkurt.clink.ui.onboarding.TourExit
+import com.mehmetbozkurt.clink.ui.onboarding.joinTourCards
 import com.mehmetbozkurt.clink.ui.onboarding.playTourCards
-import com.mehmetbozkurt.clink.ui.screens.AccountScreen
+import com.mehmetbozkurt.clink.ui.online.guestDefaults
 import com.mehmetbozkurt.clink.ui.screens.GameListScreen
 import com.mehmetbozkurt.clink.ui.screens.GameOverScreen
 import com.mehmetbozkurt.clink.ui.screens.LevelSelectScreen
@@ -55,6 +57,7 @@ import com.mehmetbozkurt.clink.ui.screens.PlayerSetupScreen
 import com.mehmetbozkurt.clink.ui.screens.ProfileSetupScreen
 import com.mehmetbozkurt.clink.ui.screens.SignInScreen
 import com.mehmetbozkurt.clink.ui.screens.WelcomeScreen
+import com.mehmetbozkurt.clink.ui.settings.SettingsScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -135,15 +138,14 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
     ) {
         composable<WelcomeRoute> { entry ->
             WelcomeScreen(
-                profile = session.profile,
+                animated = !container.reduceMotion,
                 onPlay = {
                     entry.ifResumed {
                         if (container.prefs.prefs.value.playTourSeen) goByGate() else navController.navigate(PlayTourRoute(replay = false))
                     }
                 },
                 onJoin = { entry.ifResumed { navController.navigate(JoinRoute()) } },
-                onHowToPlay = { entry.ifResumed { navController.navigate(PlayTourRoute(replay = true)) } },
-                onAccount = { entry.ifResumed { navController.navigate(AccountRoute) } },
+                onSettings = { entry.ifResumed { navController.navigate(SettingsRoute) } },
             )
         }
         composable<PlayTourRoute> { entry ->
@@ -175,7 +177,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             val editing = entry.toRoute<ProfileSetupRoute>().editing
             val current = session.profile
             ProfileSetupScreen(
-                session = session,
+                onSave = { session.save(it) },
                 initialName = if (editing && current != null) current.displayName else suggestedName(user?.googleName),
                 initialAvatar = current?.avatarId ?: Avatars.ids.first(),
                 onSaved = {
@@ -190,13 +192,52 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 onBack = { entry.back() },
             )
         }
-        composable<AccountRoute> { entry ->
-            AccountScreen(
+        composable<SettingsRoute> { entry ->
+            SettingsScreen(
                 session = session,
-                onEdit = { entry.ifResumed { navController.navigate(ProfileSetupRoute(editing = true)) } },
+                onEditProfile = {
+                    entry.ifResumed {
+                        val signedIn = user?.let { !it.isAnonymous } == true
+                        if (!signedIn) {
+                            navController.navigate(GuestProfileRoute)
+                        } else if (gating?.isActive != true) {
+                            // Read the profile first (as Play does), so an unread profile is never overwritten.
+                            gating = scope.launch {
+                                when (session.gate()) {
+                                    PlayGate.SignIn -> navController.navigate(SignInRoute)
+                                    else -> navController.navigate(ProfileSetupRoute(editing = true))
+                                }
+                            }
+                        }
+                    }
+                },
+                onPlayTour = { entry.ifResumed { navController.navigate(PlayTourRoute(replay = true)) } },
+                onJoinTour = { entry.ifResumed { navController.navigate(JoinTourRoute) } },
                 onSignedOut = { navController.popBackStack(WelcomeRoute, inclusive = false) },
                 onDeleted = { navController.popBackStack(WelcomeRoute, inclusive = false) },
                 onBack = { entry.back() },
+            )
+        }
+        composable<GuestProfileRoute> { entry ->
+            val defaults = remember { guestDefaults(null, container.prefs.prefs.value, container.random) }
+            ProfileSetupScreen(
+                onSave = { saveGuestProfile(container.prefs, it) },
+                initialName = defaults.name,
+                initialAvatar = defaults.avatarId,
+                onSaved = { entry.ifResumed { navController.popBackStack() } },
+                onBack = { entry.back() },
+            )
+        }
+        composable<JoinTourRoute> { entry ->
+            OnboardingPager(
+                cards = joinTourCards(),
+                lastLabel = Res.string.done_button,
+                onExit = {
+                    // As the Play tour: marks it seen; only the entry still on top may pop (onExit can fire again
+                    // after an Activity recreation).
+                    scope.launch { container.prefs.update { it.copy(joinTourSeen = true) } }
+                    if (navController.currentBackStackEntry == entry) navController.popBackStack()
+                },
             )
         }
         composable<GameListRoute> { entry ->
