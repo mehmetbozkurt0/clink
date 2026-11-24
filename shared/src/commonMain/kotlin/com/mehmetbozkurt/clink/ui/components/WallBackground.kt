@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.tex_grain
 import com.mehmetbozkurt.clink.resources.tex_wall
@@ -57,7 +59,8 @@ val LocalWallMotion = staticCompositionLocalOf<MutableState<Boolean>> { mutableS
  */
 @Composable
 fun WallBackground(content: @Composable BoxScope.() -> Unit) {
-    val wall = rememberTiledBrush(imageResource(Res.drawable.tex_wall))
+    val wallImage = imageResource(Res.drawable.tex_wall)
+    val wall = rememberTiledBrush(wallImage)
     val grain = rememberTiledBrush(imageResource(Res.drawable.tex_grain))
     val motion = remember { mutableStateOf(false) }
     val pink: State<Float>
@@ -75,7 +78,11 @@ fun WallBackground(content: @Composable BoxScope.() -> Unit) {
             .fillMaxSize()
             .background(ClinkColors.Wall)
             .drawBehind {
-                drawRect(wall, alpha = 0.10f)
+                // Tiled at a fixed size in dp, so the bricks read as bricks on every screen density.
+                val tileScale = WALL_TILE_WIDTH.toPx() / wallImage.width
+                scale(tileScale, pivot = Offset.Zero) {
+                    drawRect(wall, size = size / tileScale, alpha = 0.12f)
+                }
                 val radius = size.width * 0.35f
                 val p = pink.value
                 val a = acid.value
@@ -102,6 +109,9 @@ fun WallBackground(content: @Composable BoxScope.() -> Unit) {
         }
     }
 }
+
+/** One tile of the brick texture is this wide: about 11 bricks across a phone screen. */
+private val WALL_TILE_WIDTH = 585.dp
 
 private fun DrawScope.drawGlow(color: Color, center: Offset, radius: Float, alpha: Float = 1f) {
     drawCircle(
