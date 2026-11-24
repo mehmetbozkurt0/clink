@@ -26,17 +26,17 @@ class BeerPongReducerTest {
 
     @Test
     fun hitRemovesDefendersCupAndPassesTurn() {
-        val state = start.after(BpAction.Throw(at(0f, 90f)))
-        assertEquals(all - 1, state.cups[1])
+        val state = start.after(BpAction.Throw(aimAt(BeerPongPhysics.cups[5])))
+        assertEquals(all - 5, state.cups[1])
         assertEquals(all, state.cups[0])
         assertEquals(1, state.thrower)
         assertEquals(1, state.throwCount)
-        assertEquals(1, state.lastThrow!!.cupHit)
+        assertEquals(5, state.lastThrow!!.cupHit)
     }
 
     @Test
     fun missKeepsCupsAndPassesTurn() {
-        val state = start.after(BpAction.Throw(at(0f, 60f)))
+        val state = start.after(BpAction.Throw(ThrowInput(0f, 300f)))
         assertEquals(listOf(all, all), state.cups)
         assertEquals(1, state.thrower)
         assertEquals(1, state.throwCount)
@@ -44,7 +44,7 @@ class BeerPongReducerTest {
 
     @Test
     fun clearingTheLastCupEndsTheMatch() {
-        val state = start.copy(cups = listOf(all, setOf(5))).after(BpAction.Throw(at(0f, 79.2f)))
+        val state = start.copy(cups = listOf(all, setOf(5))).after(BpAction.Throw(aimAt(BeerPongPhysics.cups[5])))
         assertEquals(BpPhase.MatchOver(winner = 0, loser = 1, penaltyCardId = "p1"), state.phase)
         assertEquals(emptySet(), state.cups[1])
     }
@@ -53,20 +53,20 @@ class BeerPongReducerTest {
     fun emptyPenaltyPoolStillEndsTheMatch() {
         val state = initialBeerPongState(players, Level.CASUAL, noPenalty)
             .copy(cups = listOf(all, setOf(5)))
-            .after(BpAction.Throw(at(0f, 79.2f)))
+            .after(BpAction.Throw(aimAt(BeerPongPhysics.cups[5])))
         assertEquals(BpPhase.MatchOver(winner = 0, loser = 1, penaltyCardId = null), state.phase)
         assertEquals(BpNotice.NO_PENALTY_CARDS, state.notice)
     }
 
     @Test
     fun throwsAfterTheMatchAreIgnored() {
-        val over = start.copy(cups = listOf(all, setOf(5))).after(BpAction.Throw(at(0f, 79.2f)))
-        assertEquals(over, over.after(BpAction.Throw(at(0f, 90f))))
+        val over = start.copy(cups = listOf(all, setOf(5))).after(BpAction.Throw(aimAt(BeerPongPhysics.cups[5])))
+        assertEquals(over, over.after(BpAction.Throw(aimAt(BeerPongPhysics.cups[1]))))
     }
 
     @Test
     fun secondPlayerCanWin() {
-        val state = start.copy(thrower = 1, cups = listOf(setOf(1), all)).after(BpAction.Throw(at(0f, 90f)))
+        val state = start.copy(thrower = 1, cups = listOf(setOf(1), all)).after(BpAction.Throw(aimAt(BeerPongPhysics.cups[1])))
         assertEquals(BpPhase.MatchOver(winner = 1, loser = 0, penaltyCardId = "p1"), state.phase)
     }
 }

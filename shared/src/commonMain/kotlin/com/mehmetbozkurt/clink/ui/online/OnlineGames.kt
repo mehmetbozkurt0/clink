@@ -2,7 +2,7 @@ package com.mehmetbozkurt.clink.ui.online
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutQuart
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -395,8 +395,9 @@ internal fun OnlineBeerPong(
         try {
             progress.snapTo(0f)
             splash.snapTo(0f)
-            val bounced = result.touchdowns.size == 2
-            progress.animateTo(1f, tween(durationMillis = if (bounced) 1250 else 900, easing = FastOutSlowInEasing))
+            val bounced = result.touchedRim
+            // The physics sets the pace: the flight replays in real time.
+            progress.animateTo(1f, tween(durationMillis = result.durationMillis, easing = LinearEasing))
             outcome = when {
                 result.cupHit != null -> Res.string.bp_hit
                 bounced -> Res.string.bp_rim_out
@@ -404,9 +405,9 @@ internal fun OnlineBeerPong(
             }
             if (result.cupHit != null) {
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                splash.animateTo(1f, tween(durationMillis = 450))
+                splash.animateTo(1f, tween(durationMillis = 260))
             }
-            delay(700)
+            delay(400)
         } finally {
             outcome = null
             flight = null

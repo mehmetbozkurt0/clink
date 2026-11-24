@@ -3,88 +3,174 @@ package com.mehmetbozkurt.clink.game.beerpong
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
+import kotlin.math.roundToInt
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
- * A point on the table, in table units. The origin is the thrower's ball, +y points at the target rack
- * and +x to the thrower's right. The rack is always the defender's cups, seen from the thrower.
+ * A point or direction in the Beer Pong world, in centimetres: x to the thrower's right, y away from the thrower
+ * along the table, z up. The table's near edge is y = 0.
  */
-@Serializable
-data class TablePoint(val x: Float, val y: Float)
+data class Vec3(val x: Float, val y: Float, val z: Float) {
+    operator fun plus(o: Vec3) = Vec3(x + o.x, y + o.y, z + o.z)
+    operator fun minus(o: Vec3) = Vec3(x - o.x, y - o.y, z - o.z)
+    operator fun times(k: Float) = Vec3(x * k, y * k, z * k)
+    infix fun dot(o: Vec3) = x * o.x + y * o.y + z * o.z
+    infix fun cross(o: Vec3) = Vec3(y * o.z - z * o.y, z * o.x - x * o.z, x * o.y - y * o.x)
+    fun length() = sqrt(this dot this)
+    fun normalized() = this * (1f / length())
+}
 
-/** What a throw is, independent of any screen: published as-is in online play so every phone replays it. */
-@Serializable
-data class ThrowInput(val angleDegrees: Float, val range: Float)
-
-/** One touchdown is a clean landing; two mean the ball hit a rim and bounced once. */
-@Serializable
-data class ThrowResult(val input: ThrowInput, val touchdowns: List<TablePoint>, val cupHit: Int?)
-
-/** Hand-written throw model (spec §7.3). The constants set the feel and may be tuned on a device. */
+/** The world and the ball's physics (spec 2026-11-24-beer-pong-3d §5.1–5.2). The numbers set the feel. */
 object BeerPongPhysics {
-    const val CUP_RADIUS = 3f
-    const val BALL_RADIUS = 1f
-    const val RIM_BOUNCE = 4f
-    const val MIN_FLICK = 300f // dp/s
-    const val MAX_FLICK = 3500f // dp/s
-    const val MIN_RANGE = 70f
-    const val MAX_RANGE = 100f
-    const val AIM_SCALE = 0.25f // a 20° wobble of the finger turns the throw by only 5°
-    const val MAX_FLICK_TILT = 60f // a flick further than this from vertical is a sideways swipe, not a throw
+    const val GRAVITY = 980f
+    const val BALL_RADIUS = 2f
+    const val CUP_TOP_RADIUS = 5.0f
+    const val CUP_BOTTOM_RADIUS = 3.5f
+    const val CUP_HEIGHT = 12f
+    const val TABLE_HALF_WIDTH = 30.5f
+    const val TABLE_LENGTH = 262f
+    const val PITCH_DEGREES = 50f
+    const val MIN_SPEED = 300f
+    const val MAX_SPEED = 400f
+    const val MAX_YAW = 45f
+    const val RIM_TUBE = 0.3f
+    const val SAMPLES_PER_SECOND = 60
+    const val STEPS_PER_SECOND = 240
+    const val MAX_SECONDS = 4
 
-    /** Cup centers by id: back row 0-1-2, middle row 3-4, front cup 5 (a 3-2-1 triangle pointing at the thrower). */
-    val cups: List<TablePoint> = listOf(
-        TablePoint(-6.2f, 90f), TablePoint(0f, 90f), TablePoint(6.2f, 90f),
-        TablePoint(-3.1f, 84.6f), TablePoint(3.1f, 84.6f),
-        TablePoint(0f, 79.2f),
+    /** Where every throw starts: the ball resting on the thrower's end of the table. */
+    val REST = Vec3(0f, 100f, BALL_RADIUS)
+
+    /** Cup positions by id: back row 0-1-2, middle row 3-4, front cup 5 (a triangle pointing at the thrower). */
+    val cups: List<Vec3> = listOf(
+        Vec3(-10.4f, 228f, 0f), Vec3(0f, 228f, 0f), Vec3(10.4f, 228f, 0f),
+        Vec3(-5.2f, 219f, 0f), Vec3(5.2f, 219f, 0f),
+        Vec3(0f, 210f, 0f),
     )
 
     val ALL_CUPS: Set<Int> = cups.indices.toSet()
+
+    /** The cup's wall radius at height [z] (it widens toward the top). */
+    fun cupRadiusAt(z: Float) = CUP_BOTTOM_RADIUS + (CUP_TOP_RADIUS - CUP_BOTTOM_RADIUS) * (z / CUP_HEIGHT).coerceIn(0f, 1f)
 }
 
+/** A throw, independent of any screen: published as-is in online play. [yawDegrees] 0 = straight down the table. */
+@Serializable
+data class ThrowInput(val yawDegrees: Float, val speed: Float)
+
+/** The ball touched cup [cup]'s rim at path sample [sample] (the cup wobbles from there). */
+@Serializable
+data class RimContact(val sample: Int, val cup: Int)
+
 /**
- * Turns a flick into a throw. The direction comes from the whole drag ([dragDx], [dragDy] on screen, dy < 0 is up
- * toward the rack), which is steadier than the release velocity's direction; it is scaled down by
- * [BeerPongPhysics.AIM_SCALE]. The release speed sets the range.
- * Too weak, downward or more than [BeerPongPhysics.MAX_FLICK_TILT] off vertical → null: not a throw.
+ * A simulated throw. [path] is the ball's position 60 times a second as x, y, z triples in whole tenths of a
+ * centimetre, so online every phone replays exactly the host's flight.
  */
-fun flickToThrow(dragDx: Float, dragDy: Float, speedDpPerSec: Float): ThrowInput? = with(BeerPongPhysics) {
-    if (dragDy >= 0f || speedDpPerSec < MIN_FLICK) return null
-    val tilt = atan2(dragDx, -dragDy) * 180f / PI.toFloat()
-    if (abs(tilt) > MAX_FLICK_TILT) return null
-    val t = ((speedDpPerSec - MIN_FLICK) / (MAX_FLICK - MIN_FLICK)).coerceIn(0f, 1f)
-    ThrowInput(tilt * AIM_SCALE, MIN_RANGE + t * (MAX_RANGE - MIN_RANGE))
+@Serializable
+data class ThrowResult(
+    val input: ThrowInput,
+    val cupHit: Int?,
+    val touchedRim: Boolean,
+    val rimContacts: List<RimContact>,
+    val path: List<Int>,
+) {
+    fun points(): List<Vec3> = path.chunked(3) { Vec3(it[0] / 10f, it[1] / 10f, it[2] / 10f) }
+
+    val durationMillis: Int
+        get() = ((path.size / 3 - 1) * 1000 / BeerPongPhysics.SAMPLES_PER_SECOND).coerceAtLeast(1)
 }
 
 /**
- * Where the ball ends up. The nearest remaining cup decides (ties go to the lowest id): inside its inner edge
- * the ball is in; on its rim it bounces once, away from that cup's center, and counts only if it then drops
- * into a cup. Deterministic: the same input and cups always give the same result.
+ * The ball as a real projectile (spec §5.2): gravity, cup rims (forgiving over the opening), inner and outer cup walls
+ * and table bounces, at a fixed step. Deterministic: the same input and cups always give the same result. A rim bounce
+ * that ends in another cup counts for that cup.
  */
 fun simulateThrow(input: ThrowInput, remainingCups: Set<Int>): ThrowResult = with(BeerPongPhysics) {
-    val radians = input.angleDegrees * PI.toFloat() / 180f
-    val landing = TablePoint(input.range * sin(radians), input.range * cos(radians))
-    val inside = CUP_RADIUS - BALL_RADIUS
-    val (cup, distance) = nearestCup(landing, remainingCups) ?: return ThrowResult(input, listOf(landing), null)
-    when {
-        distance <= inside -> ThrowResult(input, listOf(landing), cup)
-        distance <= CUP_RADIUS + BALL_RADIUS -> {
-            val center = cups[cup]
-            val bounce = TablePoint(
-                landing.x + (landing.x - center.x) / distance * RIM_BOUNCE,
-                landing.y + (landing.y - center.y) / distance * RIM_BOUNCE,
-            )
-            val second = nearestCup(bounce, remainingCups)?.takeIf { it.second <= inside }?.first
-            ThrowResult(input, listOf(landing, bounce), second)
+    val step = 1f / STEPS_PER_SECOND
+    val samplesEvery = STEPS_PER_SECOND / SAMPLES_PER_SECOND
+    val yaw = input.yawDegrees * PI.toFloat() / 180f
+    val pitch = PITCH_DEGREES * PI.toFloat() / 180f
+    var p = REST
+    var v = Vec3(sin(yaw) * cos(pitch), cos(yaw) * cos(pitch), sin(pitch)) * input.speed
+    val path = mutableListOf(p)
+    val rimContacts = mutableListOf<RimContact>()
+    var touchedRim = false
+    val cupIds = remainingCups.sorted()
+
+    fun result(hit: Int?) = ThrowResult(input, hit, touchedRim, rimContacts, path.flatMap { listOf(tenths(it.x), tenths(it.y), tenths(it.z)) })
+
+    fun sink(cup: Vec3, id: Int): ThrowResult {
+        repeat(6) { i ->
+            val t = (i + 1) / 6f
+            path.add(Vec3(p.x + (cup.x - p.x) * t, p.y + (cup.y - p.y) * t, (p.z - (i + 1) * 0.8f).coerceAtLeast(BALL_RADIUS)))
         }
-        else -> ThrowResult(input, listOf(landing), null)
+        return result(id)
     }
+
+    for (n in 1..STEPS_PER_SECOND * MAX_SECONDS) {
+        v = Vec3(v.x, v.y, v.z - GRAVITY * step)
+        p = p + v * step
+        for (id in cupIds) {
+            val c = cups[id]
+            val dx = p.x - c.x
+            val dy = p.y - c.y
+            val horizontal = hypot(dx, dy)
+            if (horizontal < 0.001f) {
+                if (p.z < CUP_HEIGHT - 4f) return sink(c, id)
+                continue
+            }
+            val nx = dx / horizontal
+            val ny = dy / horizontal
+            // Rim, a thin torus. Forgiving: a ball whose centre is already over the opening drops in instead.
+            val overOpening = horizontal < CUP_TOP_RADIUS - 0.6f
+            val rim = Vec3(c.x + nx * CUP_TOP_RADIUS, c.y + ny * CUP_TOP_RADIUS, CUP_HEIGHT)
+            val off = p - rim
+            val dist = off.length()
+            if (!overOpening && dist < BALL_RADIUS + RIM_TUBE && dist > 0.001f) {
+                val normal = off * (1f / dist)
+                val into = v dot normal
+                if (into < 0f) {
+                    // The part into the rim bounces back softly; most of the sliding part is kept.
+                    val along = normal * into
+                    v = (v - along) * 0.9f - along * 0.35f
+                    if (rimContacts.lastOrNull()?.sample != path.size) rimContacts.add(RimContact(path.size, id))
+                    touchedRim = true
+                }
+                p = rim + normal * (BALL_RADIUS + RIM_TUBE)
+            }
+            val wall = cupRadiusAt(p.z)
+            if (p.z < CUP_HEIGHT && horizontal < wall) {
+                // Inside: the inner wall knocks the ball back toward the middle (the rattle), then it drops.
+                val limit = wall - BALL_RADIUS
+                if (horizontal > limit) {
+                    val out = v.x * nx + v.y * ny
+                    if (out > 0f) v = Vec3(v.x - 1.5f * out * nx, v.y - 1.5f * out * ny, v.z)
+                    p = Vec3(c.x + nx * limit, c.y + ny * limit, p.z)
+                }
+                if (p.z < CUP_HEIGHT - 4f) return sink(c, id)
+            } else if (p.z < CUP_HEIGHT && horizontal < wall + BALL_RADIUS) {
+                // Outer wall: push the ball back out and bounce horizontally.
+                val into = v.x * nx + v.y * ny
+                if (into < 0f) v = Vec3(v.x - 1.4f * into * nx, v.y - 1.4f * into * ny, v.z)
+                p = Vec3(c.x + nx * (wall + BALL_RADIUS), c.y + ny * (wall + BALL_RADIUS), p.z)
+            }
+        }
+        // Table: bounce with some loss; once it no longer hops, it rolls with friction.
+        val onTable = abs(p.x) <= TABLE_HALF_WIDTH && p.y in 0f..TABLE_LENGTH
+        if (onTable && p.z <= BALL_RADIUS) {
+            p = Vec3(p.x, p.y, BALL_RADIUS)
+            if (v.z < 0f) v = Vec3(v.x * 0.88f, v.y * 0.88f, if (-v.z < 60f) 0f else -v.z * 0.6f)
+            v = Vec3(v.x * (1f - 1.2f * step), v.y * (1f - 1.2f * step), v.z)
+        }
+        if (n % samplesEvery == 0) path.add(p)
+        val stopped = onTable && p.z <= BALL_RADIUS + 0.01f && hypot(v.x, v.y) < 20f
+        if (p.z < -40f || stopped || p.y > TABLE_LENGTH + 80f) break
+    }
+    if (path.last() != p) path.add(p)
+    result(null)
 }
 
-private fun nearestCup(point: TablePoint, remainingCups: Set<Int>): Pair<Int, Float>? =
-    remainingCups.sorted()
-        .map { id -> id to hypot(point.x - BeerPongPhysics.cups[id].x, point.y - BeerPongPhysics.cups[id].y) }
-        .minByOrNull { it.second }
+private fun tenths(value: Float) = (value * 10f).roundToInt()

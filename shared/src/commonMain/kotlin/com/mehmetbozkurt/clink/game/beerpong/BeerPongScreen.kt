@@ -1,7 +1,7 @@
 package com.mehmetbozkurt.clink.game.beerpong
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -102,8 +102,9 @@ fun BeerPongScreen(
         scope.launch {
             progress.snapTo(0f)
             splash.snapTo(0f)
-            val bounced = result.touchdowns.size == 2
-            progress.animateTo(1f, tween(durationMillis = if (bounced) 1250 else 900, easing = FastOutSlowInEasing))
+            val bounced = result.touchedRim
+            // The physics sets the pace: the flight replays in real time.
+            progress.animateTo(1f, tween(durationMillis = result.durationMillis, easing = LinearEasing))
             outcome = when {
                 result.cupHit != null -> Res.string.bp_hit
                 bounced -> Res.string.bp_rim_out
@@ -111,9 +112,9 @@ fun BeerPongScreen(
             }
             if (result.cupHit != null) {
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                splash.animateTo(1f, tween(durationMillis = 450))
+                splash.animateTo(1f, tween(durationMillis = 260))
             }
-            delay(700)
+            delay(400)
             outcome = null
             flight = null
             if ((viewModel.state.value.phase as? BpPhase.MatchOver)?.penaltyCardId != null) {
