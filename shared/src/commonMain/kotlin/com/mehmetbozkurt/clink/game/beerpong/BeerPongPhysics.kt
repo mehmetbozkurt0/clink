@@ -59,7 +59,19 @@ object BeerPongPhysics {
 
 /** A throw, independent of any screen: published as-is in online play. [yawDegrees] 0 = straight down the table. */
 @Serializable
-data class ThrowInput(val yawDegrees: Float, val speed: Float)
+data class ThrowInput(val yawDegrees: Float, val speed: Float) {
+    /**
+     * Online a member's phone sends this, so it is checked before simulating: null if a value isn't a number,
+     * otherwise held to ±[BeerPongPhysics.MAX_YAW] and [BeerPongPhysics.MIN_SPEED]…[BeerPongPhysics.MAX_SPEED].
+     */
+    fun sanitized(): ThrowInput? {
+        if (!yawDegrees.isFinite() || !speed.isFinite()) return null
+        return ThrowInput(
+            yawDegrees.coerceIn(-BeerPongPhysics.MAX_YAW, BeerPongPhysics.MAX_YAW),
+            speed.coerceIn(BeerPongPhysics.MIN_SPEED, BeerPongPhysics.MAX_SPEED),
+        )
+    }
+}
 
 /** The ball touched cup [cup]'s rim at path sample [sample] (the cup wobbles from there). */
 @Serializable

@@ -47,4 +47,22 @@ class BeerPongCameraTest {
         val back = assertNotNull(camera.onTable(screen.first, screen.second))
         assertTrue(hypot(back.x - cup.x, back.y - cup.y) < 0.1f)
     }
+    // A 16:9 phone (short canvas): the ball you flick must still be on screen.
+    @Test
+    fun restingBallIsOnAShortScreen() {
+        val short = BeerPongCamera(320f, 400f)
+        val (_, y, depth) = short.project(BeerPongPhysics.REST)
+        val r = BeerPongPhysics.BALL_RADIUS * short.focal / depth
+        assertTrue(y + r <= 400f, "ball bottom at ${y + r}")
+    }
+
+    @Test
+    fun tallScreenKeepsTheApprovedFraming() = assertEquals(2000f, BeerPongCamera(1000f, 1700f).focal, 0.01f)
+
+    @Test
+    fun veryHardFlickIsAFullSpeedThrow() {
+        val input = assertNotNull(flick(0f, -40_000f, 14_000f))
+        assertEquals(400f, input.speed, 0.01f)
+        assertTrue(abs(input.yawDegrees) < 0.5f)
+    }
 }

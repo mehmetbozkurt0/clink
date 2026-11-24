@@ -11,7 +11,10 @@ import kotlin.random.Random
 object BeerPongReducer : Reducer<BeerPongState, BpAction> {
 
     override fun reduce(state: BeerPongState, action: BpAction, random: Random): BeerPongState = when (action) {
-        is BpAction.Throw -> if (state.phase == BpPhase.Aiming) throwBall(state, action.input, random) else state
+        is BpAction.Throw -> {
+            val input = action.input.sanitized()
+            if (state.phase == BpPhase.Aiming && input != null) throwBall(state, input, random) else state
+        }
     }
 
     private fun throwBall(state: BeerPongState, input: ThrowInput, random: Random): BeerPongState {

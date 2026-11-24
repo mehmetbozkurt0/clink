@@ -7,8 +7,10 @@ import com.mehmetbozkurt.clink.content.ContentLibrary
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.content.Pack
 import com.mehmetbozkurt.clink.game.GameId
+import com.mehmetbozkurt.clink.game.beerpong.BeerPongPhysics
 import com.mehmetbozkurt.clink.game.beerpong.BpPhase
 import com.mehmetbozkurt.clink.game.beerpong.ThrowInput
+import com.mehmetbozkurt.clink.game.beerpong.aimAt
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinPhase
 import com.mehmetbozkurt.clink.game.truthordare.TodAction
@@ -139,13 +141,13 @@ class HostRefereeTest {
     @Test
     fun beerPongOnlyThrowerThrows() {
         val s = start(GameId.BEER_PONG, a, b)
-        val shot = OnlineAction.Throw(ThrowInput(0f, 90f))
+        val shot = OnlineAction.Throw(ThrowInput(0f, 350f))
         assertNull(s.act("b", shot))
         assertEquals(1, assertNotNull(s.act("a", shot)).beerPong!!.throwCount)
     }
 
     @Test
-    fun beerPongSpectatorCannotThrow() = assertNull(start(GameId.BEER_PONG, a, b).act("c", OnlineAction.Throw(ThrowInput(0f, 90f))))
+    fun beerPongSpectatorCannotThrow() = assertNull(start(GameId.BEER_PONG, a, b).act("c", OnlineAction.Throw(ThrowInput(0f, 350f))))
 
     @Test
     fun beerPongPausesWhileThrowerOffline() {
@@ -159,7 +161,7 @@ class HostRefereeTest {
     fun beerPongMatchOverIgnoresThrows() {
         val s = start(GameId.BEER_PONG, a, b)
         val over = s.copy(beerPong = s.beerPong!!.copy(phase = BpPhase.MatchOver(0, 1, null)))
-        assertNull(over.act("a", OnlineAction.Throw(ThrowInput(0f, 90f))))
+        assertNull(over.act("a", OnlineAction.Throw(ThrowInput(0f, 350f))))
     }
 
     // Publishing
@@ -181,7 +183,7 @@ class HostRefereeTest {
 
     @Test
     fun actionsRoundTripAsJson() {
-        val action = OnlineAction.Throw(ThrowInput(12f, 80f))
+        val action = OnlineAction.Throw(ThrowInput(12f, 380f))
         assertEquals(action, decodeAction(encodeAction(action)))
     }
     // A session published by the version before stop angles: no "lastAngle" field.
@@ -194,5 +196,18 @@ class HostRefereeTest {
         val decoded = decodeSession(oldJson).spin!!
         assertNull(decoded.lastAngle)
         assertEquals(spun.spin!!.lastTarget, decoded.lastTarget)
+    }
+    // Online every phone replays the host's flight, so the path must survive publishing intact.
+    @Test
+    fun publishedThrowRoundTrips() {
+        val s = assertNotNull(start(GameId.BEER_PONG, a, b).act("a", OnlineAction.Throw(aimAt(BeerPongPhysics.cups[5]))))
+        assertEquals(s, decodeSession(encodeSession(s)))
+        assertTrue(s.beerPong!!.lastThrow!!.path.isNotEmpty())
+    }
+
+    @Test
+    fun longestFlightFitsInPublishedState() {
+        val s = assertNotNull(start(GameId.BEER_PONG, a, b).act("a", OnlineAction.Throw(ThrowInput(0f, 400f))))
+        assertTrue(encodeSession(s).length < 12_000)
     }
 }

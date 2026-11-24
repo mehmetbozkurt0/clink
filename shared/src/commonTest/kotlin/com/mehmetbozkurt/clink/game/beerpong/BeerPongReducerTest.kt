@@ -69,4 +69,15 @@ class BeerPongReducerTest {
         val state = start.copy(thrower = 1, cups = listOf(setOf(1), all)).after(BpAction.Throw(aimAt(BeerPongPhysics.cups[1])))
         assertEquals(BpPhase.MatchOver(winner = 1, loser = 0, penaltyCardId = "p1"), state.phase)
     }
+    // A member's phone can send anything online: a broken number is ignored, an extreme one is held to the limits.
+    @Test
+    fun nonFiniteThrowIsIgnored() {
+        assertEquals(start, start.after(BpAction.Throw(ThrowInput(Float.NaN, 350f))))
+        assertEquals(start, start.after(BpAction.Throw(ThrowInput(0f, Float.POSITIVE_INFINITY))))
+    }
+
+    @Test
+    fun outOfRangeThrowIsClamped() {
+        assertEquals(ThrowInput(45f, 400f), start.after(BpAction.Throw(ThrowInput(80f, 5000f))).lastThrow!!.input)
+    }
 }

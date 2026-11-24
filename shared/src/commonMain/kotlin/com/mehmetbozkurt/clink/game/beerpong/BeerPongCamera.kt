@@ -10,7 +10,8 @@ class BeerPongCamera(width: Float, height: Float) {
     private val forward = (Vec3(0f, 215f, 0f) - eye).normalized()
     private val right = (forward cross Vec3(0f, 0f, 1f)).normalized()
     private val up = right cross forward
-    val focal = width * 2.0f
+    // 2 × width (the approved framing); a short canvas (16:9 phones) shrinks it so the resting ball stays on screen.
+    val focal = minOf(width * 2.0f, height * 1.2f)
     private val centerX = width / 2f
     private val centerY = height * 0.3f
 
@@ -44,7 +45,9 @@ fun flickToThrow(
 ): ThrowInput? {
     if (velocityY >= 0f || speedDpPerSecond < MIN_FLICK) return null
     val from = camera.onTable(releaseX, releaseY) ?: return null
-    val to = camera.onTable(releaseX + velocityX * LOOK_AHEAD_SECONDS, releaseY + velocityY * LOOK_AHEAD_SECONDS) ?: return null
+    // A very hard flick's look-ahead point can pass the horizon: look less far ahead until it lands on the table.
+    val to = generateSequence(LOOK_AHEAD_SECONDS) { it / 2f }.take(5)
+        .firstNotNullOfOrNull { camera.onTable(releaseX + velocityX * it, releaseY + velocityY * it) } ?: return null
     val yaw = atan2(to.x - from.x, to.y - from.y) * 180f / PI.toFloat()
     if (abs(yaw) > BeerPongPhysics.MAX_YAW) return null
     val t = ((speedDpPerSecond - MIN_FLICK) / (MAX_FLICK - MIN_FLICK)).coerceIn(0f, 1f)
