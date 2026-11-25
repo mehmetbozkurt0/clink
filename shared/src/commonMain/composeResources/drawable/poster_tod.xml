@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home poster drawing for Truth or Dare, drawn for Clink: two tilted cards, "?" and "!". Ink lines only. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="80dp"
+    android:viewportWidth="100"
+    android:viewportHeight="80">
+    <group android:rotation="-10" android:pivotX="30" android:pivotY="40">
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineJoin="round"
+            android:pathData="M19,14 H41 A5,5 0 0 1 46,19 V61 A5,5 0 0 1 41,66 H19 A5,5 0 0 1 14,61 V19 A5,5 0 0 1 19,14 Z" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineCap="round"
+            android:pathData="M23,32 C23,24 37,24 37,32 C37,37 30,37 30,44" />
+        <path
+            android:fillColor="#141414"
+            android:pathData="M28.2,52 A1.8,1.8 0 1,0 31.8,52 A1.8,1.8 0 1,0 28.2,52 Z" />
+    </group>
+    <group android:rotation="10" android:pivotX="70" android:pivotY="40">
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineJoin="round"
+            android:pathData="M59,14 H81 A5,5 0 0 1 86,19 V61 A5,5 0 0 1 81,66 H59 A5,5 0 0 1 54,61 V19 A5,5 0 0 1 59,14 Z" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineCap="round"
+            android:pathData="M70,26 V43" />
+        <path
+            android:fillColor="#141414"
+            android:pathData="M68.2,52 A1.8,1.8 0 1,0 71.8,52 A1.8,1.8 0 1,0 68.2,52 Z" />
+    </group>
+</vector>

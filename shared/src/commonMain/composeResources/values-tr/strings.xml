@@ -195,4 +195,7 @@
     <string name="game_tod_players">2–12 kişi</string>
     <string name="game_spin_players">2–12 kişi</string>
     <string name="game_pong_players">1'e 1</string>
+    <string name="game_tod_accent">Cesaret</string>
+    <string name="game_spin_accent">Şişe</string>
+    <string name="game_pong_accent">Pong</string>
     <string name="cd_home_posters">Oyunlar: %1$s</string></resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home poster drawing for Beer Pong, drawn for Clink: a ball's dotted arc into three cups. Ink lines only. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="80dp"
+    android:viewportWidth="100"
+    android:viewportHeight="80">
+    <!-- The ball's path, as dots (vector drawables have no dashed strokes). -->
+    <path
+        android:fillColor="#141414"
+        android:pathData="M7.4,50 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 Z M11.4,40 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 Z M17.4,31 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 Z M24.4,24 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 Z M32.4,20 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 Z M40.4,19 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 Z" />
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.6"
+        android:pathData="M46,25 A4.5,4.5 0 1,0 55,25 A4.5,4.5 0 1,0 46,25 Z" />
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.6"
+        android:strokeLineJoin="round"
+        android:pathData="M22,46 L25,70 H37 L40,46 Z M41,46 L44,70 H56 L59,46 Z M60,46 L63,70 H75 L78,46 Z" />
+</vector>

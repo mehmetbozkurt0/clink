@@ -195,4 +195,7 @@
     <string name="game_tod_players">2–12 players</string>
     <string name="game_spin_players">2–12 players</string>
     <string name="game_pong_players">1v1</string>
+    <string name="game_tod_accent">Dare</string>
+    <string name="game_spin_accent">Spin</string>
+    <string name="game_pong_accent">Pong</string>
     <string name="cd_home_posters">Games: %1$s</string></resources>

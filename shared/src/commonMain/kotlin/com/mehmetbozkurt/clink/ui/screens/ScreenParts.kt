@@ -25,17 +25,23 @@ import com.mehmetbozkurt.clink.resources.art_pong
 import com.mehmetbozkurt.clink.resources.art_spin
 import com.mehmetbozkurt.clink.resources.art_tod
 import com.mehmetbozkurt.clink.resources.game_beerpong
+import com.mehmetbozkurt.clink.resources.game_pong_accent
 import com.mehmetbozkurt.clink.resources.game_pong_meta
 import com.mehmetbozkurt.clink.resources.game_pong_players
 import com.mehmetbozkurt.clink.resources.game_spin
+import com.mehmetbozkurt.clink.resources.game_spin_accent
 import com.mehmetbozkurt.clink.resources.game_spin_meta
 import com.mehmetbozkurt.clink.resources.game_spin_players
 import com.mehmetbozkurt.clink.resources.game_tod
+import com.mehmetbozkurt.clink.resources.game_tod_accent
 import com.mehmetbozkurt.clink.resources.game_tod_meta
 import com.mehmetbozkurt.clink.resources.game_tod_players
 import com.mehmetbozkurt.clink.resources.ic_game_pong
 import com.mehmetbozkurt.clink.resources.ic_game_spin
 import com.mehmetbozkurt.clink.resources.ic_game_tod
+import com.mehmetbozkurt.clink.resources.poster_pong
+import com.mehmetbozkurt.clink.resources.poster_spin
+import com.mehmetbozkurt.clink.resources.poster_tod
 import org.jetbrains.compose.resources.DrawableResource
 import com.mehmetbozkurt.clink.ui.components.Poster
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
@@ -88,6 +94,13 @@ internal fun GameId.art(): DrawableResource = when (this) {
     GameId.BEER_PONG -> Res.drawable.art_pong
 }
 
+/** The game's ink line drawing on its home poster (spec 2026-11-24-home-poster-text §Design 2). */
+internal fun GameId.posterArt(): DrawableResource = when (this) {
+    GameId.TRUTH_OR_DARE -> Res.drawable.poster_tod
+    GameId.SPIN_THE_BOTTLE -> Res.drawable.poster_spin
+    GameId.BEER_PONG -> Res.drawable.poster_pong
+}
+
 /** Players and a one-line rule, e.g. "2–12 kişi · Kart çek, yap ya da ceza". */
 @Composable
 internal fun GameId.meta(): String = stringResource(
@@ -105,6 +118,16 @@ internal fun GameId.players(): String = stringResource(
         GameId.TRUTH_OR_DARE -> Res.string.game_tod_players
         GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_players
         GameId.BEER_PONG -> Res.string.game_pong_players
+    },
+)
+
+/** The title word highlighted on the home poster, e.g. "Cesaret". */
+@Composable
+internal fun GameId.accent(): String = stringResource(
+    when (this) {
+        GameId.TRUTH_OR_DARE -> Res.string.game_tod_accent
+        GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_accent
+        GameId.BEER_PONG -> Res.string.game_pong_accent
     },
 )
 

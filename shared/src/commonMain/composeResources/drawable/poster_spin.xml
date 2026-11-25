@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home poster drawing for Spin the Bottle, drawn for Clink: a tilted bottle between two spin arrows. Ink lines only. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="80dp"
+    android:viewportWidth="100"
+    android:viewportHeight="80">
+    <group android:rotation="-24" android:pivotX="50" android:pivotY="40">
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineJoin="round"
+            android:pathData="M21,29 H49 A7,7 0 0 1 56,36 V44 A7,7 0 0 1 49,51 H21 A7,7 0 0 1 14,44 V36 A7,7 0 0 1 21,29 Z" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineJoin="round"
+            android:pathData="M56,34 L66,37 H78 V43 H66 L56,46" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineJoin="round"
+            android:pathData="M78,35 H83 V45 H78 Z" />
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineCap="round"
+            android:pathData="M22,35 V45" />
+    </group>
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M12,18 A40,26 0 0 1 42,7 M38,3 L43,7 L39,12" />
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M88,62 A40,26 0 0 1 58,73 M62,77 L57,73 L61,68" />
+</vector>
