@@ -49,7 +49,7 @@ fun WallChip(
             .clip(ChipShape)
             .background(fill)
             .border(1.dp, if (selected) ClinkColors.Ink else ClinkColors.Paper.copy(alpha = 0.14f), ChipShape)
-            // A tappable chip is a pick (Beer Pong picker), so screen readers also hear whether it is selected.
+            // A tappable chip is a pick (Cup Pong picker), so screen readers also hear whether it is selected.
             .let { if (onClick != null) it.selectable(selected = selected, role = Role.Checkbox, onClick = onClick) else it }
             .padding(horizontal = if (compact) 9.dp else 12.dp, vertical = if (compact) 5.dp else 9.dp),
         verticalAlignment = Alignment.CenterVertically,

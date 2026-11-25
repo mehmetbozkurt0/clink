@@ -28,9 +28,9 @@ import com.mehmetbozkurt.clink.account.saveGuestProfile
 import com.mehmetbozkurt.clink.account.suggestedName
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
-import com.mehmetbozkurt.clink.game.beerpong.BeerPongScreen
-import com.mehmetbozkurt.clink.game.beerpong.BeerPongSetupScreen
-import com.mehmetbozkurt.clink.game.beerpong.suggestedMatchup
+import com.mehmetbozkurt.clink.game.cuppong.CupPongScreen
+import com.mehmetbozkurt.clink.game.cuppong.CupPongSetupScreen
+import com.mehmetbozkurt.clink.game.cuppong.suggestedMatchup
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleScreen
 import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareScreen
 import com.mehmetbozkurt.clink.online.Member
@@ -66,7 +66,7 @@ private const val TransitionMillis = 250
 
 @Composable
 fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
-    /** [matchWinner]/[matchLoser]: Beer Pong's previous match, so the winner stays on. */
+    /** [matchWinner]/[matchLoser]: Cup Pong's previous match, so the winner stays on. */
     fun startGame(
         game: GameId,
         players: List<String>,
@@ -78,11 +78,11 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         val route: Any = when (game) {
             GameId.TRUTH_OR_DARE -> TruthOrDareRoute(players, level)
             GameId.SPIN_THE_BOTTLE -> SpinTheBottleRoute(players, level)
-            GameId.BEER_PONG -> if (players.size == 2) {
+            GameId.CUP_PONG -> if (players.size == 2) {
                 val matchup = suggestedMatchup(2, matchWinner, matchLoser)
-                BeerPongRoute(players, level, matchup.first, matchup.second)
+                CupPongRoute(players, level, matchup.first, matchup.second)
             } else {
-                BeerPongSetupRoute(players, level, matchWinner, matchLoser)
+                CupPongSetupRoute(players, level, matchWinner, matchLoser)
             }
         }
         navController.navigate(route, options)
@@ -339,40 +339,40 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
                 },
             )
         }
-        composable<BeerPongSetupRoute> { entry ->
-            val route = entry.toRoute<BeerPongSetupRoute>()
-            BeerPongSetupScreen(
+        composable<CupPongSetupRoute> { entry ->
+            val route = entry.toRoute<CupPongSetupRoute>()
+            CupPongSetupScreen(
                 players = route.players,
                 suggested = suggestedMatchup(route.players.size, route.previousWinner, route.previousLoser),
                 previousWinner = route.previousWinner,
                 onStart = { matchup ->
                     entry.ifResumed {
-                        navController.navigate(BeerPongRoute(route.players, route.level, matchup.first, matchup.second)) {
-                            popUpTo<BeerPongSetupRoute> { inclusive = true }
+                        navController.navigate(CupPongRoute(route.players, route.level, matchup.first, matchup.second)) {
+                            popUpTo<CupPongSetupRoute> { inclusive = true }
                         }
                     }
                 },
                 onBack = { entry.back() },
             )
         }
-        composable<BeerPongRoute> { entry ->
-            val route = entry.toRoute<BeerPongRoute>()
+        composable<CupPongRoute> { entry ->
+            val route = entry.toRoute<CupPongRoute>()
             val matchIndexes = listOf(route.first, route.second)
-            BeerPongScreen(
+            CupPongScreen(
                 players = matchIndexes.map { route.players[it] },
                 playerIndexes = matchIndexes,
                 level = route.level,
                 onMatchOver = { winner, loser ->
                     entry.ifResumed {
                         navController.navigate(
-                            GameOverRoute(GameId.BEER_PONG, route.players, route.level, matchIndexes[winner], matchIndexes[loser]),
-                        ) { popUpTo<BeerPongRoute> { inclusive = true } }
+                            GameOverRoute(GameId.CUP_PONG, route.players, route.level, matchIndexes[winner], matchIndexes[loser]),
+                        ) { popUpTo<CupPongRoute> { inclusive = true } }
                     }
                 },
                 onEnd = {
                     entry.ifResumed {
-                        navController.navigate(GameOverRoute(GameId.BEER_PONG, route.players, route.level)) {
-                            popUpTo<BeerPongRoute> { inclusive = true }
+                        navController.navigate(GameOverRoute(GameId.CUP_PONG, route.players, route.level)) {
+                            popUpTo<CupPongRoute> { inclusive = true }
                         }
                     }
                 },

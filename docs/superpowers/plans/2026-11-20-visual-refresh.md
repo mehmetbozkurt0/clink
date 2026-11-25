@@ -29,7 +29,7 @@
 2. **Font scale 1.5 and a 360×640 dp screen** → no clipped text, primary action always visible, lists scroll (Task 9 check).
 3. **Texture cost** → textures decoded once and drawn as a tiled shader; scrolling lists and the bottle/ball animations stay smooth (Task 3 implementation, Task 9 check).
 4. **Contrast** → every pair the screens use is in the Task 2 contrast test.
-5. **Navigation unchanged** → back/close mirror system back on every screen; Game over has no top bar; Beer Pong winner-stays-on still works (Task 9 check).
+5. **Navigation unchanged** → back/close mirror system back on every screen; Game over has no top bar; Cup Pong winner-stays-on still works (Task 9 check).
 
 ---
 
@@ -209,17 +209,17 @@ Per design §4: `TopBar(Close)` with a turn badge (`InitialBadge` + "SIRA: MERT"
 
 ---
 
-### Task 7: Beer Pong
+### Task 7: Cup Pong
 
 **Files:**
-- Modify: `game/beerpong/BeerPongTable.kt`, `BeerPongScreen.kt`, `BeerPongSetupScreen.kt`, strings
+- Modify: `game/cuppong/CupPongTable.kt`, `CupPongScreen.kt`, `CupPongSetupScreen.kt`, strings
 
 Restyle only — throw model and constants untouched. Table: a paper/plywood surface (paper texture tinted) on the wall with an `Ink` border; cups with `Acid` (defender's cups) rims, `WallRaised` inside, empty; ball `Paper` with a hard shadow; hit splash `Acid`. `TopBar(Close)` + turn badge + score line. Match picker: player stickers (`WallChip`, selected = `Acid`), `TopBar(Back)`. Match over: winner banner in Anton `Acid`, penalty poster. Carried-over copy fixes: no turn header on match over; with an empty penalty pool the poster shows only `notice_no_penalty` (no "Penalty!" / "takes a penalty" lines).
 
 - [ ] **Step 1: Implement.**
 - [ ] **Step 2: Run** the full suite and build. Expected: PASS.
 - [ ] **Step 3: Emulator:** 2-player match to the end (aimed throws), match over → Play again; 4-player picker; screenshots.
-- [ ] **Step 4: Hand off.** Commit message: `feat: restyle Beer Pong`
+- [ ] **Step 4: Hand off.** Commit message: `feat: restyle Cup Pong`
 
 ---
 
@@ -247,7 +247,7 @@ Restyle only — throw model and constants untouched. Table: a paper/plywood sur
 - [ ] **Step 1:** `./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug --rerun-tasks`. Expected: all PASS.
 - [ ] **Step 2: Emulator, TR and EN:** every screen once; screenshots; look for fallback glyphs in ğ ş ı İ ç ö ü (Review Focus 1).
 - [ ] **Step 3: Emulator, font scale 1.5 and a 360×640 dp screen** (`wm size 945x1680`): every screen, nothing clipped, CTA visible (Review Focus 2); restore the emulator settings afterwards.
-- [ ] **Step 4: Navigation:** ‹/× and system back on every screen behave as before; Game over has no top bar; Beer Pong winner-stays-on (Review Focus 5).
+- [ ] **Step 4: Navigation:** ‹/× and system back on every screen behave as before; Game over has no top bar; Cup Pong winner-stays-on (Review Focus 5).
 - [ ] **Step 5: Mehmet's phone (with his OK in that turn):** install, Welcome + a game screen screenshot; Mehmet judges the "low resolution" feel and dark areas at low brightness (design §5 "Done when").
 - [ ] **Step 6: Report** to Mehmet in Turkish; the APK size before/after.
 
@@ -255,15 +255,15 @@ Restyle only — throw model and constants untouched. Table: a paper/plywood sur
 
 ## Carried over (not in this plan)
 
-Open items from Plans 1 and 2, kept here so they aren't lost; Mehmet decides when to do them. (Done in this plan: Spin penalty haptic — Task 6; Beer Pong "Turn: winner" header and empty-pool copy — Task 7. The coral contrast item is replaced by Task 2's contrast test.)
-- **Beer Pong throw feel and physics rework** — Mehmet: "still hard", own dedicated effort later. Includes drawn cups not matching the physics depth.
-- Beer Pong: back/End on the match-over panel loses winner-stays-on; the "Penalty done" tap guard starts ~2 s before the panel shows.
+Open items from Plans 1 and 2, kept here so they aren't lost; Mehmet decides when to do them. (Done in this plan: Spin penalty haptic — Task 6; Cup Pong "Turn: winner" header and empty-pool copy — Task 7. The coral contrast item is replaced by Task 2's contrast test.)
+- **Cup Pong throw feel and physics rework** — Mehmet: "still hard", own dedicated effort later. Includes drawn cups not matching the physics depth.
+- Cup Pong: back/End on the match-over panel loses winner-stays-on; the "Penalty done" tap guard starts ~2 s before the panel shows.
 - Repeated taps on an empty deck queue identical snackbars (~20 s).
 - Drinking-word check misses wine, vodka, tequila, whisk(e)y, chug, şarap, rakı, kadeh, votka, viski, tekila, içecek.
 - Names overlap on the 12-player Spin circle with ~7+ character names.
 - `take(20)` can split an emoji surrogate pair in player names.
-- KDocs that mislead Plan 4: `SpinTheBottle.kt` and `BeerPong.kt` say the UI animates on a counter change (it animates from the flick handler); `ThrowInput` says it is "published as-is" — Plan 4 should render the referee's `ThrowResult`.
-- Missing Beer Pong tests: outer rim edge (distance 4), rim bounce into a removed cup, rim bounce sinking the last cup.
-- Spin's VelocityTracker still uses `addPosition` (Beer Pong moved to `addPointerInputChange`).
+- KDocs that mislead Plan 4: `SpinTheBottle.kt` and `CupPong.kt` say the UI animates on a counter change (it animates from the flick handler); `ThrowInput` says it is "published as-is" — Plan 4 should render the referee's `ThrowResult`.
+- Missing Cup Pong tests: outer rim edge (distance 4), rim bounce into a removed cup, rim bounce sinking the last cup.
+- Spin's VelocityTracker still uses `addPosition` (Cup Pong moved to `addPointerInputChange`).
 - Gradle: `androidLibrary { }` in `shared/build.gradle.kts` is deprecated in favor of `android { }`.
 - A malformed bundled content file still crashes at launch; only `BaselineContentFileTest` guards it (make tests run before release builds in Plan 5).

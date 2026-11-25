@@ -3,10 +3,10 @@ package com.mehmetbozkurt.clink.online
 import com.mehmetbozkurt.clink.content.ContentLibrary
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
-import com.mehmetbozkurt.clink.game.beerpong.BeerPongReducer
-import com.mehmetbozkurt.clink.game.beerpong.BpAction
-import com.mehmetbozkurt.clink.game.beerpong.BpPhase
-import com.mehmetbozkurt.clink.game.beerpong.initialBeerPongState
+import com.mehmetbozkurt.clink.game.cuppong.CupPongReducer
+import com.mehmetbozkurt.clink.game.cuppong.CpAction
+import com.mehmetbozkurt.clink.game.cuppong.CpPhase
+import com.mehmetbozkurt.clink.game.cuppong.initialCupPongState
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinPhase
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleReducer
@@ -27,16 +27,16 @@ const val SPIN_TEXT_MAX_LENGTH = 200
  */
 object HostReferee {
 
-    /** A new game for [players] in seat order; for Beer Pong exactly the two match players. */
+    /** A new game for [players] in seat order; for Cup Pong exactly the two match players. */
     fun start(game: GameId, level: Level, players: List<Member>, library: ContentLibrary, random: Random, seq: Int = 1): SessionState {
         val names = players.map { it.name }
         val uids = players.map { it.uid }
         return when (game) {
             GameId.TRUTH_OR_DARE -> SessionState(seq, game, level, uids, tod = initialTruthOrDareState(names, level, library))
             GameId.SPIN_THE_BOTTLE -> SessionState(seq, game, level, uids, spin = initialSpinState(names, level, library))
-            GameId.BEER_PONG -> {
-                require(players.size == 2) { "Beer Pong is 1v1" }
-                SessionState(seq, game, level, uids, beerPong = initialBeerPongState(names, level, library))
+            GameId.CUP_PONG -> {
+                require(players.size == 2) { "Cup Pong is 1v1" }
+                SessionState(seq, game, level, uids, cupPong = initialCupPongState(names, level, library))
             }
         }
     }
@@ -55,7 +55,7 @@ object HostReferee {
 
     /**
      * Moves the game past a player who has to act but is offline (spec §5.2: they are skipped). Truth or Dare and Spin
-     * go on with the next online player; a Beer Pong match waits for its thrower ([isPaused]).
+     * go on with the next online player; a Cup Pong match waits for its thrower ([isPaused]).
      */
     fun skipOffline(session: SessionState, online: Set<String>, random: Random): SessionState? {
         if (session.playerUids.none { it in online }) return null
@@ -135,14 +135,14 @@ object HostReferee {
     }
 
     private fun throwBall(session: SessionState, seat: Int, action: OnlineAction.Throw, random: Random): SessionState? {
-        val match = session.beerPong ?: return null
-        if (match.phase != BpPhase.Aiming || seat != match.thrower) return null
-        return session.copy(beerPong = BeerPongReducer.reduce(match, BpAction.Throw(action.input), random))
+        val match = session.cupPong ?: return null
+        if (match.phase != CpPhase.Aiming || seat != match.thrower) return null
+        return session.copy(cupPong = CupPongReducer.reduce(match, CpAction.Throw(action.input), random))
     }
 }
 
-/** A Beer Pong match waits while its thrower is offline (1v1: there is no one to skip to). */
+/** A Cup Pong match waits while its thrower is offline (1v1: there is no one to skip to). */
 fun isPaused(session: SessionState, online: Set<String>): Boolean {
-    val match = session.beerPong ?: return false
-    return match.phase == BpPhase.Aiming && session.playerUids[match.thrower] !in online
+    val match = session.cupPong ?: return false
+    return match.phase == CpPhase.Aiming && session.playerUids[match.thrower] !in online
 }

@@ -7,10 +7,10 @@ import com.mehmetbozkurt.clink.content.ContentLibrary
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.content.Pack
 import com.mehmetbozkurt.clink.game.GameId
-import com.mehmetbozkurt.clink.game.beerpong.BeerPongPhysics
-import com.mehmetbozkurt.clink.game.beerpong.BpPhase
-import com.mehmetbozkurt.clink.game.beerpong.ThrowInput
-import com.mehmetbozkurt.clink.game.beerpong.aimAt
+import com.mehmetbozkurt.clink.game.cuppong.CupPongPhysics
+import com.mehmetbozkurt.clink.game.cuppong.CpPhase
+import com.mehmetbozkurt.clink.game.cuppong.ThrowInput
+import com.mehmetbozkurt.clink.game.cuppong.aimAt
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinPhase
 import com.mehmetbozkurt.clink.game.truthordare.TodAction
@@ -136,31 +136,31 @@ class HostRefereeTest {
         assertEquals(2, skipped.spinner)
     }
 
-    // Beer Pong
+    // Cup Pong
 
     @Test
-    fun beerPongOnlyThrowerThrows() {
-        val s = start(GameId.BEER_PONG, a, b)
+    fun cupPongOnlyThrowerThrows() {
+        val s = start(GameId.CUP_PONG, a, b)
         val shot = OnlineAction.Throw(ThrowInput(0f, 350f))
         assertNull(s.act("b", shot))
-        assertEquals(1, assertNotNull(s.act("a", shot)).beerPong!!.throwCount)
+        assertEquals(1, assertNotNull(s.act("a", shot)).cupPong!!.throwCount)
     }
 
     @Test
-    fun beerPongSpectatorCannotThrow() = assertNull(start(GameId.BEER_PONG, a, b).act("c", OnlineAction.Throw(ThrowInput(0f, 350f))))
+    fun cupPongSpectatorCannotThrow() = assertNull(start(GameId.CUP_PONG, a, b).act("c", OnlineAction.Throw(ThrowInput(0f, 350f))))
 
     @Test
-    fun beerPongPausesWhileThrowerOffline() {
-        val s = start(GameId.BEER_PONG, a, b)
+    fun cupPongPausesWhileThrowerOffline() {
+        val s = start(GameId.CUP_PONG, a, b)
         assertNull(HostReferee.skipOffline(s, setOf("b"), random))
         assertTrue(isPaused(s, online = setOf("b")))
         assertFalse(isPaused(s, online = setOf("a", "b")))
     }
 
     @Test
-    fun beerPongMatchOverIgnoresThrows() {
-        val s = start(GameId.BEER_PONG, a, b)
-        val over = s.copy(beerPong = s.beerPong!!.copy(phase = BpPhase.MatchOver(0, 1, null)))
+    fun cupPongMatchOverIgnoresThrows() {
+        val s = start(GameId.CUP_PONG, a, b)
+        val over = s.copy(cupPong = s.cupPong!!.copy(phase = CpPhase.MatchOver(0, 1, null)))
         assertNull(over.act("a", OnlineAction.Throw(ThrowInput(0f, 350f))))
     }
 
@@ -200,14 +200,14 @@ class HostRefereeTest {
     // Online every phone replays the host's flight, so the path must survive publishing intact.
     @Test
     fun publishedThrowRoundTrips() {
-        val s = assertNotNull(start(GameId.BEER_PONG, a, b).act("a", OnlineAction.Throw(aimAt(BeerPongPhysics.cups[5]))))
+        val s = assertNotNull(start(GameId.CUP_PONG, a, b).act("a", OnlineAction.Throw(aimAt(CupPongPhysics.cups[5]))))
         assertEquals(s, decodeSession(encodeSession(s)))
-        assertTrue(s.beerPong!!.lastThrow!!.path.isNotEmpty())
+        assertTrue(s.cupPong!!.lastThrow!!.path.isNotEmpty())
     }
 
     @Test
     fun longestFlightFitsInPublishedState() {
-        val s = assertNotNull(start(GameId.BEER_PONG, a, b).act("a", OnlineAction.Throw(ThrowInput(0f, 400f))))
+        val s = assertNotNull(start(GameId.CUP_PONG, a, b).act("a", OnlineAction.Throw(ThrowInput(0f, 400f))))
         assertTrue(encodeSession(s).length < 12_000)
     }
 }

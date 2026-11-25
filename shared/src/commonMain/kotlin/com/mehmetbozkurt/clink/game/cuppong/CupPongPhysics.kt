@@ -1,4 +1,4 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
@@ -10,7 +10,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
- * A point or direction in the Beer Pong world, in centimetres: x to the thrower's right, y away from the thrower
+ * A point or direction in the Cup Pong world, in centimetres: x to the thrower's right, y away from the thrower
  * along the table, z up. The table's near edge is y = 0.
  */
 data class Vec3(val x: Float, val y: Float, val z: Float) {
@@ -23,8 +23,8 @@ data class Vec3(val x: Float, val y: Float, val z: Float) {
     fun normalized() = this * (1f / length())
 }
 
-/** The world and the ball's physics (spec 2026-11-24-beer-pong-3d §5.1–5.2). The numbers set the feel. */
-object BeerPongPhysics {
+/** The world and the ball's physics (spec 2026-11-24-cup-pong-3d §5.1–5.2). The numbers set the feel. */
+object CupPongPhysics {
     const val GRAVITY = 980f
     const val BALL_RADIUS = 2f
     const val CUP_TOP_RADIUS = 5.0f
@@ -62,13 +62,13 @@ object BeerPongPhysics {
 data class ThrowInput(val yawDegrees: Float, val speed: Float) {
     /**
      * Online a member's phone sends this, so it is checked before simulating: null if a value isn't a number,
-     * otherwise held to ±[BeerPongPhysics.MAX_YAW] and [BeerPongPhysics.MIN_SPEED]…[BeerPongPhysics.MAX_SPEED].
+     * otherwise held to ±[CupPongPhysics.MAX_YAW] and [CupPongPhysics.MIN_SPEED]…[CupPongPhysics.MAX_SPEED].
      */
     fun sanitized(): ThrowInput? {
         if (!yawDegrees.isFinite() || !speed.isFinite()) return null
         return ThrowInput(
-            yawDegrees.coerceIn(-BeerPongPhysics.MAX_YAW, BeerPongPhysics.MAX_YAW),
-            speed.coerceIn(BeerPongPhysics.MIN_SPEED, BeerPongPhysics.MAX_SPEED),
+            yawDegrees.coerceIn(-CupPongPhysics.MAX_YAW, CupPongPhysics.MAX_YAW),
+            speed.coerceIn(CupPongPhysics.MIN_SPEED, CupPongPhysics.MAX_SPEED),
         )
     }
 }
@@ -92,7 +92,7 @@ data class ThrowResult(
     fun points(): List<Vec3> = path.chunked(3) { Vec3(it[0] / 10f, it[1] / 10f, it[2] / 10f) }
 
     val durationMillis: Int
-        get() = ((path.size / 3 - 1) * 1000 / BeerPongPhysics.SAMPLES_PER_SECOND).coerceAtLeast(1)
+        get() = ((path.size / 3 - 1) * 1000 / CupPongPhysics.SAMPLES_PER_SECOND).coerceAtLeast(1)
 }
 
 /**
@@ -100,7 +100,7 @@ data class ThrowResult(
  * and table bounces, at a fixed step. Deterministic: the same input and cups always give the same result. A rim bounce
  * that ends in another cup counts for that cup.
  */
-fun simulateThrow(input: ThrowInput, remainingCups: Set<Int>): ThrowResult = with(BeerPongPhysics) {
+fun simulateThrow(input: ThrowInput, remainingCups: Set<Int>): ThrowResult = with(CupPongPhysics) {
     val step = 1f / STEPS_PER_SECOND
     val samplesEvery = STEPS_PER_SECOND / SAMPLES_PER_SECOND
     val yaw = input.yawDegrees * PI.toFloat() / 180f

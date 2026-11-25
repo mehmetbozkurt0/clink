@@ -14,7 +14,7 @@
 
 - Dark only; no theme row in settings (light theme is the next round).
 - Home posters are **not tappable**; the game count line is **not a link** (no arrow). OYNA is the only way to the games.
-- Featured games: a constant in code, exactly three: Truth or Dare, Spin the Bottle, Beer Pong.
+- Featured games: a constant in code, exactly three: Truth or Dare, Spin the Bottle, Cup Pong.
 - Game count = `GameId.entries.size`, text "all games: N" / "tüm oyunlar: N".
 - Wall motion (breathing glows 9 s / 11 s, light sweep every ~12 s, poster sway ±1° over ~4 s) on the **home screen only**, and none at all when the phone's animations are off.
 - Spray tags "wow", "gg", "cheers" are not translated.
@@ -56,7 +56,7 @@ Test commands (PowerShell, repo root): one class `.\gradlew.bat :shared:testAndr
 **Interfaces — Produces:**
 - `enum class AppLanguage(val tag: String) { SYSTEM(""), TURKISH("tr"), ENGLISH("en"); companion object { fun fromTag(tag: String?): AppLanguage } }` — matches on the language part (`"tr-TR"` → TURKISH); null, blank or unknown → SYSTEM.
 - `interface LanguageSetting { fun current(): AppLanguage; fun set(language: AppLanguage) }` (same file; implemented in Task 3).
-- `object FeaturedGames { val ids: List<GameId> }` = `[TRUTH_OR_DARE, SPIN_THE_BOTTLE, BEER_PONG]`.
+- `object FeaturedGames { val ids: List<GameId> }` = `[TRUTH_OR_DARE, SPIN_THE_BOTTLE, CUP_PONG]`.
 - `LocalPrefs.hapticsOn: Boolean = true`.
 - `sealed interface ProfileCard { data class Google(val name: String, val avatarId: String) : ProfileCard; data class Guest(val name: String?, val avatarId: String?) : ProfileCard }`
 - `fun profileCard(user: AuthUser?, profile: Profile?, prefs: LocalPrefs): ProfileCard` — non-anonymous user → `Google(profile?.displayName ?: user.googleName.orEmpty(), profile?.avatarId ?: Avatars.ids.first())`; otherwise `Guest(validated prefs.guestName or null, prefs.guestAvatar if in Avatars.ids else null)`.

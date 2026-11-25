@@ -12,7 +12,7 @@ Marking used in this document: anything **Mehmet decided** is stated plainly. An
 
 ## 1. Intent and why
 
-A mobile app that bundles pub and party games, such as Truth or Dare, Spin the Bottle and Beer Pong, played either **on one phone with friends at the same table** or **online with friends** in a shared lobby.
+A mobile app that bundles pub and party games, such as Truth or Dare, Spin the Bottle and Cup Pong, played either **on one phone with friends at the same table** or **online with friends** in a shared lobby.
 
 Mehmet is building it for two reasons:
 
@@ -24,7 +24,7 @@ So "it works on my phone" is not enough. It has to pass store review, feel good 
 ## 2. Goals, non-goals, anti-goals
 
 **Goals (v1)**
-- Three games: **Truth or Dare**, **Spin the Bottle**, **Beer Pong**.
+- Three games: **Truth or Dare**, **Spin the Bottle**, **Cup Pong**.
 - Two modes: **With friends (local, one phone)** and **Online (friends via invite link)**.
 - Shared content system with three intensity levels (Casual / Hard / Spicy) and a shared **penalty pool**.
 - Turkish and English from day one.
@@ -49,7 +49,7 @@ So "it works on my phone" is not enough. It has to pass store review, feel good 
 
 ```
 [Welcome] → [Play]
-   → [Game list: Truth or Dare · Spin the Bottle · Beer Pong]
+   → [Game list: Truth or Dare · Spin the Bottle · Cup Pong]
       → [Mode: With friends | Online]      (only modes the game supports; all three support both in v1)
          → With friends: [Sign in if needed] → [Enter player names] → [Pick level] → [Game]
          → Online:       [Sign in if needed] → [Create lobby, pick level] → [Share invite link / code]
@@ -80,7 +80,7 @@ So "it works on my phone" is not enough. It has to pass store review, feel good 
 ### 5.2 Online (friends only)
 - The host creates a **lobby**, picks the game and the level, and shares an **invite link**. A **6-character room code** is a fallback for when links don't open the app.
 - Joiners tap the link → the app opens (or the store page, if not installed) → nickname → lobby.
-- **2–12 players per lobby** *(Claude's call)*. Beer Pong is 1v1: the host picks the two players and everyone else **watches** and can chat.
+- **2–12 players per lobby** *(Claude's call)*. Cup Pong is 1v1: the host picks the two players and everyone else **watches** and can chat.
 - **Text chat** is available from the lobby through the whole game, as a panel that slides over the game screen. Voice chat comes later and must slot into the same place.
 - **The host's phone is the referee** (see Section 10). If the host disconnects, the others see a "host reconnecting" state; if the host doesn't return within **60 seconds** *(Claude's call)*, the lobby closes.
 - If a non-host player disconnects, they are skipped in turn order and can rejoin the same lobby with the same link.
@@ -103,7 +103,7 @@ So "it works on my phone" is not enough. It has to pass store review, feel good 
 - One shared pool of penalties, split by level, used by every game:
   - Truth or Dare: a player refuses a card.
   - Spin the Bottle: the answering player refuses the question.
-  - Beer Pong: the loser.
+  - Cup Pong: the loser.
 - Penalties are things to do (e.g. "do 10 squats", "speak in an accent until your next turn"), never drinking.
 - Online, the penalty card is shown to everyone; doing it is on the honor system.
 
@@ -136,7 +136,7 @@ So "it works on my phone" is not enough. It has to pass store review, feel good 
 - **Online:** the asker **types the question**, and it appears as a large **question card** on everyone's screen (not buried in chat). The answerer types the answer or taps "Take penalty". The flick only drives the animation; the **referee picks the target** and every phone animates the bottle to that target.
 - No winner. The session ends when the host ends it.
 
-### 7.3 Beer Pong
+### 7.3 Cup Pong
 - **1v1, turn-based, one throw per turn** *(one throw is Claude's call)*.
 - **6 cups per side**, triangle layout *(Claude's call; the classic 10 makes phone matches drag)*.
 - The player **flicks the ball with a finger**; speed and direction of the flick set the throw. A ball that lands in a cup removes it.
@@ -190,7 +190,7 @@ Rule: text and controls must meet WCAG AA contrast against the surfaces they sit
 ### 9.3 Shape, depth, motion
 - Rounded corners: ~14–16 dp for cards and buttons, pill shape for chips and level tags.
 - Depth comes from **soft, blurred color blobs** (violet, coral) behind content, not from heavy shadows.
-- Motion is playful but short (roughly 200–300 ms). The big moments get more: the bottle spin, a card flip when drawn, a cup splash in Beer Pong.
+- Motion is playful but short (roughly 200–300 ms). The big moments get more: the bottle spin, a card flip when drawn, a cup splash in Cup Pong.
 - **Haptics** on the big moments: bottle stops, ball lands in a cup, penalty drawn.
 
 ### 9.4 Reference mockups
@@ -247,7 +247,7 @@ All phones   ──observe state──▶ render (animations replay from the pub
 ## 11. Left to the builder
 - Module/package layout, DI library, navigation library, local cache/database library.
 - Exact RTDB/Firestore data schema and security rules, within §10.4.
-- Exact physics constants and feel of the bottle spin and Beer Pong throw.
+- Exact physics constants and feel of the bottle spin and Cup Pong throw.
 - Minimum Android version.
 - How the baseline content is bundled (format and size).
 - Exact animations and screen layouts, within §9.

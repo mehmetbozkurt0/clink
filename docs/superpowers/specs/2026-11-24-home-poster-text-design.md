@@ -13,7 +13,7 @@ Mehmet: the poster text looks too plain and the posters look too empty ("Hem yaz
 ## Design (C)
 Each poster, top to bottom, sizes scaled from the poster width as today:
 1. **Title** — Anton, upper case, as today; **one word is highlighted**: a band in the poster's "other" color behind it, tilted about −2°.
-   - Paper poster (Truth or Dare): pink band. Acid poster (Spin the Bottle): ink band with acid text. Pink poster (Beer Pong): acid band.
+   - Paper poster (Truth or Dare): pink band. Acid poster (Spin the Bottle): ink band with acid text. Pink poster (Cup Pong): acid band.
    - The word comes from a new per-language string (EN: Dare / Spin / Pong; TR: Cesaret / Şişe / Pong), found in the title ignoring case. If it isn't found, the title is drawn without a highlight.
 2. **Drawing** — a new ink-only line drawing per game in the free space (two cards with ? and !, a bottle with spin arrows, three cups with a ball's arc). Line only, no fills, so it works on any poster color. New vector drawables, separate from the colored `art_*` placeholders used on the game list.
 3. **Stamp** — the players text ("2–12 KİŞİ", "1'E 1") in Anton, upper case, inside a 2.5 dp ink outline, tilted about −5°, at the bottom. On the top-right poster it sits bottom-right so the bottom poster doesn't cover it.

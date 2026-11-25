@@ -68,7 +68,7 @@ Top to bottom:
   middle. Each shows the game's name and player count, on a paper / acid / pink background with a tape strip, and
   sways very slowly (about ±1° over ~4 s, each out of phase). **Not tappable** — purely visual, and not announced as
   buttons to screen readers (one content description for the group is enough, e.g. the game names).
-- Featured list = a constant in code, today Truth or Dare, Spin the Bottle, Beer Pong (Mehmet changes it when games are
+- Featured list = a constant in code, today Truth or Dare, Spin the Bottle, Cup Pong (Mehmet changes it when games are
   added). Always exactly three posters.
 - OYNA (primary) and "Kodla katıl" (secondary) at the bottom, unchanged in behaviour: OYNA goes through the existing
   gate (tour → sign-in → profile → game list); "Kodla katıl" opens Join.
@@ -129,7 +129,7 @@ Profile card, three cases:
 Rows:
 - **Dil / Language**: System (follow the phone), Türkçe, English. Changing it applies at once (the screen reloads in
   the new language). Cards and game content follow the same language (today they use `Locale.current.language`).
-- **Titreşim / Haptics**: on by default. Off silences every haptic in the app (Beer Pong, Spin the Bottle, Truth or
+- **Titreşim / Haptics**: on by default. Off silences every haptic in the app (Cup Pong, Spin the Bottle, Truth or
   Dare, online games, player setup). Stored in `LocalPrefs`.
 - **Nasıl oynanır?**: replays the Play tour (`PlayTourRoute(replay = true)`), as the old home link did.
 - **Kodla katılma nasıl?**: replays the Join tour on its own, returning to settings when done, without opening the Join

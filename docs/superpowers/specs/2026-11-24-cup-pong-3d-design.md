@@ -1,10 +1,10 @@
-# Beer Pong 3D: real ball physics and a 3D table
+# Cup Pong 3D: real ball physics and a 3D table
 
-**Date:** 2026-11-24 · **Builds on:** product spec `2026-11-19-party-games-app-design.md` §7.3, look `2026-11-20-graffiti-visual-refresh-design.md`, online play (Plan 4). **Replaces** the hand-written 2D throw model (`BeerPongPhysics.simulateThrow`, `BeerPongTable`).
+**Date:** 2026-11-24 · **Builds on:** product spec `2026-11-19-party-games-app-design.md` §7.3, look `2026-11-20-graffiti-visual-refresh-design.md`, online play (Plan 4). **Replaces** the hand-written 2D throw model (`CupPongPhysics.simulateThrow`, `CupPongTable`).
 
 ## 1. Intent
 
-Mehmet played Beer Pong with a friend and found the throws "didn't follow my hand" and felt "clunky". He wants it to
+Mehmet played Cup Pong with a friend and found the throws "didn't follow my hand" and felt "clunky". He wants it to
 play like the swipe-to-throw cup pong games people know from phones: **real physics** (the ball flies, bounces on the
 table, clips rims, can drop into a neighbouring cup) and **3D cups and ball**, in Clink's own look (theme and colours
 are ours; no copied art or layout).
@@ -93,7 +93,7 @@ finger would reach 0.06 s later (from the release velocity) are both cast onto t
 direction between them is the yaw. Not a throw: moving down, slower than 300 dp/s, or |yaw| > 45°. Speed: 300…3000 dp/s
 maps linearly to 300…400 cm/s. The ball never follows the finger.
 
-### 5.4 Camera and drawing (`BeerPongTable`)
+### 5.4 Camera and drawing (`CupPongTable`)
 Camera at (0, 40, 85) looking at (0, 215, 0); focal length 2.0 × canvas width; horizon point at 30 % of the height.
 Painter's order: a ball that has dropped below the table top is drawn **before** the table (hidden by it); then the
 table (board in tape colour, darker toward the far end, ink border and centre line, a short far-edge face); the ball's
@@ -110,13 +110,13 @@ outcome text (hit / rim / miss), splash 260 ms on a hit, a 400 ms pause, then th
 
 ### 5.6 Online
 The host runs `simulateThrow3d` (via the reducer) and publishes the result **including the flight path** (rounded to
-0.1 cm) in `BeerPongState.lastThrow`; every phone, the host included, replays the published path — no re-simulation, so
+0.1 cm) in `CupPongState.lastThrow`; every phone, the host included, replays the published path — no re-simulation, so
 phones can't disagree. A throwing member still sends only `ThrowInput` (well under the 2 000-character action limit).
-The camera is always the thrower's view, for everyone, as today. Old and new app versions can't share a Beer Pong match
+The camera is always the thrower's view, for everyone, as today. Old and new app versions can't share a Cup Pong match
 (the input means something else) — both phones must be updated.
 
 ### 5.7 Removed
-`BeerPongPhysics.simulateThrow`, `flickToThrow`, the 2D `TableProjection` drawing, and their tests; the spike's test
+`CupPongPhysics.simulateThrow`, `flickToThrow`, the 2D `TableProjection` drawing, and their tests; the spike's test
 door (`/join/spike-pong`).
 
 ### 5.8 Decisions settled after the builder check (Claude's calls)
@@ -127,7 +127,7 @@ door (`/join/spike-pong`).
   integer list (x, y, z per sample). A 4 s path is at most ~240 samples ≈ 4 KB of JSON in `state`, which has no size
   rule (only member actions are capped at 2 000 characters).
 - **Old and new versions together:** no version gate. Session decoding already fails soft (an undecodable state is
-  ignored, no crash), so a mismatched phone just doesn't see the Beer Pong match; both phones must be updated.
+  ignored, no crash), so a mismatched phone just doesn't see the Cup Pong match; both phones must be updated.
 - **Difficulty guard:** a deterministic simulation test with a fixed-seed "average player" (aim noise 2.5°, speed noise
   3.5 %, aiming at a random remaining cup with the ideal speed for its distance) asserts that clearing 6 cups takes at
   most 35 throws on average over 300 racks, so later physics changes can't quietly make matches drag.
@@ -137,7 +137,7 @@ door (`/join/spike-pong`).
 
 ## 6. Constraints
 Kotlin Multiplatform shared code, Compose Multiplatform Canvas, MVI pure reducer, kotlinx.serialization for published
-state; no new dependencies. TR/EN strings unchanged unless a new text is needed. Existing tests outside Beer Pong stay
+state; no new dependencies. TR/EN strings unchanged unless a new text is needed. Existing tests outside Cup Pong stay
 green. CLAUDE.md: Mehmet commits.
 
 ## 7. Left to the builder

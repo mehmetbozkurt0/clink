@@ -32,7 +32,7 @@ stops at a truly random angle, and whoever's sector it points into is picked.
   chips are today. Compact names from 9 players on, as today.
 
 ## Non-goals
-Beer Pong, new games, settings screens (later projects); changing the asking/answering rules.
+Cup Pong, new games, settings screens (later projects); changing the asking/answering rules.
 
 ## Done when
 The bottle visibly stops at arbitrary angles inside sectors (not always on a name), the picked player is the sector it

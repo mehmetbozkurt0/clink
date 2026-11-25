@@ -1,4 +1,4 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import kotlin.math.hypot
 import kotlin.test.Test
@@ -7,9 +7,9 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class BeerPongPhysicsTest {
-    private val all = BeerPongPhysics.ALL_CUPS
-    private val cups = BeerPongPhysics.cups
+class CupPongPhysicsTest {
+    private val all = CupPongPhysics.ALL_CUPS
+    private val cups = CupPongPhysics.cups
 
     @Test
     fun straightThrowAtTheFrontCupGoesIn() {

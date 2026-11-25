@@ -44,8 +44,8 @@
 @Test fun findsTheWordInAnEnglishTitle() = assertEquals(9..12, accentRange("TRUTH OR DARE", "DARE"))
 @Test fun findsTheWordInATurkishTitle() = assertEquals(12..18, accentRange("DOĞRULUK MU CESARET Mİ", "CESARET"))
 @Test fun findsAWordWithDottedCapitalI() = assertEquals(0..3, accentRange("ŞİŞE ÇEVİRMECE", "ŞİŞE"))
-@Test fun missingWordHasNoAccent() = assertNull(accentRange("BEER PONG", "DARE"))
-@Test fun blankWordHasNoAccent() = assertNull(accentRange("BEER PONG", " "))
+@Test fun missingWordHasNoAccent() = assertNull(accentRange("CUP PONG", "DARE"))
+@Test fun blankWordHasNoAccent() = assertNull(accentRange("CUP PONG", " "))
 ```
 
 - [ ] **Step 2: Run** `suite.ps1 -Filter "*PosterAccentTest"` — Expected: compile failure, `accentRange` unresolved.

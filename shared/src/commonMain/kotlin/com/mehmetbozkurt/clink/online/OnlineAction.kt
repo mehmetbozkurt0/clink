@@ -1,6 +1,6 @@
 package com.mehmetbozkurt.clink.online
 
-import com.mehmetbozkurt.clink.game.beerpong.ThrowInput
+import com.mehmetbozkurt.clink.game.cuppong.ThrowInput
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.truthordare.TodAction
 import kotlinx.serialization.SerialName
@@ -24,7 +24,7 @@ sealed interface OnlineAction {
     @Serializable @SerialName("answer")
     data class AnswerQuestion(val text: String) : OnlineAction
 
-    /** Beer Pong: only the flick input is sent; the host computes the result (spec §7.3). */
+    /** Cup Pong: only the flick input is sent; the host computes the result (spec §7.3). */
     @Serializable @SerialName("throw")
     data class Throw(val input: ThrowInput) : OnlineAction
 }

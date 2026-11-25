@@ -392,7 +392,7 @@ Rules: `Spin` (only in `ReadyToSpin`): `target = random.nextInt(players.size)`, 
 **Interfaces:**
 - Consumes: theme and components (Task 7), `Level` (Task 2), `loadBundledContent()` (Task 3)
 - Produces:
-  - `@Serializable enum class GameId { TRUTH_OR_DARE, SPIN_THE_BOTTLE, BEER_PONG }`
+  - `@Serializable enum class GameId { TRUTH_OR_DARE, SPIN_THE_BOTTLE, CUP_PONG }`
   - `object PlayerNames { const val MIN = 2; const val MAX = 12; const val MAX_LENGTH = 20; fun validate(raw: List<String>): PlayerNamesResult }`
   - `sealed interface PlayerNamesResult { data class Valid(val names: List<String>); data object TooFew; data object TooMany; data class Duplicate(val name: String) }` — `validate` trims, drops blank rows, caps each name at 20 characters, then checks count (on the remaining names) and duplicates (case-insensitive)
   - `class AppContainer(val library: ContentLibrary, val random: Random = Random.Default)` and `val LocalAppContainer = staticCompositionLocalOf<AppContainer> { error("AppContainer not provided") }`. `App()` calls `loadBundledContent()` once (`produceState`), shows only `ClinkBackground` until it's loaded, then provides `LocalAppContainer` around `ClinkNavHost`. Game ViewModels get `library` and `random` from it.
@@ -400,7 +400,7 @@ Rules: `Spin` (only in `ReadyToSpin`): `target = random.nextInt(players.size)`, 
 
 Screens:
 - **Welcome:** logo `clink.` (Unbounded 800, coral period), tagline, three game chips, `PrimaryButton` "PLAY" → GameList.
-- **GameList:** three cards. Beer Pong disabled with "Coming soon" until Plan 2.
+- **GameList:** three cards. Cup Pong disabled with "Coming soon" until Plan 2.
 - **ModeSelect:** "With friends" (enabled) and "Online" (disabled, "Coming soon" until Plan 4).
 - **PlayerSetup:** starts with two empty rows; add row (up to 12), remove row, move up/down; "Continue" runs `PlayerNames.validate` and shows the error for `TooFew`/`TooMany`/`Duplicate`.
 - **LevelSelect:** three level cards with `LevelTag` and description; tapping Spicy opens the 18+ dialog every time; only "Yes" continues.
@@ -412,7 +412,7 @@ Copy (EN / TR):
 |---|---|---|
 | tagline | For everyone at the table. | Masadaki herkes için. |
 | play | PLAY | OYNA |
-| game_tod / game_spin / game_beerpong | Truth or Dare / Spin the Bottle / Beer Pong | Doğruluk mu Cesaret mi / Şişe Çevirmece / Beer Pong |
+| game_tod / game_spin / game_cuppong | Truth or Dare / Spin the Bottle / Cup Pong | Doğruluk mu Cesaret mi / Şişe Çevirmece / Cup Pong |
 | coming_soon | Coming soon | Yakında |
 | mode_local / mode_local_sub | With friends / One phone, take turns | Arkadaşlarla / Tek telefon, sırayla |
 | mode_online | Online | Online |
@@ -507,6 +507,6 @@ Copy (EN / TR): `spin_hint` "%s spins — flick the bottle" / "%s çeviriyor, ş
 
 - [ ] **Step 1: Run** `./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug`. Expected: `BUILD SUCCESSFUL`, all tests pass.
 - [ ] **Step 2: Fresh install with no network:** `adb uninstall com.mehmetbozkurt.clink`, turn on airplane mode in the emulator, install, play one round of each game. Expected: works offline with the sample content.
-- [ ] **Step 3: Both languages:** play the Step 2 round once with `--locales en` and once with `--locales tr`. Expected: all UI copy and cards in that language; no English left in the Turkish run except "Beer Pong", "Online", "Casual/Hard/Spicy".
+- [ ] **Step 3: Both languages:** play the Step 2 round once with `--locales en` and once with `--locales tr`. Expected: all UI copy and cards in that language; no English left in the Turkish run except "Cup Pong", "Online", "Casual/Hard/Spicy".
 - [ ] **Step 4: Look:** screenshots of Welcome, Level select and a Truth or Dare card (`adb exec-out screencap -p > <scratchpad>/x.png`); compare with option A in the brainstorm mockup. Report differences to Mehmet; don't redesign.
 - [ ] **Step 5: Report** to Mehmet in Turkish: what works, what was checked, anything that didn't match. Nothing to commit unless a fix was made.

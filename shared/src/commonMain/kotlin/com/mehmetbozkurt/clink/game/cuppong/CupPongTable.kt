@@ -1,4 +1,4 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -34,7 +34,7 @@ import kotlin.math.sin
  * of the table becomes a throw through [flickToThrow]; the ball itself never follows the finger.
  */
 @Composable
-fun BeerPongTable(
+fun CupPongTable(
     cups: Set<Int>,
     flight: ThrowResult?,
     progress: Float,
@@ -64,7 +64,7 @@ fun BeerPongTable(
                 onDragEnd = {
                     if (fromBallArea) {
                         val v = tracker.calculateVelocity()
-                        val camera = BeerPongCamera(canvasSize.width, canvasSize.height)
+                        val camera = CupPongCamera(canvasSize.width, canvasSize.height)
                         flickToThrow(camera, finger.x, finger.y, v.x, v.y, hypot(v.x, v.y) / density)?.let(onFlick)
                     }
                 },
@@ -72,19 +72,19 @@ fun BeerPongTable(
         },
     ) {
         canvasSize = size
-        val camera = BeerPongCamera(size.width, size.height)
+        val camera = CupPongCamera(size.width, size.height)
         val ball = ballAt(points, flight?.cupHit, progress)
         // A ball that dropped below the table top (off an edge) is behind the board: drawn first, the table hides it.
         val underTable = ball != null && ball.z < 0f
         if (underTable) drawBall(camera, ball!!)
         drawBoard(camera)
-        if (ball != null && !underTable && abs(ball.x) <= BeerPongPhysics.TABLE_HALF_WIDTH && ball.y in 0f..BeerPongPhysics.TABLE_LENGTH) {
+        if (ball != null && !underTable && abs(ball.x) <= CupPongPhysics.TABLE_HALF_WIDTH && ball.y in 0f..CupPongPhysics.TABLE_LENGTH) {
             drawBallShadow(camera, ball)
         }
         // Painter's order: far things first.
         val items = cups.map { id ->
             val wobble = wobble(flight, points, progress, id)
-            val center = BeerPongPhysics.cups[id].let { Vec3(it.x + wobble, it.y, it.z) }
+            val center = CupPongPhysics.cups[id].let { Vec3(it.x + wobble, it.y, it.z) }
             center.y to { drawCup(camera, center, if (id == flight?.cupHit) splash else 0f) }
         } + listOfNotNull(ball?.takeIf { !underTable }?.let { b -> b.y - 0.01f to { drawBall(camera, b) } })
         items.sortedByDescending { it.first }.forEach { it.second() }
@@ -93,7 +93,7 @@ fun BeerPongTable(
 
 /** The ball at [progress] along the path; at rest before a throw, gone once it has dropped into a cup. */
 private fun ballAt(points: List<Vec3>?, cupHit: Int?, progress: Float): Vec3? {
-    if (points.isNullOrEmpty()) return BeerPongPhysics.REST
+    if (points.isNullOrEmpty()) return CupPongPhysics.REST
     if (progress >= 1f && cupHit != null) return null
     if (points.size == 1) return points[0]
     val f = progress.coerceIn(0f, 1f) * (points.size - 1)
@@ -122,9 +122,9 @@ private fun DrawScope.polygon(points: List<Offset>) = Path().apply {
 }
 
 /** The board in tape colour, darker toward the far end (depth), with an ink border, centre line and far-edge face. */
-private fun DrawScope.drawBoard(camera: BeerPongCamera) {
-    val w = BeerPongPhysics.TABLE_HALF_WIDTH
-    val l = BeerPongPhysics.TABLE_LENGTH
+private fun DrawScope.drawBoard(camera: CupPongCamera) {
+    val w = CupPongPhysics.TABLE_HALF_WIDTH
+    val l = CupPongPhysics.TABLE_LENGTH
     val corners = listOf(Vec3(-w, 0f, 0f), Vec3(w, 0f, 0f), Vec3(w, l, 0f), Vec3(-w, l, 0f)).map { camera.project(it).offset() }
     val board = polygon(corners)
     drawPath(board, Brush.verticalGradient(listOf(lerp(ClinkColors.Tape, ClinkColors.Ink, 0.18f), ClinkColors.Tape), startY = corners[2].y, endY = size.height))
@@ -136,14 +136,14 @@ private fun DrawScope.drawBoard(camera: BeerPongCamera) {
 }
 
 /** An empty cup: contact shadow, a left-lit pink body, a dark opening, a paper rim, and a splash ring on a hit. */
-private fun DrawScope.drawCup(camera: BeerPongCamera, c: Vec3, splash: Float) {
+private fun DrawScope.drawCup(camera: CupPongCamera, c: Vec3, splash: Float) {
     fun ring(radius: Float, z: Float) = (0 until CUP_SEGMENTS).map { i ->
         val a = 2f * PI.toFloat() * i / CUP_SEGMENTS
         camera.project(Vec3(c.x + cos(a) * radius, c.y + sin(a) * radius, z)).offset()
     }
-    drawPath(polygon(ring(BeerPongPhysics.CUP_BOTTOM_RADIUS * 1.45f, 0f)), ClinkColors.Ink.copy(alpha = 0.38f))
-    val rim = ring(BeerPongPhysics.CUP_TOP_RADIUS, BeerPongPhysics.CUP_HEIGHT)
-    val outline = convexHull(rim + ring(BeerPongPhysics.CUP_BOTTOM_RADIUS, 0f))
+    drawPath(polygon(ring(CupPongPhysics.CUP_BOTTOM_RADIUS * 1.45f, 0f)), ClinkColors.Ink.copy(alpha = 0.38f))
+    val rim = ring(CupPongPhysics.CUP_TOP_RADIUS, CupPongPhysics.CUP_HEIGHT)
+    val outline = convexHull(rim + ring(CupPongPhysics.CUP_BOTTOM_RADIUS, 0f))
     val body = polygon(outline)
     val dark = lerp(ClinkColors.Pink, ClinkColors.Ink, 0.45f)
     val light = lerp(ClinkColors.Pink, Color.White, 0.35f)
@@ -162,29 +162,29 @@ private fun DrawScope.drawCup(camera: BeerPongCamera, c: Vec3, splash: Float) {
         ),
     )
     clipPath(opening) {
-        drawPath(polygon(ring(BeerPongPhysics.CUP_TOP_RADIUS * 0.8f, BeerPongPhysics.CUP_HEIGHT - 5f)), lerp(ClinkColors.Pink, ClinkColors.Ink, 0.62f))
+        drawPath(polygon(ring(CupPongPhysics.CUP_TOP_RADIUS * 0.8f, CupPongPhysics.CUP_HEIGHT - 5f)), lerp(ClinkColors.Pink, ClinkColors.Ink, 0.62f))
     }
-    val rimWidth = BeerPongPhysics.CUP_TOP_RADIUS * camera.focal / camera.project(c).third * 0.14f
+    val rimWidth = CupPongPhysics.CUP_TOP_RADIUS * camera.focal / camera.project(c).third * 0.14f
     drawPath(opening, ClinkColors.Paper, style = Stroke(width = rimWidth.coerceAtLeast(1.5f)))
     if (splash > 0f) {
-        val ripple = polygon(ring(BeerPongPhysics.CUP_TOP_RADIUS * (1f + splash * 1.3f), BeerPongPhysics.CUP_HEIGHT))
+        val ripple = polygon(ring(CupPongPhysics.CUP_TOP_RADIUS * (1f + splash * 1.3f), CupPongPhysics.CUP_HEIGHT))
         drawPath(ripple, ClinkColors.Acid.copy(alpha = 1f - splash), style = Stroke(width = 3.dp.toPx()))
     }
 }
 
 private const val CUP_SEGMENTS = 40
 
-private fun DrawScope.drawBallShadow(camera: BeerPongCamera, ball: Vec3) {
+private fun DrawScope.drawBallShadow(camera: CupPongCamera, ball: Vec3) {
     val (x, y, depth) = camera.project(Vec3(ball.x, ball.y, 0f))
-    val r = BeerPongPhysics.BALL_RADIUS * camera.focal / depth
+    val r = CupPongPhysics.BALL_RADIUS * camera.focal / depth
     val fade = (1f - ball.z / 80f).coerceIn(0.15f, 1f)
     drawOval(ClinkColors.Ink.copy(alpha = 0.4f * fade), Offset(x - r, y - r * 0.35f), Size(r * 2f, r * 0.7f))
 }
 
 /** A paper sphere lit from the upper left, with an ink edge. */
-private fun DrawScope.drawBall(camera: BeerPongCamera, ball: Vec3) {
+private fun DrawScope.drawBall(camera: CupPongCamera, ball: Vec3) {
     val (x, y, depth) = camera.project(ball)
-    val r = BeerPongPhysics.BALL_RADIUS * camera.focal / depth
+    val r = CupPongPhysics.BALL_RADIUS * camera.focal / depth
     val center = Offset(x, y)
     drawCircle(
         Brush.radialGradient(

@@ -193,9 +193,9 @@ private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
                 when (game.game) {
                     GameId.TRUTH_OR_DARE -> OnlineTruthOrDare(game, me, send, onClose, chatButton)
                     GameId.SPIN_THE_BOTTLE -> OnlineSpinTheBottle(game, me, send, onClose, chatButton)
-                    GameId.BEER_PONG -> {
+                    GameId.CUP_PONG -> {
                         val online = snap.members.filter { it.online }.map { it.uid }.toSet()
-                        OnlineBeerPong(
+                        OnlineCupPong(
                             session = game,
                             me = me,
                             paused = isPaused(game, online),
@@ -284,10 +284,10 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
     var askAdult by remember { mutableStateOf(false) }
     var starting by remember { mutableStateOf(false) }
     var startFailed by remember { mutableStateOf(false) }
-    // Beer Pong: the two picked players, if both are still here and online.
+    // Cup Pong: the two picked players, if both are still here and online.
     val livePair = pair.filter { uid -> players.any { it.uid == uid && (it.online || it.uid == session.me.uid) } }
     val ready = players.count { it.online || it.uid == session.me.uid }
-    val canStart = if (meta.game == GameId.BEER_PONG) livePair.size == 2 || (ready == 2 && pair.isEmpty()) else ready >= 2
+    val canStart = if (meta.game == GameId.CUP_PONG) livePair.size == 2 || (ready == 2 && pair.isEmpty()) else ready >= 2
     // The invite: the code and the link that opens the app (spec §5.1).
     val invite = stringResource(Res.string.lobby_invite_text, session.code, inviteLink(session.code))
 
@@ -335,7 +335,7 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
                 color = ClinkColors.Muted,
                 style = MaterialTheme.typography.labelLarge,
             )
-            if (session.isHost && meta.game == GameId.BEER_PONG && players.size > 2) {
+            if (session.isHost && meta.game == GameId.CUP_PONG && players.size > 2) {
                 Text(stringResource(Res.string.lobby_pick_pair), color = ClinkColors.Amber, style = MaterialTheme.typography.bodyMedium)
             }
             players.forEach { member ->
@@ -345,7 +345,7 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
                     isHost = member.uid == meta.hostUid,
                     isMe = member.uid == session.me.uid,
                     picked = picked,
-                    onPick = if (session.isHost && meta.game == GameId.BEER_PONG) {
+                    onPick = if (session.isHost && meta.game == GameId.CUP_PONG) {
                         { pair = if (picked) pair - member.uid else (livePair + member.uid).takeLast(2) }
                     } else {
                         null
@@ -357,7 +357,7 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
         if (session.isHost) {
             if (startFailed || !canStart) {
                 Text(
-                    text = stringResource(if (meta.game == GameId.BEER_PONG && ready > 2) Res.string.lobby_pick_pair else Res.string.lobby_need_two),
+                    text = stringResource(if (meta.game == GameId.CUP_PONG && ready > 2) Res.string.lobby_pick_pair else Res.string.lobby_need_two),
                     color = ClinkColors.Muted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -369,7 +369,7 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
                 onClick = {
                     starting = true
                     scope.launch {
-                        val chosen = if (meta.game == GameId.BEER_PONG && livePair.size == 2) livePair else null
+                        val chosen = if (meta.game == GameId.CUP_PONG && livePair.size == 2) livePair else null
                         startFailed = !session.startGame(chosen)
                         starting = false
                     }

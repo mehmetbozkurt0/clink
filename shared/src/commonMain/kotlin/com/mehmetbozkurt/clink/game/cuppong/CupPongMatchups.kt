@@ -1,4 +1,4 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import kotlinx.serialization.Serializable
 

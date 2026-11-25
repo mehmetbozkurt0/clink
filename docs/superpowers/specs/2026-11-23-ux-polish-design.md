@@ -129,7 +129,7 @@ signed in with a profile, the 4th card still shows; its button just continues to
 
 | # | Title (TR / EN) | Body | Preview |
 |---|---|---|---|
-| 1 | Üç oyun, tek uygulama / Three games, one app | Truth or Dare, Spin the Bottle and Beer Pong. | Game list posters |
+| 1 | Üç oyun, tek uygulama / Three games, one app | Truth or Dare, Spin the Bottle and Cup Pong. | Game list posters |
 | 2 | Tek telefon ya da online / One phone or online | Pass one phone around the table, or everyone joins from their own phone. | Mode posters |
 | 3 | Seviyeni seç / Pick a level | Casual, Hard or Spicy (18+). | Level cards |
 | 4 | Kuranın hesabı olur / The host has an account | You sign in with Google to host; your friends join without one. | Profile poster (avatar + name) |

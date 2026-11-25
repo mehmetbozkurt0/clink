@@ -1,4 +1,4 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
@@ -16,9 +16,9 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.resources.Res
-import com.mehmetbozkurt.clink.resources.bp_setup_hint
-import com.mehmetbozkurt.clink.resources.bp_setup_title
-import com.mehmetbozkurt.clink.resources.bp_start_match
+import com.mehmetbozkurt.clink.resources.cp_setup_hint
+import com.mehmetbozkurt.clink.resources.cp_setup_title
+import com.mehmetbozkurt.clink.resources.cp_start_match
 import com.mehmetbozkurt.clink.ui.components.PrimaryButton
 import com.mehmetbozkurt.clink.ui.components.TopBar
 import com.mehmetbozkurt.clink.ui.components.TopBarNav
@@ -38,13 +38,13 @@ private val SelectionSaver = listSaver<SnapshotStateList<Int>, Int>(
  * tapping a third player replaces the one picked first.
  */
 @Composable
-fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinner: Int?, onStart: (Matchup) -> Unit, onBack: () -> Unit) {
+fun CupPongSetupScreen(players: List<String>, suggested: Matchup, previousWinner: Int?, onStart: (Matchup) -> Unit, onBack: () -> Unit) {
     val selected = rememberSaveable(saver = SelectionSaver) { mutableStateListOf(suggested.first, suggested.second) }
 
     ScreenColumn {
         TopBar(navigation = TopBarNav.Back, onNavigate = onBack)
-        ScreenTitle(stringResource(Res.string.bp_setup_title))
-        Text(stringResource(Res.string.bp_setup_hint), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyLarge)
+        ScreenTitle(stringResource(Res.string.cp_setup_title))
+        Text(stringResource(Res.string.cp_setup_hint), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyLarge)
         // Scrolls, so 12 long names or a large font never push "Start match" off the screen.
         FlowRow(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
@@ -70,7 +70,7 @@ fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinne
             }
         }
         PrimaryButton(
-            text = stringResource(Res.string.bp_start_match),
+            text = stringResource(Res.string.cp_start_match),
             // Re-checked here: `enabled` only updates on the next frame.
             onClick = { if (selected.size == 2) onStart(matchupFromSelection(selected.toList(), previousWinner)) },
             modifier = Modifier.fillMaxWidth(),

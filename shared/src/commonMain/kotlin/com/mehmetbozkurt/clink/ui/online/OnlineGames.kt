@@ -39,11 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.LocalAppContainer
-import com.mehmetbozkurt.clink.game.beerpong.BeerPongState
-import com.mehmetbozkurt.clink.game.beerpong.BeerPongTable
-import com.mehmetbozkurt.clink.game.beerpong.BpPhase
-import com.mehmetbozkurt.clink.game.beerpong.Flight
-import com.mehmetbozkurt.clink.game.beerpong.MatchOverPanel
+import com.mehmetbozkurt.clink.game.cuppong.CupPongState
+import com.mehmetbozkurt.clink.game.cuppong.CupPongTable
+import com.mehmetbozkurt.clink.game.cuppong.CpPhase
+import com.mehmetbozkurt.clink.game.cuppong.Flight
+import com.mehmetbozkurt.clink.game.cuppong.MatchOverPanel
 import com.mehmetbozkurt.clink.game.spinthebottle.BottleCircle
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinMotion
@@ -64,11 +64,11 @@ import com.mehmetbozkurt.clink.online.SessionState
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.answered
 import com.mehmetbozkurt.clink.resources.asks_answers
-import com.mehmetbozkurt.clink.resources.bp_hint
-import com.mehmetbozkurt.clink.resources.bp_hit
-import com.mehmetbozkurt.clink.resources.bp_miss
-import com.mehmetbozkurt.clink.resources.bp_rim_out
-import com.mehmetbozkurt.clink.resources.bp_score
+import com.mehmetbozkurt.clink.resources.cp_hint
+import com.mehmetbozkurt.clink.resources.cp_hit
+import com.mehmetbozkurt.clink.resources.cp_miss
+import com.mehmetbozkurt.clink.resources.cp_rim_out
+import com.mehmetbozkurt.clink.resources.cp_score
 import com.mehmetbozkurt.clink.resources.card_missing
 import com.mehmetbozkurt.clink.resources.landed_on_self
 import com.mehmetbozkurt.clink.resources.notice_no_penalty
@@ -362,7 +362,7 @@ private fun TextEntry(hint: String, button: String, key: Any, onSend: (String) -
 }
 
 @Composable
-internal fun OnlineBeerPong(
+internal fun OnlineCupPong(
     session: SessionState,
     me: OnlineSeat,
     paused: Boolean,
@@ -371,7 +371,7 @@ internal fun OnlineBeerPong(
     onClose: () -> Unit,
     topBarExtras: @Composable RowScope.() -> Unit,
 ) {
-    val state = session.beerPong ?: return
+    val state = session.cupPong ?: return
     val haptics = LocalHapticFeedback.current
     var flight by remember { mutableStateOf<Flight?>(null) }
     var outcome by remember { mutableStateOf<StringResource?>(null) }
@@ -399,9 +399,9 @@ internal fun OnlineBeerPong(
             // The physics sets the pace: the flight replays in real time.
             progress.animateTo(1f, tween(durationMillis = result.durationMillis, easing = LinearEasing))
             outcome = when {
-                result.cupHit != null -> Res.string.bp_hit
-                bounced -> Res.string.bp_rim_out
-                else -> Res.string.bp_miss
+                result.cupHit != null -> Res.string.cp_hit
+                bounced -> Res.string.cp_rim_out
+                else -> Res.string.cp_miss
             }
             if (result.cupHit != null) {
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -425,7 +425,7 @@ internal fun OnlineBeerPong(
     }
     fun cupsLeft(player: Int) = if (player == defender) rack.size else state.cups[player].size
     val myThrow = me.seat == state.thrower
-    val over = state.phase as? BpPhase.MatchOver
+    val over = state.phase as? CpPhase.MatchOver
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
         TopBar(navigation = TopBarNav.Close, onNavigate = onClose) {
@@ -433,7 +433,7 @@ internal fun OnlineBeerPong(
             if (over == null || shown != null) TurnBadge(name = state.players[thrower], index = thrower)
         }
         Text(
-            text = stringResource(Res.string.bp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)).toUpperCase(Locale.current),
+            text = stringResource(Res.string.cp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)).toUpperCase(Locale.current),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             color = ClinkColors.Muted,
             style = MaterialTheme.typography.labelLarge,
@@ -461,12 +461,12 @@ internal fun OnlineBeerPong(
             )
             if (!me.isHost) WaitingLabel(stringResource(Res.string.online_waiting_host))
         } else {
-            BeerPongTable(
+            CupPongTable(
                 cups = rack,
                 flight = shown?.result,
                 progress = progress.value,
                 splash = splash.value,
-                flickEnabled = shown == null && !awaitingThrow && !paused && myThrow && state.phase == BpPhase.Aiming,
+                flickEnabled = shown == null && !awaitingThrow && !paused && myThrow && state.phase == CpPhase.Aiming,
                 onFlick = { input ->
                     awaitingThrow = true
                     send(OnlineAction.Throw(input))
@@ -476,13 +476,13 @@ internal fun OnlineBeerPong(
             val hint = when {
                 outcome != null -> stringResource(outcome!!)
                 paused -> stringResource(Res.string.online_reconnecting_player, state.players[state.thrower])
-                myThrow -> stringResource(Res.string.bp_hint)
+                myThrow -> stringResource(Res.string.cp_hint)
                 else -> stringResource(Res.string.online_waiting_for, state.players[state.thrower])
             }
             Text(
                 text = hint,
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                color = if (outcome == Res.string.bp_hit) ClinkColors.Acid else ClinkColors.Muted,
+                color = if (outcome == Res.string.cp_hit) ClinkColors.Acid else ClinkColors.Muted,
                 style = if (outcome != null) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )

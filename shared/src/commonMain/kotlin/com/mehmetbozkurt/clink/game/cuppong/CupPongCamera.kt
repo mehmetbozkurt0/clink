@@ -1,11 +1,11 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 
 /** A camera behind the thrower looking down the table (spec §5.4): projects world points onto a canvas of this size. */
-class BeerPongCamera(width: Float, height: Float) {
+class CupPongCamera(width: Float, height: Float) {
     private val eye = Vec3(0f, 40f, 85f)
     private val forward = (Vec3(0f, 215f, 0f) - eye).normalized()
     private val right = (forward cross Vec3(0f, 0f, 1f)).normalized()
@@ -33,10 +33,10 @@ class BeerPongCamera(width: Float, height: Float) {
 /**
  * A flick → a throw (spec §5.3). The direction is the finger's movement across the table: the release point and where
  * the finger would be 0.06 s later are both cast onto the table. The flick speed (300…3000 dp/s) sets the launch speed.
- * Not a throw: too slow, moving down, or more than [BeerPongPhysics.MAX_YAW] off straight.
+ * Not a throw: too slow, moving down, or more than [CupPongPhysics.MAX_YAW] off straight.
  */
 fun flickToThrow(
-    camera: BeerPongCamera,
+    camera: CupPongCamera,
     releaseX: Float,
     releaseY: Float,
     velocityX: Float,
@@ -49,9 +49,9 @@ fun flickToThrow(
     val to = generateSequence(LOOK_AHEAD_SECONDS) { it / 2f }.take(5)
         .firstNotNullOfOrNull { camera.onTable(releaseX + velocityX * it, releaseY + velocityY * it) } ?: return null
     val yaw = atan2(to.x - from.x, to.y - from.y) * 180f / PI.toFloat()
-    if (abs(yaw) > BeerPongPhysics.MAX_YAW) return null
+    if (abs(yaw) > CupPongPhysics.MAX_YAW) return null
     val t = ((speedDpPerSecond - MIN_FLICK) / (MAX_FLICK - MIN_FLICK)).coerceIn(0f, 1f)
-    return ThrowInput(yaw, BeerPongPhysics.MIN_SPEED + t * (BeerPongPhysics.MAX_SPEED - BeerPongPhysics.MIN_SPEED))
+    return ThrowInput(yaw, CupPongPhysics.MIN_SPEED + t * (CupPongPhysics.MAX_SPEED - CupPongPhysics.MIN_SPEED))
 }
 
 private const val MIN_FLICK = 300f

@@ -59,18 +59,18 @@ data class SpinTheBottleRoute(val players: List<String>, val level: Level)
 
 /** Picking the two match players when there are more than two (indexes into [players]). */
 @Serializable
-data class BeerPongSetupRoute(
+data class CupPongSetupRoute(
     val players: List<String>,
     val level: Level,
     val previousWinner: Int? = null,
     val previousLoser: Int? = null,
 )
 
-/** One Beer Pong match: [first] and [second] index into the full session list [players]; [first] throws first. */
+/** One Cup Pong match: [first] and [second] index into the full session list [players]; [first] throws first. */
 @Serializable
-data class BeerPongRoute(val players: List<String>, val level: Level, val first: Int, val second: Int)
+data class CupPongRoute(val players: List<String>, val level: Level, val first: Int, val second: Int)
 
-/** [matchWinner] and [matchLoser] (indexes into [players]) let Beer Pong's "Play again" keep the winner on. */
+/** [matchWinner] and [matchLoser] (indexes into [players]) let Cup Pong's "Play again" keep the winner on. */
 @Serializable
 data class GameOverRoute(
     val game: GameId,

@@ -18,20 +18,20 @@ Mehmet compared six directions side by side (Midnight, Candypop, Retro Pub, Grun
 ## 2. Goals, non-goals, anti-goals
 
 **Goals**
-- Every screen of the app in the new Street / Graffiti look: Welcome, Game list, Mode, Players, Level, Truth or Dare, Spin the Bottle, Beer Pong (match picker, table, match over), Game over, and all dialogs.
+- Every screen of the app in the new Street / Graffiti look: Welcome, Game list, Mode, Players, Level, Truth or Dare, Spin the Bottle, Cup Pong (match picker, table, match over), Game over, and all dialogs.
 - Remove the low-resolution feel (see §5).
 - The UX upgrades in §6.
 - Real assets instead of text, emoji or hand-drawn glyphs (see §7).
 
 **Non-goals (this step)**
-- Beer Pong's throw feel and physics. Mehmet set it aside as its own piece of work; this step only restyles the table, cups and ball.
+- Cup Pong's throw feel and physics. Mehmet set it aside as its own piece of work; this step only restyles the table, cups and ball.
 - New features or screens beyond §6 (no settings screen, no sound, no onboarding tour).
 - Firebase, accounts, online play (Plans 3–4).
 
 **Anti-goals** (failure even if it technically works)
 - Handwritten or spray fonts on anything people must read quickly (card questions, buttons, names, rules).
 - Texture so strong that text or buttons are hard to see, or that looks dirty rather than designed.
-- Any drinking imagery or wording (spec §10.5). Beer Pong cups are drawn empty; the Spin bottle is a plain bottle with no label.
+- Any drinking imagery or wording (spec §10.5). Cup Pong cups are drawn empty; the Spin bottle is a plain bottle with no label.
 - Slower screens: no per-frame heavy effects; textures are static images.
 
 ## 3. Visual system
@@ -86,13 +86,13 @@ Same flow and copy as today unless stated. Every screen gets the shared top bar 
 - **Game list:** title "Ne oynuyoruz?" (EN "What are we playing?"); one poster per game with illustration (§7), name, player count and a one-line rule:
   - Truth or Dare — "2–12 kişi · Kart çek, yap ya da ceza" / "2–12 players · Draw a card, do it or take a penalty"
   - Spin the Bottle — "2–12 kişi · Şişe kimi gösterirse" / "2–12 players · Whoever the bottle picks"
-  - Beer Pong — "1'e 1 · Topu bardağa fırlat" / "1v1 · Flick the ball into the cups"
+  - Cup Pong — "1'e 1 · Topu bardağa fırlat" / "1v1 · Flick the ball into the cups"
 - **Mode:** two posters (With friends / Online "Coming soon").
 - **Players:** title + counter "3 / 12"; rows with a colored initial badge, the name field, a drag handle and a remove icon; dashed "+ Add player"; `DEVAM` CTA. Error text in `amber`.
 - **Level:** three posters with the level pill and description; Spicy keeps the 18+ dialog every time.
 - **Truth or Dare:** top bar with close (×) and a turn badge (initial + "SIRA: MERT"); choosing = two large neon panels (Truth acid, Dare pink); card = paper poster with level + type pills, the question in Archivo 800, a Permanent Marker hint ("Cevap ver ya da ceza çek"); buttons `YAPTI` (acid) / `CEZA ÇEK` (pink). The card is sized to its content, not stretched to the full height *(fixes the Plan 1 look note)*.
 - **Spin the Bottle:** names as wall chips around the circle (spinner acid, answerer pink); the bottle illustration (§7); prompt and buttons as in ToD.
-- **Beer Pong:** table drawn as a paper/plywood surface on the wall, cups with acid/pink rims, empty; ball white with a hard shadow; match picker with chips as stickers; match-over panel as a poster. Also fixes the carried-over copy issues: no "Turn: winner" header on match over; with an empty penalty pool the card doesn't say "Penalty!".
+- **Cup Pong:** table drawn as a paper/plywood surface on the wall, cups with acid/pink rims, empty; ball white with a hard shadow; match picker with chips as stickers; match-over panel as a poster. Also fixes the carried-over copy issues: no "Turn: winner" header on match over; with an empty penalty pool the card doesn't say "Penalty!".
 - **Game over:** no top bar; big Anton "OYUN BİTTİ", game name as a tape label, CTAs.
 - **Dialogs** (18+, End game): paper poster dialogs with Anton title and neon buttons.
 
@@ -112,7 +112,7 @@ So the fix is about **detail and crispness**, not resolution:
 
 ## 6. UX upgrades
 
-- **Shared top bar** on every screen except Welcome and Game over: back (‹) on flow screens (Game list, Mode, Players, Level, Beer Pong match picker), close (×) on game screens (close opens the End-game dialog, like system back). 48 dp touch targets. **Navigation doesn't change:** ‹ does exactly what system back does today. Game over has no top bar *(Claude's call)*: it already has two explicit buttons, and a ‹ there would lead back to Level select, which is easy to hit by mistake. *(Claude's call: the match picker counts as a flow screen.)*
+- **Shared top bar** on every screen except Welcome and Game over: back (‹) on flow screens (Game list, Mode, Players, Level, Cup Pong match picker), close (×) on game screens (close opens the End-game dialog, like system back). 48 dp touch targets. **Navigation doesn't change:** ‹ does exactly what system back does today. Game over has no top bar *(Claude's call)*: it already has two explicit buttons, and a ‹ there would lead back to Level select, which is easy to hit by mistake. *(Claude's call: the match picker counts as a flow screen.)*
 - **Primary action always at the bottom**, full width, in thumb reach.
 - **Real icons** everywhere (back, close, drag handle, remove, game icons) — see §7.
 - **Players:** reorder by **long-press and drag** on the handle, replacing the ↑/↓ buttons; remove with the × icon; colored initial badges (colors cycle acid, pink, amber, paper); counter "n / 12".

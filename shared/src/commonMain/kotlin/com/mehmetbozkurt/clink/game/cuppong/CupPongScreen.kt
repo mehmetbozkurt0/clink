@@ -1,4 +1,4 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -37,13 +37,13 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import com.mehmetbozkurt.clink.LocalAppContainer
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.resources.Res
-import com.mehmetbozkurt.clink.resources.bp_hint
-import com.mehmetbozkurt.clink.resources.bp_hit
-import com.mehmetbozkurt.clink.resources.bp_loser_penalty
-import com.mehmetbozkurt.clink.resources.bp_miss
-import com.mehmetbozkurt.clink.resources.bp_rim_out
-import com.mehmetbozkurt.clink.resources.bp_score
-import com.mehmetbozkurt.clink.resources.bp_win
+import com.mehmetbozkurt.clink.resources.cp_hint
+import com.mehmetbozkurt.clink.resources.cp_hit
+import com.mehmetbozkurt.clink.resources.cp_loser_penalty
+import com.mehmetbozkurt.clink.resources.cp_miss
+import com.mehmetbozkurt.clink.resources.cp_rim_out
+import com.mehmetbozkurt.clink.resources.cp_score
+import com.mehmetbozkurt.clink.resources.cp_win
 import com.mehmetbozkurt.clink.resources.continue_button
 import com.mehmetbozkurt.clink.resources.notice_no_penalty
 import com.mehmetbozkurt.clink.resources.penalty_done
@@ -67,12 +67,12 @@ import org.jetbrains.compose.resources.stringResource
 internal data class Flight(val thrower: Int, val cupsBefore: Set<Int>, val result: ThrowResult)
 
 /**
- * One Beer Pong match on one phone. [players] are the two match players in throwing order;
+ * One Cup Pong match on one phone. [players] are the two match players in throwing order;
  * [onMatchOver] gets the winner and loser as 0/1 in that list. [playerIndexes] are their positions in the full
  * player list, so their turn badges keep their colors from the Players screen.
  */
 @Composable
-fun BeerPongScreen(
+fun CupPongScreen(
     players: List<String>,
     level: Level,
     onMatchOver: (winner: Int, loser: Int) -> Unit,
@@ -80,7 +80,7 @@ fun BeerPongScreen(
     playerIndexes: List<Int>,
 ) {
     val container = LocalAppContainer.current
-    val viewModel = viewModel { BeerPongViewModel(players, level, container.library, container.random) }
+    val viewModel = viewModel { CupPongViewModel(players, level, container.library, container.random) }
     val state by viewModel.state.collectAsState()
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
@@ -93,9 +93,9 @@ fun BeerPongScreen(
     val tapGuard = rememberPhaseTapGuard(state.phase)
 
     fun throwBall(input: ThrowInput) {
-        if (flight != null || state.phase != BpPhase.Aiming) return
+        if (flight != null || state.phase != CpPhase.Aiming) return
         val before = state
-        viewModel.onAction(BpAction.Throw(input))
+        viewModel.onAction(CpAction.Throw(input))
         val after = viewModel.state.value
         val result = after.lastThrow ?: return
         flight = Flight(before.thrower, before.cups[1 - before.thrower], result)
@@ -106,9 +106,9 @@ fun BeerPongScreen(
             // The physics sets the pace: the flight replays in real time.
             progress.animateTo(1f, tween(durationMillis = result.durationMillis, easing = LinearEasing))
             outcome = when {
-                result.cupHit != null -> Res.string.bp_hit
-                bounced -> Res.string.bp_rim_out
-                else -> Res.string.bp_miss
+                result.cupHit != null -> Res.string.cp_hit
+                bounced -> Res.string.cp_rim_out
+                else -> Res.string.cp_miss
             }
             if (result.cupHit != null) {
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -117,7 +117,7 @@ fun BeerPongScreen(
             delay(400)
             outcome = null
             flight = null
-            if ((viewModel.state.value.phase as? BpPhase.MatchOver)?.penaltyCardId != null) {
+            if ((viewModel.state.value.phase as? CpPhase.MatchOver)?.penaltyCardId != null) {
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         }
@@ -138,14 +138,14 @@ fun BeerPongScreen(
     }
     fun cupsLeft(player: Int) = if (player == defender) rack.size else state.cups[player].size
 
-    val over = state.phase as? BpPhase.MatchOver
+    val over = state.phase as? CpPhase.MatchOver
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
         TopBar(navigation = TopBarNav.Close, onNavigate = { confirmEnd = true }) {
             // No turn on match over: nobody throws any more.
             if (over == null || shown != null) TurnBadge(name = state.players[thrower], index = playerIndexes[thrower])
         }
         Text(
-            text = stringResource(Res.string.bp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)).toUpperCase(Locale.current),
+            text = stringResource(Res.string.cp_score, state.players[0], cupsLeft(0), state.players[1], cupsLeft(1)).toUpperCase(Locale.current),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             color = ClinkColors.Muted,
             style = MaterialTheme.typography.labelLarge,
@@ -163,19 +163,19 @@ fun BeerPongScreen(
                 modifier = Modifier.weight(1f),
             )
         } else {
-            BeerPongTable(
+            CupPongTable(
                 cups = rack,
                 flight = shown?.result,
                 progress = progress.value,
                 splash = splash.value,
-                flickEnabled = shown == null && state.phase == BpPhase.Aiming,
+                flickEnabled = shown == null && state.phase == CpPhase.Aiming,
                 onFlick = ::throwBall,
                 modifier = Modifier.weight(1f).fillMaxWidth(),
             )
             Text(
-                text = stringResource(outcome ?: Res.string.bp_hint),
+                text = stringResource(outcome ?: Res.string.cp_hint),
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                color = if (outcome == Res.string.bp_hit) ClinkColors.Acid else ClinkColors.Muted,
+                color = if (outcome == Res.string.cp_hit) ClinkColors.Acid else ClinkColors.Muted,
                 style = if (outcome != null) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
@@ -202,7 +202,7 @@ internal fun MatchOverPanel(
             verticalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterVertically),
         ) {
             Text(
-                text = stringResource(Res.string.bp_win, winner).toUpperCase(Locale.current),
+                text = stringResource(Res.string.cp_win, winner).toUpperCase(Locale.current),
                 color = ClinkColors.Acid,
                 style = MaterialTheme.typography.displaySmall,
             )
@@ -216,7 +216,7 @@ internal fun MatchOverPanel(
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Text(
-                        stringResource(Res.string.bp_loser_penalty, loser),
+                        stringResource(Res.string.cp_loser_penalty, loser),
                         modifier = Modifier.padding(top = 4.dp),
                         color = ClinkColors.InkMuted,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),

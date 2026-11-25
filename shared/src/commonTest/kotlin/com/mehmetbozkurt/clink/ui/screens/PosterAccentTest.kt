@@ -15,8 +15,8 @@ class PosterAccentTest {
     fun findsAWordWithDottedCapitalI() = assertEquals(0..3, accentRange("ŞİŞE ÇEVİRMECE", "ŞİŞE"))
 
     @Test
-    fun missingWordHasNoAccent() = assertNull(accentRange("BEER PONG", "DARE"))
+    fun missingWordHasNoAccent() = assertNull(accentRange("CUP PONG", "DARE"))
 
     @Test
-    fun blankWordHasNoAccent() = assertNull(accentRange("BEER PONG", " "))
+    fun blankWordHasNoAccent() = assertNull(accentRange("CUP PONG", " "))
 }

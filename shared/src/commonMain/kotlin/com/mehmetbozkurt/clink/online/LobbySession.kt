@@ -197,14 +197,14 @@ class LobbySession internal constructor(
         return if (isHost) HostStatus.Online else hostStatus(meta.hostOnline, meta.hostSeenAt, now())
     }
 
-    /** Host: starts [LobbyMeta.game] with the online members (Beer Pong: the two in [players]). False if it can't. */
+    /** Host: starts [LobbyMeta.game] with the online members (Cup Pong: the two in [players]). False if it can't. */
     suspend fun startGame(players: List<String>? = null): Boolean {
         if (!isHost) return false
         val snap = snapshot.value ?: return false
         val meta = snap.meta ?: return false
         val ready = playerOrder(snap.members).filter { it.online || it.uid == me.uid }
         val chosen = if (players != null) ready.filter { it.uid in players } else ready
-        val enough = if (meta.game == GameId.BEER_PONG) chosen.size == 2 else chosen.size >= 2
+        val enough = if (meta.game == GameId.CUP_PONG) chosen.size == 2 else chosen.size >= 2
         if (!enough) return false
         mutex.withLock {
             val next = HostReferee.start(meta.game, meta.level, chosen, library, random, seq = (current?.seq ?: 0) + 1)

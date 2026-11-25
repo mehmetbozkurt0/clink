@@ -7,7 +7,7 @@ The spec covers several independent subsystems, so it is built as five plans. Ea
 | # | Plan | Ends with | Spec sections |
 |---|---|---|---|
 | 1 | **Foundation + local Truth or Dare and Spin the Bottle** | An Android app that runs offline: Midnight theme, welcome → game → mode → players → level flow, Truth or Dare and Spin the Bottle playable on one phone, bundled sample content in TR/EN | §3, §5.1, §6 (bundled), §7.1–7.2 local, §9, §10.1 (MVI, pure reducers) |
-| 2 | **Beer Pong (local)** | Beer Pong playable 1v1 on one phone: flick physics, 6 cups, winner-stays-on | §7.3 local |
+| 2 | **Cup Pong (local)** | Cup Pong playable 1v1 on one phone: flick physics, 6 cups, winner-stays-on | §7.3 local |
 | 3 | **Firebase: accounts and content** | Google sign-in (required for the host), anonymous guests, profiles and avatars, account deletion, content packs from Firestore with local cache, content import script | §4, §6.3 remote, §10.2–10.3 (Auth, Firestore) |
 | 4 | **Online play** | Lobbies on Realtime Database, host-as-referee, invite links on `clink-game.com` + room codes, chat, presence and reconnects, all three games online, spectators | §5.2, §7 online, §8, §10.4 |
 | 5 | **Release** | Cloud Functions cleanup jobs, Crashlytics/Analytics, privacy policy and deletion pages, Play Console listing, Data safety form, signed release build on Google Play | §10.3 (Functions, Crashlytics), §10.5 |

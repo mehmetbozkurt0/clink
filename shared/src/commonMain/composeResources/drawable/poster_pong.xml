@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Home poster drawing for Beer Pong, drawn for Clink: a ball's dotted arc into three cups. Ink lines only. -->
+<!-- Home poster drawing for Cup Pong, drawn for Clink: a ball's dotted arc into three cups. Ink lines only. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="100dp"
     android:height="80dp"

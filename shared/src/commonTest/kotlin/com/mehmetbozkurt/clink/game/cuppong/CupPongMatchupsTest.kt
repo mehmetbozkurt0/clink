@@ -1,9 +1,9 @@
-package com.mehmetbozkurt.clink.game.beerpong
+package com.mehmetbozkurt.clink.game.cuppong
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class BeerPongMatchupsTest {
+class CupPongMatchupsTest {
     @Test
     fun firstMatchIsTheFirstTwoPlayers() = assertEquals(Matchup(0, 1), suggestedMatchup(5, null, null))
 

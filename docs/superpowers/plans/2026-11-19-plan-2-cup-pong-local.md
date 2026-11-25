@@ -1,14 +1,14 @@
-# Plan 2: Beer Pong (local) — Implementation Plan
+# Plan 2: Cup Pong (local) — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Beer Pong playable 1v1 on one phone: flick the ball at the other player's 6 cups, a hand-written deterministic throw model, the loser draws a penalty, and with more than 2 players the winner stays on.
+**Goal:** Cup Pong playable 1v1 on one phone: flick the ball at the other player's 6 cups, a hand-written deterministic throw model, the loser draws a penalty, and with more than 2 players the winner stays on.
 
-**Architecture:** Same pattern as Plan 1. The throw model (`flickToThrow`, `simulateThrow`) and the match rules (`BeerPongReducer`) are pure Kotlin in `shared/commonMain` with no randomness in the throw, so in Plan 4 the referee can publish the `ThrowInput` and every phone replays the same result. Match picking (winner stays on) is a pure function too. The screen only draws the table, reads the flick and animates the `ThrowResult`.
+**Architecture:** Same pattern as Plan 1. The throw model (`flickToThrow`, `simulateThrow`) and the match rules (`CupPongReducer`) are pure Kotlin in `shared/commonMain` with no randomness in the throw, so in Plan 4 the referee can publish the `ThrowInput` and every phone replays the same result. Match picking (winner stays on) is a pure function too. The screen only draws the table, reads the flick and animates the `ThrowResult`.
 
 **Tech Stack:** As Plan 1 (Kotlin Multiplatform, Compose Multiplatform, JetBrains Navigation/Lifecycle, kotlin.test). No new libraries.
 
-**Spec:** `docs/superpowers/specs/2026-11-19-party-games-app-design.md` (§7.3 Beer Pong, local part; §9.3 motion and haptics; §10.5 store constraints)
+**Spec:** `docs/superpowers/specs/2026-11-19-party-games-app-design.md` (§7.3 Cup Pong, local part; §9.3 motion and haptics; §10.5 store constraints)
 **Roadmap:** `docs/superpowers/plans/2026-11-19-clink-roadmap.md` (this is Plan 2 of 5)
 
 ## Global Constraints
@@ -18,7 +18,7 @@
 - Android only; all code except `MainActivity` in `shared/src/commonMain`; no iOS target; only libraries that also support iOS.
 - **1v1, one throw per turn, 6 cups per side in a 3-2-1 triangle** (spec §7.3). The player who loses all their cups loses and draws a **penalty** from the session's level.
 - The throw is a **simple hand-written projectile model in shared Kotlin**, not a physics engine, and it is **deterministic**: the same `ThrowInput` and the same remaining cups always give the same `ThrowResult` (needed for Plan 4).
-- **No drinking wording or imagery.** Cups are drawn without any drink in them (no amber/foam colors); a hit is a mint "splash" ring. "Beer Pong" stays as the game's name (spec decision).
+- **No drinking wording or imagery.** Cups are drawn without any drink in them (no amber/foam colors); a hit is a mint "splash" ring. "Cup Pong" stays as the game's name (spec decision).
 - Haptics on: ball lands in a cup, penalty drawn (spec §9.3).
 - Spicy keeps its 18+ confirmation on level select and on Play again (Plan 1 behavior, must not regress).
 - Players per session 2–12. With exactly 2, no match picking screen.
@@ -37,17 +37,17 @@
 ## File Structure
 
 ```
-shared/src/commonMain/kotlin/com/mehmetbozkurt/clink/game/beerpong/
-  BeerPongPhysics.kt     — TablePoint, ThrowInput, ThrowResult, rack layout, constants, flickToThrow, simulateThrow
-  BeerPong.kt            — BeerPongState, BpPhase, BpAction, BpNotice, initialBeerPongState
-  BeerPongReducer.kt
-  BeerPongMatchups.kt    — Matchup, suggestedMatchup, matchupFromSelection
-  BeerPongViewModel.kt, BeerPongScreen.kt, BeerPongTable.kt, BeerPongSetupScreen.kt
+shared/src/commonMain/kotlin/com/mehmetbozkurt/clink/game/cuppong/
+  CupPongPhysics.kt     — TablePoint, ThrowInput, ThrowResult, rack layout, constants, flickToThrow, simulateThrow
+  CupPong.kt            — CupPongState, CpPhase, CpAction, CpNotice, initialCupPongState
+  CupPongReducer.kt
+  CupPongMatchups.kt    — Matchup, suggestedMatchup, matchupFromSelection
+  CupPongViewModel.kt, CupPongScreen.kt, CupPongTable.kt, CupPongSetupScreen.kt
 shared/src/commonMain/kotlin/com/mehmetbozkurt/clink/ui/navigation/Routes.kt, ClinkNavHost.kt   (modify)
 shared/src/commonMain/kotlin/com/mehmetbozkurt/clink/ui/screens/GameListScreen.kt, GameOverScreen.kt (modify)
 shared/src/commonMain/composeResources/values/strings.xml, values-tr/strings.xml (modify)
-shared/src/commonTest/kotlin/com/mehmetbozkurt/clink/game/beerpong/
-  BeerPongPhysicsTest.kt, BeerPongReducerTest.kt, BeerPongMatchupsTest.kt
+shared/src/commonTest/kotlin/com/mehmetbozkurt/clink/game/cuppong/
+  CupPongPhysicsTest.kt, CupPongReducerTest.kt, CupPongMatchupsTest.kt
 ```
 
 Table coordinates (used by every task): units on the table, origin at the thrower's ball, **+y toward the target rack**, +x to the thrower's right. The rack is always the **defender's** cups, seen from the thrower.
@@ -57,15 +57,15 @@ Table coordinates (used by every task): units on the table, origin at the throwe
 ### Task 1: Throw model
 
 **Files:**
-- Create: `game/beerpong/BeerPongPhysics.kt`
-- Test: `game/beerpong/BeerPongPhysicsTest.kt`
+- Create: `game/cuppong/CupPongPhysics.kt`
+- Test: `game/cuppong/CupPongPhysicsTest.kt`
 
 **Interfaces:**
 - Produces:
   - `data class TablePoint(val x: Float, val y: Float)`
   - `@Serializable data class ThrowInput(val angleDegrees: Float, val range: Float)` — angle 0 = straight at the rack, positive = to the right; landing point is `(range·sin(angle), range·cos(angle))`
   - `data class ThrowResult(val input: ThrowInput, val touchdowns: List<TablePoint>, val cupHit: Int?)` — 1 touchdown = clean landing; 2 = hit a rim and bounced
-  - `object BeerPongPhysics` with: `CUP_RADIUS = 3f`, `BALL_RADIUS = 1f`, `RIM_BOUNCE = 4f`, `MIN_FLICK = 300f`, `MAX_FLICK = 3000f` (dp/s), `MIN_RANGE = 60f`, `MAX_RANGE = 110f`, `MAX_ANGLE = 30f`, `val cups: List<TablePoint>` = id 0 `(-6.2, 90)`, 1 `(0, 90)`, 2 `(6.2, 90)`, 3 `(-3.1, 84.6)`, 4 `(3.1, 84.6)`, 5 `(0, 79.2)`, `val ALL_CUPS: Set<Int> = (0..5).toSet()`
+  - `object CupPongPhysics` with: `CUP_RADIUS = 3f`, `BALL_RADIUS = 1f`, `RIM_BOUNCE = 4f`, `MIN_FLICK = 300f`, `MAX_FLICK = 3000f` (dp/s), `MIN_RANGE = 60f`, `MAX_RANGE = 110f`, `MAX_ANGLE = 30f`, `val cups: List<TablePoint>` = id 0 `(-6.2, 90)`, 1 `(0, 90)`, 2 `(6.2, 90)`, 3 `(-3.1, 84.6)`, 4 `(3.1, 84.6)`, 5 `(0, 79.2)`, `val ALL_CUPS: Set<Int> = (0..5).toSet()`
   - `fun flickToThrow(vxDpPerSec: Float, vyDpPerSec: Float): ThrowInput?` — screen velocity (vy < 0 = up toward the rack). `null` when `vy >= 0` or speed < `MIN_FLICK`. Angle = `atan2(vx, -vy)` in degrees clamped to ±`MAX_ANGLE`; range linear from `MIN_RANGE` at `MIN_FLICK` to `MAX_RANGE` at `MAX_FLICK`, clamped.
   - `fun simulateThrow(input: ThrowInput, remainingCups: Set<Int>): ThrowResult` — landing `p`; among remaining cups take the nearest (ties → lowest id). Distance ≤ `CUP_RADIUS - BALL_RADIUS` → in that cup. Distance ≤ `CUP_RADIUS + BALL_RADIUS` → rim: second touchdown `p + unit(p - cupCenter) · RIM_BOUNCE`, which counts only if it is *in* a remaining cup (no second rim). Otherwise a miss. No randomness.
 
@@ -75,7 +75,7 @@ The constants are a starting point for feel (spec §11 leaves them to the builde
 
 ```kotlin
 private fun at(x: Float, y: Float) = ThrowInput(atan2(x, y) * 180f / PI.toFloat(), hypot(x, y))
-private val all = BeerPongPhysics.ALL_CUPS
+private val all = CupPongPhysics.ALL_CUPS
 
 @Test fun straightIntoBackMiddleCup() = assertEquals(1, simulateThrow(at(0f, 90f), all).cupHit)
 @Test fun straightIntoFrontCup() = assertEquals(5, simulateThrow(at(0f, 79.2f), all).cupHit)
@@ -107,28 +107,28 @@ private val all = BeerPongPhysics.ALL_CUPS
 
 (`rounded()` = a test helper rounding both coordinates to 2 decimals.)
 
-- [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.game.beerpong.*"`. Expected: FAIL, unresolved references.
-- [ ] **Step 3: Implement** `BeerPongPhysics.kt` as specified above.
+- [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.game.cuppong.*"`. Expected: FAIL, unresolved references.
+- [ ] **Step 3: Implement** `CupPongPhysics.kt` as specified above.
 - [ ] **Step 4: Run** the same command. Expected: PASS.
-- [ ] **Step 5: Hand off.** Commit message: `feat: add Beer Pong throw model`
+- [ ] **Step 5: Hand off.** Commit message: `feat: add Cup Pong throw model`
 
 ---
 
 ### Task 2: Match rules
 
 **Files:**
-- Create: `game/beerpong/BeerPong.kt`, `BeerPongReducer.kt`
-- Test: `game/beerpong/BeerPongReducerTest.kt`
+- Create: `game/cuppong/CupPong.kt`, `CupPongReducer.kt`
+- Test: `game/cuppong/CupPongReducerTest.kt`
 
 **Interfaces:**
-- Consumes: `simulateThrow`, `ThrowInput`, `ThrowResult`, `BeerPongPhysics.ALL_CUPS` (Task 1); `Reducer`, `SequenceRandom` (Plan 1 Task 4); `Deck`, `ContentLibrary`, `CardType`, `Level` (Plan 1 Task 2)
+- Consumes: `simulateThrow`, `ThrowInput`, `ThrowResult`, `CupPongPhysics.ALL_CUPS` (Task 1); `Reducer`, `SequenceRandom` (Plan 1 Task 4); `Deck`, `ContentLibrary`, `CardType`, `Level` (Plan 1 Task 2)
 - Produces:
-  - `data class BeerPongState(val players: List<String>, val level: Level, val thrower: Int, val cups: List<Set<Int>>, val phase: BpPhase, val throwCount: Int, val lastThrow: ThrowResult?, val penaltyDeck: Deck, val notice: BpNotice?)` — `players` has exactly 2 names (index 0 throws first); `cups[i]` are the cups player `i` still has (the ones the other player aims at)
-  - `sealed interface BpPhase { data object Aiming; data class MatchOver(val winner: Int, val loser: Int, val penaltyCardId: String?) }`
-  - `enum class BpNotice { NO_PENALTY_CARDS }`
-  - `sealed interface BpAction { data class Throw(val input: ThrowInput) }`
-  - `fun initialBeerPongState(players: List<String>, level: Level, library: ContentLibrary): BeerPongState` (`thrower = 0`, all cups, `Aiming`, `throwCount = 0`)
-  - `object BeerPongReducer : Reducer<BeerPongState, BpAction>`
+  - `data class CupPongState(val players: List<String>, val level: Level, val thrower: Int, val cups: List<Set<Int>>, val phase: CpPhase, val throwCount: Int, val lastThrow: ThrowResult?, val penaltyDeck: Deck, val notice: CpNotice?)` — `players` has exactly 2 names (index 0 throws first); `cups[i]` are the cups player `i` still has (the ones the other player aims at)
+  - `sealed interface CpPhase { data object Aiming; data class MatchOver(val winner: Int, val loser: Int, val penaltyCardId: String?) }`
+  - `enum class CpNotice { NO_PENALTY_CARDS }`
+  - `sealed interface CpAction { data class Throw(val input: ThrowInput) }`
+  - `fun initialCupPongState(players: List<String>, level: Level, library: ContentLibrary): CupPongState` (`thrower = 0`, all cups, `Aiming`, `throwCount = 0`)
+  - `object CupPongReducer : Reducer<CupPongState, CpAction>`
 
 Rules: `Throw` only in `Aiming`. Defender = `1 - thrower`. `result = simulateThrow(input, cups[defender])`; remove `result.cupHit` from the defender's cups; `throwCount + 1`, `lastThrow = result`. If the defender has no cups left → `MatchOver(winner = thrower, loser = defender, penaltyCardId = penaltyDeck.draw(random)?.first)`; an empty penalty deck gives `null` and `notice = NO_PENALTY_CARDS`. Otherwise `thrower = defender`. Any successful throw clears an older notice. The UI animates `lastThrow` whenever `throwCount` changes.
 
@@ -145,18 +145,18 @@ Rules: `Throw` only in `Aiming`. Defender = `1 - thrower`. `result = simulateThr
 
 Each test asserts exactly the fields in its comment.
 
-- [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.game.beerpong.*"`. Expected: FAIL on the new class.
+- [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.game.cuppong.*"`. Expected: FAIL on the new class.
 - [ ] **Step 3: Implement** the types and reducer.
 - [ ] **Step 4: Run** the same command. Expected: PASS.
-- [ ] **Step 5: Hand off.** Commit message: `feat: add Beer Pong match rules`
+- [ ] **Step 5: Hand off.** Commit message: `feat: add Cup Pong match rules`
 
 ---
 
 ### Task 3: Winner stays on
 
 **Files:**
-- Create: `game/beerpong/BeerPongMatchups.kt`
-- Test: `game/beerpong/BeerPongMatchupsTest.kt`
+- Create: `game/cuppong/CupPongMatchups.kt`
+- Test: `game/cuppong/CupPongMatchupsTest.kt`
 
 **Interfaces:**
 - Produces:
@@ -179,33 +179,33 @@ Each test asserts exactly the fields in its comment.
 @Test fun selectionWithoutWinnerPutsLowerIndexFirst() = assertEquals(Matchup(1, 3), matchupFromSelection(listOf(3, 1), previousWinner = null))
 ```
 
-- [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.game.beerpong.BeerPongMatchupsTest"`. Expected: FAIL.
+- [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest --tests "com.mehmetbozkurt.clink.game.cuppong.CupPongMatchupsTest"`. Expected: FAIL.
 - [ ] **Step 3: Implement** both functions.
 - [ ] **Step 4: Run** the same command. Expected: PASS.
-- [ ] **Step 5: Hand off.** Commit message: `feat: add Beer Pong winner-stays-on matchups`
+- [ ] **Step 5: Hand off.** Commit message: `feat: add Cup Pong winner-stays-on matchups`
 
 ---
 
-### Task 4: Table, throw animation and Beer Pong screen
+### Task 4: Table, throw animation and Cup Pong screen
 
 **Files:**
-- Create: `game/beerpong/BeerPongTable.kt`, `BeerPongViewModel.kt`, `BeerPongScreen.kt`
+- Create: `game/cuppong/CupPongTable.kt`, `CupPongViewModel.kt`, `CupPongScreen.kt`
 - Modify: `strings.xml` (EN/TR)
 
 **Interfaces:**
 - Consumes: Tasks 1–2; `Store` (Plan 1); `EndGameDialog`, `rememberPhaseTapGuard`, `ClinkCard`, `LevelTag`, `PrimaryButton`, `ClinkColors` (Plan 1); `LocalAppContainer`
 - Produces:
-  - `class BeerPongViewModel(players: List<String>, level: Level, library: ContentLibrary, random: Random) : ViewModel` with `val state: StateFlow<BeerPongState>`, `fun onAction(action: BpAction)` (the two names of the match, in throwing order)
-  - `@Composable fun BeerPongScreen(players: List<String>, level: Level, onMatchOver: (winner: Int, loser: Int) -> Unit, onEnd: () -> Unit)` — `players` are the 2 match players; `winner`/`loser` are 0/1 in that list
+  - `class CupPongViewModel(players: List<String>, level: Level, library: ContentLibrary, random: Random) : ViewModel` with `val state: StateFlow<CupPongState>`, `fun onAction(action: CpAction)` (the two names of the match, in throwing order)
+  - `@Composable fun CupPongScreen(players: List<String>, level: Level, onMatchOver: (winner: Int, loser: Int) -> Unit, onEnd: () -> Unit)` — `players` are the 2 match players; `winner`/`loser` are 0/1 in that list
 
-`BeerPongTable(cups: Set<Int>, flight: ThrowResult?, progress: Float, splash: Float, flickEnabled: Boolean, onFlick: (ThrowInput) -> Unit, modifier)`:
+`CupPongTable(cups: Set<Int>, flight: ThrowResult?, progress: Float, splash: Float, flickEnabled: Boolean, onFlick: (ThrowInput) -> Unit, modifier)`:
 - Draws the table in a simple perspective on a `Canvas`: a trapezoid in `Surface` (wide at the bottom, narrow at the far end). One helper maps a `TablePoint` to the screen: depth `d = y / 100`, screen y from bottom to top, x and sizes scaled by `lerp(1f, 0.55f, d)`.
 - Cups: a coral (`Primary`) ring with a `SurfaceRaised` inside, nothing in them. Removed cups are not drawn.
 - The ball sits at the bottom center. During a flight it moves along launch → touchdown 1 (→ touchdown 2 for a rim bounce), lifted by an arc `4·h·t·(1−t)` with a shadow on the table; the ball shrinks with depth.
 - `splash` (0→1) draws an expanding mint ring at the cup that was hit.
 - The flick: drag on the lower part of the table, `VelocityTracker` on release, convert px/s to dp/s, `flickToThrow(...)`; `null` → nothing happens.
 
-`BeerPongScreen`:
+`CupPongScreen`:
 - Top bar: "Turn: {thrower}" (reuse `turn_of`) and "End". Under it, both players' remaining cups as "Ayşe 6 · Mert 4" (`bp_score`).
 - The rack drawn is the **defender's** cups, so the view switches to the thrower's side every turn (spec §7.3 "the view flips").
 - On a flick: `onAction(Throw(input))`, then animate `lastThrow` (≈900 ms flight, +350 ms for a rim bounce, `FastOutSlowInEasing`), showing the **previous** thrower's view until it lands; then `bp_hit` / `bp_rim_out` / `bp_miss` for ~700 ms; haptic on a hit. While animating, the flick is disabled (a second flick dispatches nothing). After a configuration change, skip the animation and show the current state.
@@ -214,33 +214,33 @@ Each test asserts exactly the fields in its comment.
 
 Copy (EN / TR): `bp_score` "%1$s %2$d · %3$s %4$d" (same in TR); `bp_hint` "Flick the ball at the cups" / "Topu bardaklara fırlat"; `bp_hit` "In the cup!" / "Bardağa girdi!"; `bp_rim_out` "Off the rim!" / "Kenardan döndü!"; `bp_miss` "Miss" / "Iska"; `bp_win` "%1$s wins!" / "%1$s kazandı!"; `bp_loser_penalty` "%1$s takes a penalty" / "%1$s ceza çekiyor"; `continue_button` reused; reuse `penalty_title`, `penalty_done`, `end`, `notice_no_penalty`.
 
-- [ ] **Step 1: Implement** `BeerPongViewModel` (a `Store` built from the arguments, like Plan 1's view models), `BeerPongTable` and `BeerPongScreen`. No new unit tests here: the rules and the throw model are covered by Tasks 1–2.
+- [ ] **Step 1: Implement** `CupPongViewModel` (a `Store` built from the arguments, like Plan 1's view models), `CupPongTable` and `CupPongScreen`. No new unit tests here: the rules and the throw model are covered by Tasks 1–2.
 - [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug`. Expected: all PASS, BUILD SUCCESSFUL. The screen becomes reachable in Task 5, which does its device check.
-- [ ] **Step 3: Hand off.** Commit message: `feat: add Beer Pong table and match screen`
+- [ ] **Step 3: Hand off.** Commit message: `feat: add Cup Pong table and match screen`
 
 ---
 
 ### Task 5: Match picking, navigation and end-to-end check
 
 **Files:**
-- Create: `game/beerpong/BeerPongSetupScreen.kt`
-- Modify: `ui/navigation/Routes.kt`, `ClinkNavHost.kt`, `ui/screens/GameListScreen.kt` (enable Beer Pong), `ui/screens/GameOverScreen.kt` only if needed, `strings.xml` (EN/TR)
+- Create: `game/cuppong/CupPongSetupScreen.kt`
+- Modify: `ui/navigation/Routes.kt`, `ClinkNavHost.kt`, `ui/screens/GameListScreen.kt` (enable Cup Pong), `ui/screens/GameOverScreen.kt` only if needed, `strings.xml` (EN/TR)
 
 **Interfaces:**
 - Consumes: Tasks 3–4; `ifResumed`, `AdultConfirmDialog` / Play again flow (Plan 1)
 - Produces:
-  - Routes: `BeerPongSetupRoute(players: List<String>, level: Level, previousWinner: Int? = null, previousLoser: Int? = null)`, `BeerPongRoute(players: List<String>, level: Level, first: Int, second: Int)` (`players` = full session list, `first`/`second` index into it); `GameOverRoute` gains `matchWinner: Int? = null, matchLoser: Int? = null` (full-list indexes). If the navigation library rejects nullable `Int` arguments, use `-1` for "none" and ledger it.
-  - `@Composable fun BeerPongSetupScreen(players: List<String>, suggested: Matchup, previousWinner: Int?, onStart: (Matchup) -> Unit)` — title `bp_setup_title`, hint `bp_setup_hint`; every player as a chip, the 2 from `suggested` preselected, tapping toggles (at most 2 selected); `bp_start_match` enabled only with 2 selected → `onStart(matchupFromSelection(selected, previousWinner))`.
+  - Routes: `CupPongSetupRoute(players: List<String>, level: Level, previousWinner: Int? = null, previousLoser: Int? = null)`, `CupPongRoute(players: List<String>, level: Level, first: Int, second: Int)` (`players` = full session list, `first`/`second` index into it); `GameOverRoute` gains `matchWinner: Int? = null, matchLoser: Int? = null` (full-list indexes). If the navigation library rejects nullable `Int` arguments, use `-1` for "none" and ledger it.
+  - `@Composable fun CupPongSetupScreen(players: List<String>, suggested: Matchup, previousWinner: Int?, onStart: (Matchup) -> Unit)` — title `bp_setup_title`, hint `bp_setup_hint`; every player as a chip, the 2 from `suggested` preselected, tapping toggles (at most 2 selected); `bp_start_match` enabled only with 2 selected → `onStart(matchupFromSelection(selected, previousWinner))`.
 
 Navigation:
-- `startGame(BEER_PONG, players, level, winner?, loser?)`: 2 players → straight to `BeerPongRoute` with `suggestedMatchup(2, winner, loser)`; more → `BeerPongSetupRoute`.
-- `BeerPongRoute` → `BeerPongScreen(listOf(players[first], players[second]), …)`; `onMatchOver(w, l)` maps 0/1 back to `first`/`second` and goes to `GameOverRoute(BEER_PONG, players, level, matchWinner, matchLoser)` popping the game; `onEnd` goes to `GameOverRoute` with no winner.
-- GameOver "Play again" for Beer Pong passes `matchWinner`/`matchLoser` on, so the winner stays on. The Spicy 18+ question still comes first.
+- `startGame(CUP_PONG, players, level, winner?, loser?)`: 2 players → straight to `CupPongRoute` with `suggestedMatchup(2, winner, loser)`; more → `CupPongSetupRoute`.
+- `CupPongRoute` → `CupPongScreen(listOf(players[first], players[second]), …)`; `onMatchOver(w, l)` maps 0/1 back to `first`/`second` and goes to `GameOverRoute(CUP_PONG, players, level, matchWinner, matchLoser)` popping the game; `onEnd` goes to `GameOverRoute` with no winner.
+- GameOver "Play again" for Cup Pong passes `matchWinner`/`matchLoser` on, so the winner stays on. The Spicy 18+ question still comes first.
 - All navigation through `entry.ifResumed { … }` (Plan 1 fix).
 
 Copy (EN / TR): `bp_setup_title` "Who plays this match?" / "Bu maçı kim oynuyor?"; `bp_setup_hint` "Pick two players" / "İki oyuncu seç"; `bp_start_match` "Start match" / "Maçı başlat".
 
-- [ ] **Step 1: Implement** the setup screen, routes and navigation; enable Beer Pong in the game list (remove its "Coming soon").
+- [ ] **Step 1: Implement** the setup screen, routes and navigation; enable Cup Pong in the game list (remove its "Coming soon").
 - [ ] **Step 2: Run** `./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug`. Expected: all PASS, BUILD SUCCESSFUL.
 - [ ] **Step 3: Verify on the emulator** (`Pixel_9a`):
   - 2 players, Casual: straight flicks, a weak flick (nothing happens, same thrower), a sideways flick (nothing), hits remove cups, the rack switches to the thrower's side each turn, a rim bounce plays its second hop, the match ends at 0 cups, penalty card + haptic, Penalty done → GameOver → Play again → rematch with the other player throwing first.
@@ -248,7 +248,7 @@ Copy (EN / TR): `bp_setup_title` "Who plays this match?" / "Bu maçı kim oynuyo
   - Spicy: 18+ on level select and on Play again.
   - Back / End → dialog → GameOver. A second fast flick during a flight does nothing. Switching the app language during a flight (`adb shell cmd locale set-app-locales com.mehmetbozkurt.clink --locales tr`) leaves cups and turn intact.
   - Tune `MIN_RANGE`, `MAX_RANGE`, `MAX_FLICK` if hitting a cup is far too easy or impossible; keep Task 1 tests green (they only fix the mapping endpoints — update those two asserted values if the constants change, and ledger it).
-- [ ] **Step 4: Hand off.** Commit message: `feat: add Beer Pong match picking and navigation`
+- [ ] **Step 4: Hand off.** Commit message: `feat: add Cup Pong match picking and navigation`
 
 ---
 

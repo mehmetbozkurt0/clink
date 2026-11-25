@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Friends play Truth or Dare, Spin the Bottle and Beer Pong on their own phones: the host opens a lobby, shares an invite link (`https://clink-game.com/join/<code>`) or the 6-character room code, joiners pick a nickname and avatar (guests sign in anonymously), everyone chats, the host's phone runs the rules and publishes the state, disconnects are handled, and the lobby outlives a single game.
+**Goal:** Friends play Truth or Dare, Spin the Bottle and Cup Pong on their own phones: the host opens a lobby, shares an invite link (`https://clink-game.com/join/<code>`) or the 6-character room code, joiners pick a nickname and avatar (guests sign in anonymously), everyone chats, the host's phone runs the rules and publishes the state, disconnects are handled, and the lobby outlives a single game.
 
 **Architecture:** Spec §10.4, host-authoritative. Realtime Database holds one node per lobby: `meta` (host, game, level, status, host presence), `members`, `actions` (any member appends), `state` (only the host writes: the game state as JSON plus a sequence number), `chat`, and a top-level `codes/{code}` lookup. A `HostReferee` (pure Kotlin, tested) applies member actions to the existing game reducers, checks that the sender is allowed to act, skips players who are offline, and returns the new published state. The game screens are refactored to take a `GameController` (state + `onAction` + which seat this phone has) so one screen serves local and online play. Firebase is behind a `LobbyRepository` interface; everything that decides something is pure and covered by tests with fakes.
 
@@ -16,7 +16,7 @@
 - **Git, this plan only (Mehmet, 2026-11-23):** all tasks are done in one run without stopping for commits; Mehmet makes **one commit at the end**. Claude still never commits, pushes or rewrites history.
 - **Mehmet's parts** (console, domain, deploy, devices) are listed in `docs/online-setup.md`; Claude never asks for passwords or key contents.
 - **Host-authoritative:** only the host's app runs reducers and writes `state`; randomness (card draws, bottle target) is decided by the host and published. Members only append actions and chat (enforced by `firebase/database.rules.json`).
-- **Lobby:** 2–12 players; Beer Pong 1v1 with the others watching; host can remove a player; host gone > 60 s → lobby closes; a non-host who drops is skipped in turn order and can rejoin with the same link; the lobby stays after a game (host can restart or switch game/level).
+- **Lobby:** 2–12 players; Cup Pong 1v1 with the others watching; host can remove a player; host gone > 60 s → lobby closes; a non-host who drops is skipped in turn order and can rejoin with the same link; the lobby stays after a game (host can restart or switch game/level).
 - **Spicy:** 18+ confirmation for the host when choosing it, and for each joiner when entering (or staying in) a Spicy lobby.
 - **Chat:** available in the lobby and during the game as a panel over the screen; max 300 characters per message; its own module (§8, voice later).
 - **Card IDs only** are published, never card text (§6.3); each phone shows the card in its own language.
@@ -26,7 +26,7 @@
 ## Review Focus
 
 1. **A member who is not allowed to act sends an action** (not their turn, a spectator, a forged uid) → the referee ignores it; the state does not change (Task 2 tests).
-2. **The player whose turn it is goes offline** → the referee moves the turn to the next online player (Truth or Dare, Spin) or pauses the match (Beer Pong); nobody is stuck (Task 2 tests).
+2. **The player whose turn it is goes offline** → the referee moves the turn to the next online player (Truth or Dare, Spin) or pauses the match (Cup Pong); nobody is stuck (Task 2 tests).
 3. **The host goes offline** → members see "host reconnecting" with a countdown; after 60 s the lobby closes for everyone; the host coming back within 60 s resumes (Task 2 tests for the timing, Task 6 screen).
 4. **Joining with a wrong, expired or closed code, a full lobby, or after being removed** → a clear message, no crash, no half-joined state (Task 2/4 tests).
 5. **Two phones in different languages** in one lobby → each shows the same card in its own language (card ids only).
@@ -46,7 +46,7 @@ shared/src/commonMain/kotlin/com/mehmetbozkurt/clink/
   online/LobbyModel.kt          — LobbyMeta, Member, ChatMessage, ActionEnvelope, PublishedState, HostStatus, lobby rules (seats, full, spectators)
   online/OnlineAction.kt        — serializable action envelope per game (+ Spin question/answer)
   online/SessionState.kt        — what the host publishes: game, level, player uids/names, game state JSON, Spin texts, seq
-  online/HostReferee.kt         — validate actor, apply reducer, skip offline players, Beer Pong pause
+  online/HostReferee.kt         — validate actor, apply reducer, skip offline players, Cup Pong pause
   online/LobbyRepository.kt     — interface; online/RtdbLobbyRepository.kt — Realtime Database
   online/LobbySession.kt        — one active lobby: flows for meta/members/chat/state, host loop, commands
   game/GameController.kt        — state + onAction + Seat (Everyone / Player(i) / Spectator)
@@ -83,7 +83,7 @@ Realtime Database schema (every task uses it):
 - `RoomCode.ALPHABET` (no 0/O/1/I/L), `RoomCode.generate(random): String` (6), `RoomCode.normalize(input): String?` (trim, upper, strip spaces/dashes, 6 valid chars or null), `inviteLink(code)`, `codeFromLink(url): String?`.
 - `hostStatus(hostOnline: Boolean, hostSeenAt: Long?, now: Long): HostStatus` — `Online`, `Reconnecting(secondsLeft)`, `Gone` (60 s).
 - `seats(members, players: List<String> /*uids*/)`, `playerOrder(members): List<Member>` (by `joinedAt`, first 12), `isFull`.
-- `HostReferee.start(game, level, players: List<Member>, library, random, beerPongPair?) : SessionState`; `HostReferee.apply(session, envelope, online: Set<String>, library, random): SessionState?` (null = ignored); `HostReferee.skipOffline(session, online, library, random): SessionState?`.
+- `HostReferee.start(game, level, players: List<Member>, library, random, cupPongPair?) : SessionState`; `HostReferee.apply(session, envelope, online: Set<String>, library, random): SessionState?` (null = ignored); `HostReferee.skipOffline(session, online, library, random): SessionState?`.
 
 Tests (each written first and seen failing):
 ```kotlin
@@ -94,7 +94,7 @@ hostOnlineIsOnline; hostAwayCountsDown (30 s gone → Reconnecting(30)); hostAwa
 // HostRefereeTest
 todOnlyCurrentPlayerMayAct; todSpectatorActionIgnored; todOfflineCurrentPlayerIsSkipped;
 spinOnlySpinnerSpins; spinOnlyAskerAsksAndOnlyAnswererAnswers; spinQuestionAndAnswerArePublished; spinOfflineSpinnerIsSkipped;
-beerPongOnlyThrowerThrows; beerPongSpectatorCannotThrow; beerPongPausesWhileThrowerOffline;
+cupPongOnlyThrowerThrows; cupPongSpectatorCannotThrow; cupPongPausesWhileThrowerOffline;
 publishesCardIdsNotText; seqGoesUpOnEveryChange
 ```
 - [ ] Run tests. Expected: all PASS.
@@ -110,12 +110,12 @@ publishesCardIdsNotText; seqGoesUpOnEveryChange
 
 **Files:** `game/GameController.kt`, the three `…Screen.kt` (take a controller and a `Seat`), local ViewModels implement it, `online/OnlineControllers.kt`.
 - [ ] Local play behaves exactly as before (all existing tests stay green; emulator round of each game).
-- [ ] Online: buttons only for the seat that may act; others see "Waiting for …"; Spin: asker types the question → large question card for everyone; answerer types the answer or takes a penalty; Beer Pong: only the thrower flicks, everyone replays the published throw, spectators see a "watching" label.
+- [ ] Online: buttons only for the seat that may act; others see "Waiting for …"; Spin: asker types the question → large question card for everyone; answerer types the answer or takes a penalty; Cup Pong: only the thrower flicks, everyone replays the published throw, spectators see a "watching" label.
 
 ### Task 5: Lobby, join and chat screens
 
 **Files:** `OnlineLobbyScreen.kt`, `JoinScreen.kt`, `ChatPanel.kt`, routes/nav, Mode (Online enabled), Welcome ("Kodla katıl"), strings.
-- [ ] Host: Mode → Online → (sign-in gate) → Level (Spicy 18+) → lobby created → lobby screen: code (big), Share, members with avatar and online dot, remove (host), Beer Pong pair picker, Start (≥ 2), Close lobby.
+- [ ] Host: Mode → Online → (sign-in gate) → Level (Spicy 18+) → lobby created → lobby screen: code (big), Share, members with avatar and online dot, remove (host), Cup Pong pair picker, Start (≥ 2), Close lobby.
 - [ ] Joiner: link or Welcome → "Join with code" → code check (wrong / closed / full messages) → nickname + avatar (guests sign in anonymously; a signed-in user's profile prefills) → Spicy 18+ if the lobby is Spicy → lobby.
 - [ ] Chat: button on lobby and game top bars, panel slides over the screen, messages with avatar and name, 300 limit.
 - [ ] After a game ends everyone returns to the lobby; the host can start again or switch game/level.
