@@ -4,16 +4,17 @@ Bu brif, Clink'in oyun çizimlerini ve uygulama simgesini yaptırmak için hazı
 
 ## Uygulama hakkında kısaca
 
-Clink, arkadaş ortamında tek telefonla oynanan bir parti oyunları uygulaması: Doğruluk mu Cesaret mi, Şişe Çevirmece ve Cup Pong. Görsel dili **"sokak / graffiti"**: koyu bir tuğla duvar, üstüne yapıştırılmış yırtık kenarlı kağıt afişler, neon sprey renkleri, maskeleme bandı etiketleri. Dağınık değil, temiz ve "tasarlanmış" bir graffiti.
+Clink, arkadaş ortamında tek telefonla oynanan bir parti oyunları uygulaması: Doğruluk mu Cesaret mi, Şişe Çevirmece, Cup Pong ve Kim Daha Çok?. Görsel dili **"sokak / graffiti"**: koyu bir tuğla duvar, üstüne yapıştırılmış yırtık kenarlı kağıt afişler, neon sprey renkleri, maskeleme bandı etiketleri. Dağınık değil, temiz ve "tasarlanmış" bir graffiti.
 
-## İstenen görseller (4 adet)
+## İstenen görseller (5 adet)
 
 | # | Görsel | Ne anlatmalı | Uygulamada nerede |
 |---|---|---|---|
 | 1 | **Doğruluk mu Cesaret mi** | Yelpaze gibi açılmış iki oyun kartı; biri soru (merak), biri cesaret (heyecan) hissi versin. Kartların üstünde yazı olmasın; "?" ve "!" gibi işaretler kullanılabilir. | Oyun listesinde, oyunun afişinin sağında (yaklaşık 76×76 dp) |
 | 2 | **Şişe Çevirmece** | Dönen, **etiketsiz düz bir cam şişe**, hareket çizgileriyle. Hiçbir içki markası ya da içki çağrışımı olmasın (etiket yok, içinde sıvı yok). | Oyun listesi |
 | 3 | **Cup Pong** | Üçgen dizilmiş **boş** bardaklar ve havada bir top. Bardaklarda sıvı ya da köpük olmasın. | Oyun listesi |
-| 4 | **Uygulama simgesi** | Sprey boyayla yazılmış küçük harf bir **"c"**, yanında pembe bir **nokta**, harften aşağı akan iki boya damlası (logodaki "clink." yazısının kısaltması). | Telefonun ana ekranı ve uygulama çekmecesi |
+| 4 | **Kim Daha Çok?** | Üç el ya da ok, ortadaki tek bir kişiyi gösteriyor. Kişinin yüzü belirgin olmasın; herkes olabilecek biri. | Oyun listesi |
+| 5 | **Uygulama simgesi** | Sprey boyayla yazılmış küçük harf bir **"c"**, yanında pembe bir **nokta**, harften aşağı akan iki boya damlası (logodaki "clink." yazısının kısaltması). | Telefonun ana ekranı ve uygulama çekmecesi |
 
 ## Stil
 

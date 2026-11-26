@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder (design §7) until the commissioned illustration arrives: three arrows pointing at one person. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- The person everyone points at -->
+    <path
+        android:fillColor="#F4EFE3"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:pathData="M60,38 A13,13 0 1,0 60,64 A13,13 0 1,0 60,38 Z" />
+    <path
+        android:fillColor="#F4EFE3"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M43,88 C43,72 77,72 77,88 L77,96 H43 Z" />
+    <!-- Acid arrow from the left -->
+    <path
+        android:fillColor="#C6FF00"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M6,46 H22 V58 H6 Z M22,38 L38,52 L22,66 Z" />
+    <!-- Pink arrow from the right -->
+    <path
+        android:fillColor="#FF2E88"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M114,46 H98 V58 H114 Z M98,38 L82,52 L98,66 Z" />
+    <!-- Amber arrow from below -->
+    <path
+        android:fillColor="#FFB020"
+        android:strokeColor="#141414"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M54,116 V104 H66 V116 Z M46,104 L60,90 L74,104 Z" />
+</vector>

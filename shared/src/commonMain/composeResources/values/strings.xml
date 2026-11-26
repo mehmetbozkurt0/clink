@@ -5,6 +5,7 @@
     <string name="game_tod">Truth or Dare</string>
     <string name="game_spin">Spin the Bottle</string>
     <string name="game_cuppong">Cup Pong</string>
+    <string name="game_mostlikely">Most Likely To</string>
     <string name="coming_soon">Coming soon</string>
     <string name="mode_title">How are you playing?</string>
     <string name="mode_local_title">WITH FRIENDS</string>
@@ -14,7 +15,7 @@
     <string name="player_hint">Player %1$d</string>
     <string name="add_player">Add player</string>
     <string name="continue_button">Continue</string>
-    <string name="err_too_few">At least 2 players needed</string>
+    <string name="err_too_few">At least %1$d players needed</string>
     <string name="err_too_many">12 players max</string>
     <string name="err_duplicate">“%1$s” is already playing</string>
     <string name="level_title">Pick a level</string>
@@ -35,6 +36,14 @@
     <string name="take_penalty">Take penalty</string>
     <string name="penalty_title">Penalty!</string>
     <string name="penalty_done">Penalty done</string>
+    <string name="ml_instruction">Count to three and everyone points at once</string>
+    <string name="ml_who">WHO GOT POINTED AT MOST?</string>
+    <string name="ml_pass">Pass this one</string>
+    <string name="ml_wrong_person">Wrong person</string>
+    <string name="ml_no_prompts">No prompts at this level yet</string>
+    <string name="ml_no_penalty">No penalty cards at this level</string>
+    <string name="ml_summary_title">Tonight</string>
+    <string name="ml_chip">%1$s · %2$d</string>
     <string name="end">End</string>
     <string name="end_confirm">End this game?</string>
     <string name="notice_no_truth">No truth cards at this level</string>
@@ -57,6 +66,7 @@
     <string name="game_tod_meta">2–12 players · Draw a card, do it or take a penalty</string>
     <string name="game_spin_meta">2–12 players · Whoever the bottle picks</string>
     <string name="game_pong_meta">1v1 · Flick the ball into the cups</string>
+    <string name="game_ml_meta">3–12 players · Count to three and point</string>
     <string name="cd_back">Back</string>
     <string name="cd_close">Close</string>
     <string name="players_count">%1$d / %2$d</string>
@@ -157,8 +167,8 @@
     <string name="next_button">NEXT</string>
     <string name="start_button">START</string>
     <string name="done_button">DONE</string>
-    <string name="tour_play_1_title">Three games, one app</string>
-    <string name="tour_play_1_body">Truth or Dare, Spin the Bottle and Cup Pong.</string>
+    <string name="tour_play_1_title">A game for every mood</string>
+    <string name="tour_play_1_body">Pick one, gather round and start playing.</string>
     <string name="tour_play_2_title">One phone or online</string>
     <string name="tour_play_2_body">Pass one phone around the table, or everyone joins from their own phone.</string>
     <string name="tour_play_3_title">Pick a level</string>
@@ -195,7 +205,9 @@
     <string name="game_tod_players">2–12 players</string>
     <string name="game_spin_players">2–12 players</string>
     <string name="game_pong_players">1v1</string>
+    <string name="game_ml_players">3–12 players</string>
     <string name="game_tod_accent">Dare</string>
     <string name="game_spin_accent">Spin</string>
     <string name="game_pong_accent">Pong</string>
+    <string name="game_ml_accent">Most</string>
     <string name="cd_home_posters">Games: %1$s</string></resources>

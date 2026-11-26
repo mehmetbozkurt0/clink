@@ -3,6 +3,7 @@ package com.mehmetbozkurt.clink.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
@@ -40,6 +42,8 @@ fun WallChip(
     icon: DrawableResource? = null,
     iconTint: Color = ClinkColors.Acid,
     compact: Boolean = false,
+    role: Role = Role.Checkbox,
+    badge: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
     val fill = if (selected) color ?: ClinkColors.Acid else ClinkColors.WallRaised
@@ -49,8 +53,15 @@ fun WallChip(
             .clip(ChipShape)
             .background(fill)
             .border(1.dp, if (selected) ClinkColors.Ink else ClinkColors.Paper.copy(alpha = 0.14f), ChipShape)
-            // A tappable chip is a pick (Cup Pong picker), so screen readers also hear whether it is selected.
-            .let { if (onClick != null) it.selectable(selected = selected, role = Role.Checkbox, onClick = onClick) else it }
+            // A tappable chip is usually a pick (Cup Pong picker), so screen readers also hear whether it is
+            // selected; with Role.Button it is a one-shot action instead and has no selected state to announce.
+            .let {
+                when {
+                    onClick == null -> it
+                    role == Role.Button -> it.clickable(role = role, onClick = onClick)
+                    else -> it.selectable(selected = selected, role = role, onClick = onClick)
+                }
+            }
             .padding(horizontal = if (compact) 9.dp else 12.dp, vertical = if (compact) 5.dp else 9.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -63,12 +74,18 @@ fun WallChip(
                 colorFilter = ColorFilter.tint(if (selected) ClinkColors.Ink else iconTint),
             )
         }
+        val textStyle = if (compact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge
         Text(
             text = text,
+            // With a badge the name gives way first, so a long name can never ellipsize the badge off the chip.
+            modifier = if (badge != null) Modifier.weight(1f, fill = false) else Modifier,
             color = textColor,
-            style = if (compact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+            style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        if (badge != null) {
+            Text(text = badge, color = textColor, style = textStyle.copy(fontWeight = FontWeight.Bold), maxLines = 1)
+        }
     }
 }

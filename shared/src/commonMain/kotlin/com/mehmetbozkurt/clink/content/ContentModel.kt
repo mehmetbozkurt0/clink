@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 enum class Level { CASUAL, HARD, SPICY }
 
 @Serializable
-enum class CardType { TRUTH, DARE, PENALTY }
+enum class CardType { TRUTH, DARE, PENALTY, MOST_LIKELY }
 
 @Serializable
 enum class Access { FREE }

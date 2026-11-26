@@ -2,7 +2,8 @@ package com.mehmetbozkurt.clink.game
 
 sealed interface PlayerNamesResult {
     data class Valid(val names: List<String>) : PlayerNamesResult
-    data object TooFew : PlayerNamesResult
+    /** [min] is how many the game being set up needs, so the message can say the right number. */
+    data class TooFew(val min: Int) : PlayerNamesResult
     data object TooMany : PlayerNamesResult
     data class Duplicate(val name: String) : PlayerNamesResult
 }
@@ -13,10 +14,13 @@ object PlayerNames {
     const val MAX = 12
     const val MAX_LENGTH = 20
 
-    /** Trims, drops blank rows, caps each name at [MAX_LENGTH], then checks the count and case-insensitive duplicates. */
-    fun validate(raw: List<String>): PlayerNamesResult {
+    /**
+     * Trims, drops blank rows, caps each name at [MAX_LENGTH], then checks the count and case-insensitive duplicates.
+     * [min] comes from the game being set up ([GameId.minPlayers]); most games take the default.
+     */
+    fun validate(raw: List<String>, min: Int = MIN): PlayerNamesResult {
         val names = raw.map { it.trim().take(MAX_LENGTH).trim() }.filter { it.isNotEmpty() }
-        if (names.size < MIN) return PlayerNamesResult.TooFew
+        if (names.size < min) return PlayerNamesResult.TooFew(min)
         if (names.size > MAX) return PlayerNamesResult.TooMany
         names.forEachIndexed { index, name ->
             // Char-wise ignoreCase also matches Turkish İ/i and I/ı.

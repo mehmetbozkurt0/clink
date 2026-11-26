@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Three arrows pointing at one person, drawn for Clink (no Phosphor icon fits). Tinted in code. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M128,102 A26,26 0 1,0 128,154 A26,26 0 1,0 128,102 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M16,116 H64 V140 H16 Z M64,100 L100,128 L64,156 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M240,116 H192 V140 H240 Z M192,100 L156,128 L192,156 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M116,240 V192 H140 V240 Z M100,192 L128,156 L156,192 Z" />
+</vector>

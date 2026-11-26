@@ -25,6 +25,10 @@ import com.mehmetbozkurt.clink.resources.art_pong
 import com.mehmetbozkurt.clink.resources.art_spin
 import com.mehmetbozkurt.clink.resources.art_tod
 import com.mehmetbozkurt.clink.resources.game_cuppong
+import com.mehmetbozkurt.clink.resources.game_ml_accent
+import com.mehmetbozkurt.clink.resources.game_ml_meta
+import com.mehmetbozkurt.clink.resources.game_ml_players
+import com.mehmetbozkurt.clink.resources.game_mostlikely
 import com.mehmetbozkurt.clink.resources.game_pong_accent
 import com.mehmetbozkurt.clink.resources.game_pong_meta
 import com.mehmetbozkurt.clink.resources.game_pong_players
@@ -38,7 +42,10 @@ import com.mehmetbozkurt.clink.resources.game_tod_meta
 import com.mehmetbozkurt.clink.resources.game_tod_players
 import com.mehmetbozkurt.clink.resources.ic_game_pong
 import com.mehmetbozkurt.clink.resources.ic_game_spin
+import com.mehmetbozkurt.clink.resources.art_mostlikely
+import com.mehmetbozkurt.clink.resources.ic_game_mostlikely
 import com.mehmetbozkurt.clink.resources.ic_game_tod
+import com.mehmetbozkurt.clink.resources.poster_mostlikely
 import com.mehmetbozkurt.clink.resources.poster_pong
 import com.mehmetbozkurt.clink.resources.poster_spin
 import com.mehmetbozkurt.clink.resources.poster_tod
@@ -85,6 +92,7 @@ internal fun GameId.icon(): DrawableResource = when (this) {
     GameId.TRUTH_OR_DARE -> Res.drawable.ic_game_tod
     GameId.SPIN_THE_BOTTLE -> Res.drawable.ic_game_spin
     GameId.CUP_PONG -> Res.drawable.ic_game_pong
+    GameId.MOST_LIKELY_TO -> Res.drawable.ic_game_mostlikely
 }
 
 /** The game's illustration on its poster (design §7; placeholders until the commissioned art arrives). */
@@ -92,6 +100,7 @@ internal fun GameId.art(): DrawableResource = when (this) {
     GameId.TRUTH_OR_DARE -> Res.drawable.art_tod
     GameId.SPIN_THE_BOTTLE -> Res.drawable.art_spin
     GameId.CUP_PONG -> Res.drawable.art_pong
+    GameId.MOST_LIKELY_TO -> Res.drawable.art_mostlikely
 }
 
 /** The game's ink line drawing on its home poster (spec 2026-11-24-home-poster-text §Design 2). */
@@ -99,6 +108,7 @@ internal fun GameId.posterArt(): DrawableResource = when (this) {
     GameId.TRUTH_OR_DARE -> Res.drawable.poster_tod
     GameId.SPIN_THE_BOTTLE -> Res.drawable.poster_spin
     GameId.CUP_PONG -> Res.drawable.poster_pong
+    GameId.MOST_LIKELY_TO -> Res.drawable.poster_mostlikely
 }
 
 /** Players and a one-line rule, e.g. "2–12 kişi · Kart çek, yap ya da ceza". */
@@ -108,6 +118,7 @@ internal fun GameId.meta(): String = stringResource(
         GameId.TRUTH_OR_DARE -> Res.string.game_tod_meta
         GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_meta
         GameId.CUP_PONG -> Res.string.game_pong_meta
+        GameId.MOST_LIKELY_TO -> Res.string.game_ml_meta
     },
 )
 
@@ -118,6 +129,7 @@ internal fun GameId.players(): String = stringResource(
         GameId.TRUTH_OR_DARE -> Res.string.game_tod_players
         GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_players
         GameId.CUP_PONG -> Res.string.game_pong_players
+        GameId.MOST_LIKELY_TO -> Res.string.game_ml_players
     },
 )
 
@@ -128,6 +140,7 @@ internal fun GameId.accent(): String = stringResource(
         GameId.TRUTH_OR_DARE -> Res.string.game_tod_accent
         GameId.SPIN_THE_BOTTLE -> Res.string.game_spin_accent
         GameId.CUP_PONG -> Res.string.game_pong_accent
+        GameId.MOST_LIKELY_TO -> Res.string.game_ml_accent
     },
 )
 
@@ -155,5 +168,6 @@ internal fun GameId.title(): String = stringResource(
         GameId.TRUTH_OR_DARE -> Res.string.game_tod
         GameId.SPIN_THE_BOTTLE -> Res.string.game_spin
         GameId.CUP_PONG -> Res.string.game_cuppong
+        GameId.MOST_LIKELY_TO -> Res.string.game_mostlikely
     },
 )

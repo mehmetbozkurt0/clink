@@ -5,6 +5,7 @@
     <string name="game_tod">Doğruluk mu Cesaret mi</string>
     <string name="game_spin">Şişe Çevirmece</string>
     <string name="game_cuppong">Cup Pong</string>
+    <string name="game_mostlikely">Kim Daha Çok?</string>
     <string name="coming_soon">Yakında</string>
     <string name="mode_title">Nasıl oynuyorsunuz?</string>
     <string name="mode_local_title">ARKADAŞLARLA</string>
@@ -14,7 +15,7 @@
     <string name="player_hint">Oyuncu %1$d</string>
     <string name="add_player">Oyuncu ekle</string>
     <string name="continue_button">Devam</string>
-    <string name="err_too_few">En az 2 oyuncu gerekli</string>
+    <string name="err_too_few">En az %1$d oyuncu gerekli</string>
     <string name="err_too_many">En fazla 12 oyuncu</string>
     <string name="err_duplicate">“%1$s” zaten oyunda</string>
     <string name="level_title">Seviye seç</string>
@@ -35,6 +36,14 @@
     <string name="take_penalty">Ceza çek</string>
     <string name="penalty_title">Ceza!</string>
     <string name="penalty_done">Cezayı çekti</string>
+    <string name="ml_instruction">Üçe kadar sayın, herkes aynı anda birini göstersin</string>
+    <string name="ml_who">EN ÇOK GÖSTERİLEN KİM?</string>
+    <string name="ml_pass">Bu soruyu geç</string>
+    <string name="ml_wrong_person">Yanlış kişi</string>
+    <string name="ml_no_prompts">Bu seviyede henüz soru yok</string>
+    <string name="ml_no_penalty">Bu seviyede ceza kartı yok</string>
+    <string name="ml_summary_title">Bu akşam</string>
+    <string name="ml_chip">%1$s · %2$d</string>
     <string name="end">Bitir</string>
     <string name="end_confirm">Oyunu bitirmek istiyor musun?</string>
     <string name="notice_no_truth">Bu seviyede doğruluk kartı yok</string>
@@ -57,6 +66,7 @@
     <string name="game_tod_meta">2–12 kişi · Kart çek, yap ya da ceza</string>
     <string name="game_spin_meta">2–12 kişi · Şişe kimi gösterirse</string>
     <string name="game_pong_meta">1'e 1 · Topu bardağa fırlat</string>
+    <string name="game_ml_meta">3–12 kişi · Üçe kadar say, göster</string>
     <string name="cd_back">Geri</string>
     <string name="cd_close">Kapat</string>
     <string name="players_count">%1$d / %2$d</string>
@@ -157,8 +167,8 @@
     <string name="next_button">İLERİ</string>
     <string name="start_button">BAŞLA</string>
     <string name="done_button">TAMAM</string>
-    <string name="tour_play_1_title">Üç oyun, tek uygulama</string>
-    <string name="tour_play_1_body">Doğruluk mu Cesaret mi, Şişe Çevirmece ve Cup Pong.</string>
+    <string name="tour_play_1_title">Her havaya bir oyun</string>
+    <string name="tour_play_1_body">Birini seç, etrafına toplanın ve başlayın.</string>
     <string name="tour_play_2_title">Tek telefon ya da online</string>
     <string name="tour_play_2_body">Telefonu masada elden ele dolaştır ya da herkes kendi telefonundan katılsın.</string>
     <string name="tour_play_3_title">Seviyeni seç</string>
@@ -195,7 +205,9 @@
     <string name="game_tod_players">2–12 kişi</string>
     <string name="game_spin_players">2–12 kişi</string>
     <string name="game_pong_players">1'e 1</string>
+    <string name="game_ml_players">3–12 kişi</string>
     <string name="game_tod_accent">Cesaret</string>
     <string name="game_spin_accent">Şişe</string>
     <string name="game_pong_accent">Pong</string>
+    <string name="game_ml_accent">Kim</string>
     <string name="cd_home_posters">Oyunlar: %1$s</string></resources>

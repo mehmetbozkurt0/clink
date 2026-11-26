@@ -72,6 +72,67 @@
         { "id": "penalty-spicy-002", "text": { "tr": "Odadaki birinin omuzlarına 30 saniye masaj yap.", "en": "Give someone in the room a 30-second shoulder massage." } },
         { "id": "penalty-spicy-003", "text": { "tr": "Bir sonraki turuna kadar solundaki kişinin elini tut.", "en": "Hold hands with the person on your left until your next turn." } }
       ]
+    },
+    {
+      "id": "mostlikely-casual-base", "type": "MOST_LIKELY", "level": "CASUAL", "access": "FREE",
+      "cards": [
+        { "id": "mostlikely-casual-001", "text": { "tr": "Kim bu gece ilk uyuyakalır?", "en": "Who falls asleep first tonight?" } },
+        { "id": "mostlikely-casual-002", "text": { "tr": "Kim bir buluşmaya en geç kalır?", "en": "Who shows up latest to everything?" } },
+        { "id": "mostlikely-casual-003", "text": { "tr": "Kim telefonunu en sık kaybeder?", "en": "Who loses their phone the most?" } },
+        { "id": "mostlikely-casual-004", "text": { "tr": "Kim bir filmin sonunu ağlamadan izleyemez?", "en": "Who cries at the end of every film?" } },
+        { "id": "mostlikely-casual-005", "text": { "tr": "Kim en kötü şoför?", "en": "Who is the worst driver?" } },
+        { "id": "mostlikely-casual-006", "text": { "tr": "Kim bir yemeği fotoğraflamadan yiyemez?", "en": "Who can't eat a meal without photographing it?" } },
+        { "id": "mostlikely-casual-007", "text": { "tr": "Kim bir tartışmayı asla kaybetmeyi kabul etmez?", "en": "Who never admits they lost an argument?" } },
+        { "id": "mostlikely-casual-008", "text": { "tr": "Kim ünlü olur?", "en": "Who becomes famous?" } },
+        { "id": "mostlikely-casual-009", "text": { "tr": "Kim en çok dizi izler?", "en": "Who watches the most TV?" } },
+        { "id": "mostlikely-casual-010", "text": { "tr": "Kim alarmı on kez erteler?", "en": "Who hits snooze ten times?" } },
+        { "id": "mostlikely-casual-011", "text": { "tr": "Kim bir kediyi görünce yolunu değiştirir?", "en": "Who crosses the street to pet a cat?" } },
+        { "id": "mostlikely-casual-012", "text": { "tr": "Kim en kötü şarkı söyler?", "en": "Who is the worst singer?" } },
+        { "id": "mostlikely-casual-013", "text": { "tr": "Kim bir tatilde her şeyi önceden planlar?", "en": "Who plans every hour of a holiday?" } },
+        { "id": "mostlikely-casual-014", "text": { "tr": "Kim en çok para harcar?", "en": "Who spends the most money?" } },
+        { "id": "mostlikely-casual-015", "text": { "tr": "Kim bir sırrı en uzun süre saklar?", "en": "Who keeps a secret the longest?" } }
+      ]
+    },
+    {
+      "id": "mostlikely-hard-base", "type": "MOST_LIKELY", "level": "HARD", "access": "FREE",
+      "cards": [
+        { "id": "mostlikely-hard-001", "text": { "tr": "Kimin telefonunu karıştırmak en çok şaşırtır?", "en": "Whose phone would surprise you the most?" } },
+        { "id": "mostlikely-hard-002", "text": { "tr": "Kim buradaki birine söylemediği bir şey saklıyor?", "en": "Who is keeping something from someone in this room?" } },
+        { "id": "mostlikely-hard-003", "text": { "tr": "Kim bir arkadaşının sırrını ağzından kaçırır?", "en": "Who would let a friend's secret slip?" } },
+        { "id": "mostlikely-hard-004", "text": { "tr": "Kim bu gruptan birini uzun süre görmezden gelebilir?", "en": "Who could ignore someone here for weeks?" } },
+        { "id": "mostlikely-hard-005", "text": { "tr": "Kim bir işten ilk kovulur?", "en": "Who gets fired first?" } },
+        { "id": "mostlikely-hard-006", "text": { "tr": "Kim en çok kıskanır ama belli etmez?", "en": "Who gets jealous but never shows it?" } },
+        { "id": "mostlikely-hard-007", "text": { "tr": "Kim bir kavgayı yıllarca unutmaz?", "en": "Who holds a grudge for years?" } },
+        { "id": "mostlikely-hard-008", "text": { "tr": "Kim bir arkadaşına yalan söyledi ve hâlâ anlatmadı?", "en": "Who lied to a friend and never owned up?" } },
+        { "id": "mostlikely-hard-009", "text": { "tr": "Kim bir ilişkiyi mesajla bitirir?", "en": "Who ends a relationship by text?" } },
+        { "id": "mostlikely-hard-010", "text": { "tr": "Kim en çok dedikodu yapar?", "en": "Who gossips the most?" } },
+        { "id": "mostlikely-hard-011", "text": { "tr": "Kim zor bir günde kimseyi aramaz?", "en": "Who tells nobody when they're having a bad day?" } },
+        { "id": "mostlikely-hard-012", "text": { "tr": "Kim bir arkadaşının parasını geri vermeyi unutur?", "en": "Who forgets to pay a friend back?" } },
+        { "id": "mostlikely-hard-013", "text": { "tr": "Kim buradaki birinin hakkında en çok şey biliyor?", "en": "Who knows the most about someone in this room?" } },
+        { "id": "mostlikely-hard-014", "text": { "tr": "Kim özür dilemekte en çok zorlanır?", "en": "Who finds it hardest to apologise?" } },
+        { "id": "mostlikely-hard-015", "text": { "tr": "Kim her şeyi ailesine anlatır?", "en": "Who tells their family everything?" } }
+      ]
+    },
+    {
+      "id": "mostlikely-spicy-base", "type": "MOST_LIKELY", "level": "SPICY", "access": "FREE",
+      "cards": [
+        { "id": "mostlikely-spicy-001", "text": { "tr": "Kim bu gece bir eskisine mesaj atar?", "en": "Who texts an ex tonight?" } },
+        { "id": "mostlikely-spicy-002", "text": { "tr": "Kim bir yabancıya ilk adımı atar?", "en": "Who makes the first move on a stranger?" } },
+        { "id": "mostlikely-spicy-003", "text": { "tr": "Kim buradaki birine gizlice ilgi duymuştur?", "en": "Who has had a crush on someone in this room?" } },
+        { "id": "mostlikely-spicy-004", "text": { "tr": "Kim bir tatilde tanıştığı biriyle hâlâ yazışıyor?", "en": "Who still texts someone they met on holiday?" } },
+        { "id": "mostlikely-spicy-005", "text": { "tr": "Kim bir randevuda en çok kendini övdü?", "en": "Who oversells themselves on a date?" } },
+        { "id": "mostlikely-spicy-006", "text": { "tr": "Kim bir buluşmadan sabaha karşı döner?", "en": "Who comes home at sunrise?" } },
+        { "id": "mostlikely-spicy-007", "text": { "tr": "Kim en çok flört mesajı siler?", "en": "Who deletes the most flirty messages?" } },
+        { "id": "mostlikely-spicy-008", "text": { "tr": "Kim iki kişiyle aynı anda yazışır?", "en": "Who texts two people at once?" } },
+        { "id": "mostlikely-spicy-009", "text": { "tr": "Kim bir arkadaşının eskisiyle çıkar?", "en": "Who dates a friend's ex?" } },
+        { "id": "mostlikely-spicy-010", "text": { "tr": "Kim bir ilişkide daha çok emek verir?", "en": "Who puts more into a relationship?" } },
+        { "id": "mostlikely-spicy-011", "text": { "tr": "Kim bir bakışla anlaşır?", "en": "Who flirts with just a look?" } },
+        { "id": "mostlikely-spicy-012", "text": { "tr": "Kim tanıştığı gün âşık olur?", "en": "Who falls in love on day one?" } },
+        { "id": "mostlikely-spicy-013", "text": { "tr": "Kim bir eskisinin profiline en çok bakar?", "en": "Who checks an ex's profile the most?" } },
+        { "id": "mostlikely-spicy-014", "text": { "tr": "Kim bir öpücüğü en çok abartır?", "en": "Who makes the biggest deal out of a kiss?" } },
+        { "id": "mostlikely-spicy-015", "text": { "tr": "Kim burada en çok sır saklıyor?", "en": "Who is hiding the most in this room?" } }
+      ]
     }
+
   ]
 }

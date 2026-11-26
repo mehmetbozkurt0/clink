@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.resources.coming_soon
 import com.mehmetbozkurt.clink.resources.mode_local_title
 import com.mehmetbozkurt.clink.resources.mode_local_sub
 import com.mehmetbozkurt.clink.resources.mode_online_title
@@ -37,8 +38,16 @@ fun ModeSelectScreen(game: GameId, onLocal: () -> Unit, onOnline: () -> Unit, on
             ChoiceCard(onClick = onLocal, rotation = PosterTilts[0]) {
                 ModeText(stringResource(Res.string.mode_local_title), stringResource(Res.string.mode_local_sub))
             }
-            ChoiceCard(onClick = onOnline, rotation = PosterTilts[1]) {
-                ModeText(stringResource(Res.string.mode_online_title), stringResource(Res.string.mode_online_sub))
+            // A game whose online rules aren't written yet shows the card greyed out rather than hiding it.
+            ChoiceCard(onClick = onOnline, enabled = game.playsOnline, rotation = PosterTilts[1]) {
+                ModeText(
+                    title = stringResource(Res.string.mode_online_title),
+                    subtitle = if (game.playsOnline) {
+                        stringResource(Res.string.mode_online_sub)
+                    } else {
+                        stringResource(Res.string.coming_soon)
+                    },
+                )
             }
         }
     }

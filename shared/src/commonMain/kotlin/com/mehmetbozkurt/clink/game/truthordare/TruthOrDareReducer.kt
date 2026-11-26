@@ -23,7 +23,8 @@ object TruthOrDareReducer : Reducer<TruthOrDareState, TodAction> {
         val deck = when (type) {
             CardType.TRUTH -> state.truthDeck
             CardType.DARE -> state.dareDeck
-            CardType.PENALTY -> return state
+            // Truth or Dare only draws these two; any other type is not an action this game can take.
+            CardType.PENALTY, CardType.MOST_LIKELY -> return state
         }
         val (cardId, rest) = deck.draw(random)
             ?: return state.copy(notice = if (type == CardType.TRUTH) TodNotice.NO_TRUTH_CARDS else TodNotice.NO_DARE_CARDS)

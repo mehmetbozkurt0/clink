@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home poster drawing for Most Likely To, drawn for Clink: three hands pointing at one spot. Ink lines only. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="80dp"
+    android:viewportWidth="100"
+    android:viewportHeight="80">
+    <!-- The spot everyone points at. -->
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.6"
+        android:pathData="M44,34 A6,6 0 1,0 56,34 A6,6 0 1,0 44,34 Z" />
+    <path
+        android:strokeColor="#141414"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M42,52 C42,44 58,44 58,52 L58,62 H42 Z" />
+    <!-- Left hand. -->
+    <group android:rotation="-18" android:pivotX="18" android:pivotY="40">
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M6,36 H24 M8,44 h14 a6,6 0 0 0 6,-6 v-4 a5,5 0 0 0 -5,-5 h-9 a4,4 0 0 0 -4,4 v3" />
+    </group>
+    <!-- Right hand. -->
+    <group android:rotation="18" android:pivotX="82" android:pivotY="40">
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M94,36 H76 M92,44 H78 a6,6 0 0 1 -6,-6 v-4 a5,5 0 0 1 5,-5 h9 a4,4 0 0 1 4,4 v3" />
+    </group>
+    <!-- Hand from below. -->
+    <group android:rotation="-80" android:pivotX="50" android:pivotY="72">
+        <path
+            android:strokeColor="#141414"
+            android:strokeWidth="2.6"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M38,68 H56 M40,76 h14 a6,6 0 0 0 6,-6 v-4 a5,5 0 0 0 -5,-5 h-9 a4,4 0 0 0 -4,4 v3" />
+    </group>
+</vector>

@@ -32,6 +32,7 @@ import com.mehmetbozkurt.clink.game.cuppong.CupPongScreen
 import com.mehmetbozkurt.clink.game.cuppong.CupPongSetupScreen
 import com.mehmetbozkurt.clink.game.cuppong.suggestedMatchup
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleScreen
+import com.mehmetbozkurt.clink.game.mostlikely.MostLikelyScreen
 import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareScreen
 import com.mehmetbozkurt.clink.online.Member
 import com.mehmetbozkurt.clink.online.codeFromLink
@@ -78,6 +79,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
         val route: Any = when (game) {
             GameId.TRUTH_OR_DARE -> TruthOrDareRoute(players, level)
             GameId.SPIN_THE_BOTTLE -> SpinTheBottleRoute(players, level)
+            GameId.MOST_LIKELY_TO -> MostLikelyRoute(players, level)
             GameId.CUP_PONG -> if (players.size == 2) {
                 val matchup = suggestedMatchup(2, matchWinner, matchLoser)
                 CupPongRoute(players, level, matchup.first, matchup.second)
@@ -302,6 +304,7 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             PlayerSetupScreen(
                 onContinue = { players -> entry.ifResumed { navController.navigate(LevelRoute(route.game, players)) } },
                 onBack = { entry.back() },
+                minPlayers = route.game.minPlayers,
             )
         }
         composable<LevelRoute> { entry ->
@@ -309,6 +312,20 @@ fun ClinkNavHost(navController: NavHostController = rememberNavController()) {
             LevelSelectScreen(
                 onLevel = { level -> entry.ifResumed { startGame(route.game, route.players, level) } },
                 onBack = { entry.back() },
+            )
+        }
+        composable<MostLikelyRoute> { entry ->
+            val route = entry.toRoute<MostLikelyRoute>()
+            MostLikelyScreen(
+                players = route.players,
+                level = route.level,
+                onEnd = {
+                    entry.ifResumed {
+                        navController.navigate(GameOverRoute(GameId.MOST_LIKELY_TO, route.players, route.level)) {
+                            popUpTo<MostLikelyRoute> { inclusive = true }
+                        }
+                    }
+                },
             )
         }
         composable<TruthOrDareRoute> { entry ->

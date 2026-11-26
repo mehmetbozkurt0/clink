@@ -121,8 +121,11 @@ private val RowSpacing = 8.dp
 
 /** Players (design §4, §6): long-press the handle and drag to reorder; × removes; counter "n / 12". */
 @Composable
-fun PlayerSetupScreen(onContinue: (List<String>) -> Unit, onBack: () -> Unit) {
-    val rows = rememberSaveable(saver = RowsSaver) { mutableStateListOf(PlayerRow(0, ""), PlayerRow(1, "")) }
+fun PlayerSetupScreen(onContinue: (List<String>) -> Unit, onBack: () -> Unit, minPlayers: Int = PlayerNames.MIN) {
+    // One empty row per player the game needs, so a game that wants three does not look like it wants two.
+    val rows = rememberSaveable(saver = RowsSaver) {
+        mutableStateListOf(*Array(minPlayers) { PlayerRow(it, "") })
+    }
     var error by remember { mutableStateOf<PlayerNamesResult?>(null) }
 
     // Drag state: the row under the finger and how far it is from its slot.
@@ -185,7 +188,7 @@ fun PlayerSetupScreen(onContinue: (List<String>) -> Unit, onBack: () -> Unit) {
                         name = row.name,
                         index = index,
                         lastIndex = rows.lastIndex,
-                        canRemove = rows.size > PlayerNames.MIN,
+                        canRemove = rows.size > minPlayers,
                         dragged = dragged,
                         modifier = Modifier
                             .onSizeChanged { rowHeight = it.height }
@@ -228,7 +231,7 @@ fun PlayerSetupScreen(onContinue: (List<String>) -> Unit, onBack: () -> Unit) {
         PrimaryButton(
             text = stringResource(Res.string.continue_button),
             onClick = {
-                when (val result = PlayerNames.validate(rows.map { it.name })) {
+                when (val result = PlayerNames.validate(rows.map { it.name }, minPlayers)) {
                     is PlayerNamesResult.Valid -> onContinue(result.names)
                     else -> error = result
                 }
@@ -406,7 +409,7 @@ private fun Modifier.animatePlacement(animate: Boolean): Modifier = composed {
 
 @Composable
 private fun errorText(result: PlayerNamesResult): String? = when (result) {
-    PlayerNamesResult.TooFew -> stringResource(Res.string.err_too_few)
+    is PlayerNamesResult.TooFew -> stringResource(Res.string.err_too_few, result.min)
     PlayerNamesResult.TooMany -> stringResource(Res.string.err_too_many)
     is PlayerNamesResult.Duplicate -> stringResource(Res.string.err_duplicate, result.name)
     is PlayerNamesResult.Valid -> null

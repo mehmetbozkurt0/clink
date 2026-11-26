@@ -10,7 +10,17 @@ class PlayerNamesTest {
         assertEquals(PlayerNamesResult.Valid(listOf("Ayşe", "Mert")), PlayerNames.validate(listOf("  Ayşe ", "", "   ", "Mert")))
 
     @Test
-    fun tooFewAfterDroppingBlanks() = assertEquals(PlayerNamesResult.TooFew, PlayerNames.validate(listOf("Ayşe", " ")))
+    fun tooFewAfterDroppingBlanks() = assertEquals(PlayerNamesResult.TooFew(2), PlayerNames.validate(listOf("Ayşe", " ")))
+
+    @Test
+    fun twoPlayersAreTooFewWhenAGameWantsThree() =
+        assertEquals(PlayerNamesResult.TooFew(3), PlayerNames.validate(listOf("Mert", "Ayşe"), min = 3))
+
+    @Test
+    fun threePlayersPassWhenAGameWantsThree() = assertEquals(
+        PlayerNamesResult.Valid(listOf("Mert", "Ayşe", "Can")),
+        PlayerNames.validate(listOf("Mert", "Ayşe", "Can"), min = 3),
+    )
 
     @Test
     fun tooMany() = assertEquals(PlayerNamesResult.TooMany, PlayerNames.validate((1..13).map { "P$it" }))

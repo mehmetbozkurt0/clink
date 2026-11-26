@@ -38,6 +38,8 @@ object HostReferee {
                 require(players.size == 2) { "Cup Pong is 1v1" }
                 SessionState(seq, game, level, uids, cupPong = initialCupPongState(names, level, library))
             }
+            // Unreachable while GameId.playsOnline is false: the lobby cannot pick this game (spec 2026-11-25 §8).
+            GameId.MOST_LIKELY_TO -> error("$game has no online rules yet")
         }
     }
 

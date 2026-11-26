@@ -57,6 +57,9 @@ data class TruthOrDareRoute(val players: List<String>, val level: Level)
 @Serializable
 data class SpinTheBottleRoute(val players: List<String>, val level: Level)
 
+@Serializable
+data class MostLikelyRoute(val players: List<String>, val level: Level)
+
 /** Picking the two match players when there are more than two (indexes into [players]). */
 @Serializable
 data class CupPongSetupRoute(

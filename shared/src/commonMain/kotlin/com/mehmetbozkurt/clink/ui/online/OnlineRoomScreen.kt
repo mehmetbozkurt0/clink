@@ -205,6 +205,8 @@ private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
                             topBarExtras = chatButton,
                         )
                     }
+                    // Unreachable while GameId.playsOnline is false: the picker never offers this game.
+                    GameId.MOST_LIKELY_TO -> Unit
                 }
             }
             else -> Lobby(session, snap, chatButton, onLeave = { confirmLeave = true })
@@ -304,7 +306,8 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
             CodeCard(code = session.code, onShare = { container.share(invite) })
             if (session.isHost) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    GameId.entries.forEach { game ->
+                    // Only games that have online rules (spec 2026-11-25 §8).
+                    GameId.entries.filter { it.playsOnline }.forEach { game ->
                         WallChip(
                             text = game.title(),
                             icon = game.icon(),
