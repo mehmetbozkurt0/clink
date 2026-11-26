@@ -35,9 +35,9 @@ class CupPongCameraTest {
 
     @Test
     fun speedMapsToTheBand() {
-        assertEquals(300f, flick(0f, -2000f, 300f)!!.speed, 0.01f)
-        assertEquals(400f, flick(0f, -2000f, 3000f)!!.speed, 0.01f)
-        assertEquals(400f, flick(0f, -2000f, 6000f)!!.speed, 0.01f)
+        assertEquals(CupPongPhysics.MIN_SPEED, flick(0f, -2000f, 300f)!!.speed, 0.01f)
+        assertEquals(CupPongPhysics.MAX_SPEED, flick(0f, -2000f, 3000f)!!.speed, 0.01f)
+        assertEquals(CupPongPhysics.MAX_SPEED, flick(0f, -2000f, 6000f)!!.speed, 0.01f)
     }
 
     @Test
@@ -62,7 +62,27 @@ class CupPongCameraTest {
     @Test
     fun veryHardFlickIsAFullSpeedThrow() {
         val input = assertNotNull(flick(0f, -40_000f, 14_000f))
-        assertEquals(400f, input.speed, 0.01f)
+        assertEquals(CupPongPhysics.MAX_SPEED, input.speed, 0.01f)
         assertTrue(abs(input.yawDegrees) < 0.5f)
+    }
+
+    /** Spec 2026-11-26 §1: someone who swipes as hard as they can must still be making a throw that can score. */
+    @Test
+    fun aFullForceFlickCanStillScore() {
+        val input = assertNotNull(flick(0f, -40_000f, 14_000f))
+        assertNotNull(simulateThrow(input, CupPongPhysics.ALL_CUPS).cupHit, "a full-force flick cannot score")
+    }
+
+    /**
+     * The gentlest flick the game accepts need not score — a feeble flick should fall short, that is what makes the
+     * control honest — but it must arrive at the cups rather than die on the near half. Measured at where the ball
+     * first comes down, not how far it ever travels: a miss rolls off the far end, which would pass from any speed.
+     */
+    @Test
+    fun theGentlestFlickArrivesAtTheCups() {
+        val input = assertNotNull(flick(0f, -2000f, 300f))
+        val landing = simulateThrow(input, CupPongPhysics.ALL_CUPS).points()
+            .first { it.y > 150f && it.z <= CupPongPhysics.BALL_RADIUS + 0.2f }
+        assertTrue(landing.y > 200f, "the gentlest flick lands at ${landing.y}, short of the front cup")
     }
 }

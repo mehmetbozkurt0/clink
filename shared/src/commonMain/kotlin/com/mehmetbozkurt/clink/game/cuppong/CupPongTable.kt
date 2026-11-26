@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.lerp
@@ -45,6 +47,10 @@ fun CupPongTable(
 ) {
     var canvasSize by remember { mutableStateOf(Size.Zero) }
     val points = remember(flight) { flight?.points() }
+    // The faint streak the finger leaves while it drags (spec 2026-11-26 §7.4): it shows the gesture, never the throw.
+    // Keyed on flickEnabled: when the turn changes Compose cancels the gesture without onDragCancel, so a
+    // trail remembered across that would keep drawing through the flight and the other player's turn.
+    val trail = remember(flickEnabled) { mutableStateListOf<Offset>() }
     Canvas(
         modifier = modifier.pointerInput(flickEnabled) {
             if (!flickEnabled) return@pointerInput
@@ -56,10 +62,16 @@ fun CupPongTable(
                     tracker.resetTracking()
                     finger = start
                     fromBallArea = start.y > size.height * 0.55f
+                    trail.clear()
+                    if (fromBallArea) trail.add(start)
                 },
                 onDrag = { change, amount ->
                     tracker.addPointerInputChange(change)
                     finger += amount
+                    if (fromBallArea) {
+                        trail.add(finger)
+                        if (trail.size > TRAIL_POINTS) trail.removeAt(0)
+                    }
                 },
                 onDragEnd = {
                     if (fromBallArea) {
@@ -67,7 +79,9 @@ fun CupPongTable(
                         val camera = CupPongCamera(canvasSize.width, canvasSize.height)
                         flickToThrow(camera, finger.x, finger.y, v.x, v.y, hypot(v.x, v.y) / density)?.let(onFlick)
                     }
+                    trail.clear()
                 },
+                onDragCancel = { trail.clear() },
             )
         },
     ) {
@@ -88,6 +102,8 @@ fun CupPongTable(
             center.y to { drawCup(camera, center, if (id == flight?.cupHit) splash else 0f) }
         } + listOfNotNull(ball?.takeIf { !underTable }?.let { b -> b.y - 0.01f to { drawBall(camera, b) } })
         items.sortedByDescending { it.first }.forEach { it.second() }
+        // Last, so it is visible over the table, but faint enough not to hide a cup.
+        drawFingerTrail(trail)
     }
 }
 
@@ -213,4 +229,22 @@ private fun convexHull(points: List<Offset>): List<Offset> {
         return out
     }
     return half(sorted).dropLast(1) + half(sorted.asReversed()).dropLast(1)
+}
+
+/** How many of the finger's latest positions the streak keeps. */
+private const val TRAIL_POINTS = 24
+
+/** A short streak along the finger's path, oldest end faded out, drawn over the table but barely there. */
+private fun DrawScope.drawFingerTrail(trail: List<Offset>) {
+    if (trail.size < 2) return
+    for (i in 1 until trail.size) {
+        val age = i.toFloat() / (trail.size - 1)
+        drawLine(
+            color = ClinkColors.Paper.copy(alpha = 0.26f * age),
+            start = trail[i - 1],
+            end = trail[i],
+            strokeWidth = 2.dp.toPx() + 2.dp.toPx() * age,
+            cap = StrokeCap.Round,
+        )
+    }
 }

@@ -13,6 +13,7 @@ import com.mehmetbozkurt.clink.game.cuppong.ThrowInput
 import com.mehmetbozkurt.clink.game.mostlikely.MlAction
 import com.mehmetbozkurt.clink.game.mostlikely.MlPhase
 import com.mehmetbozkurt.clink.game.cuppong.aimAt
+import com.mehmetbozkurt.clink.game.cuppong.simulateThrow
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinPhase
 import com.mehmetbozkurt.clink.game.truthordare.TodAction
@@ -215,8 +216,13 @@ class HostRefereeTest {
 
     @Test
     fun longestFlightFitsInPublishedState() {
-        val s = assertNotNull(start(GameId.CUP_PONG, a, b).act("a", OnlineAction.Throw(ThrowInput(0f, 400f))))
-        assertTrue(encodeSession(s).length < 12_000)
+        // The worst case is a miss that bounces and rolls, not a throw that sinks: a sunk ball stops at the cup.
+        val longest = (0..40).maxBy { i ->
+            val speed = CupPongPhysics.MIN_SPEED + i * (CupPongPhysics.MAX_SPEED - CupPongPhysics.MIN_SPEED) / 40f
+            simulateThrow(ThrowInput(0f, speed), CupPongPhysics.ALL_CUPS).path.size
+        }.let { CupPongPhysics.MIN_SPEED + it * (CupPongPhysics.MAX_SPEED - CupPongPhysics.MIN_SPEED) / 40f }
+        val s = assertNotNull(start(GameId.CUP_PONG, a, b).act("a", OnlineAction.Throw(ThrowInput(0f, longest))))
+        assertTrue(encodeSession(s).length < 12_000, "the longest flight encodes to ${encodeSession(s).length} chars")
     }
 
     // Most Likely To

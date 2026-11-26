@@ -90,4 +90,27 @@ class CupPongPhysicsTest {
         val end = result.points().last()
         assertTrue(hypot(end.x - cups[5].x, end.y - cups[5].y) < 5f)
     }
+    /**
+     * A ball that clips a rim must leave it. The softened rim (spec 2026-11-26 §7.2) made it possible for a ball to
+     * be pushed back onto the rim shell every step and hover there for the whole flight, buzzing the cup, while the
+     * turn waited on it.
+     */
+    @Test
+    fun noThrowGetsStuckOnARim() {
+        var worstSamples = 0
+        var worstContacts = 0
+        var worstInput = ThrowInput(0f, 0f)
+        for (yawTenths in -120..120 step 2) {
+            for (speedTenths in 3350..3750 step 5) {
+                val input = ThrowInput(yawTenths / 10f, speedTenths / 10f)
+                val r = simulateThrow(input, all)
+                val samples = r.path.size / 3
+                if (samples > worstSamples || r.rimContacts.size > worstContacts) worstInput = input
+                worstSamples = maxOf(worstSamples, samples)
+                worstContacts = maxOf(worstContacts, r.rimContacts.size)
+            }
+        }
+        assertTrue(worstSamples <= 150, "a throw took $worstSamples samples ($worstInput)")
+        assertTrue(worstContacts <= 20, "a throw hit a rim $worstContacts times ($worstInput)")
+    }
 }

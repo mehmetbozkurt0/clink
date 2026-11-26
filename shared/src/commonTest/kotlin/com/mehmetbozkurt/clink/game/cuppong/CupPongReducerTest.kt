@@ -78,6 +78,7 @@ class CupPongReducerTest {
 
     @Test
     fun outOfRangeThrowIsClamped() {
-        assertEquals(ThrowInput(45f, 400f), start.after(CpAction.Throw(ThrowInput(80f, 5000f))).lastThrow!!.input)
+        val clamped = ThrowInput(CupPongPhysics.MAX_YAW, CupPongPhysics.MAX_SPEED)
+        assertEquals(clamped, start.after(CpAction.Throw(ThrowInput(80f, 5000f))).lastThrow!!.input)
     }
 }

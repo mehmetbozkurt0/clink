@@ -33,10 +33,34 @@ object CupPongPhysics {
     const val TABLE_HALF_WIDTH = 30.5f
     const val TABLE_LENGTH = 262f
     const val PITCH_DEGREES = 50f
-    const val MIN_SPEED = 300f
-    const val MAX_SPEED = 400f
+    /**
+     * The speeds a flick maps onto (spec 2026-11-26-cup-pong-easier §7.1). Only this band can reach the cups, so the
+     * whole range of a finger's strength maps into it instead of wasting half on throws that cannot score.
+     */
+    const val MIN_SPEED = 335f
+    const val MAX_SPEED = 375f
     const val MAX_YAW = 45f
     const val RIM_TUBE = 0.3f
+
+    /**
+     * A ball that clips the rim keeps this much of its sliding speed and bounces back this much of its push (spec
+     * 2026-11-26 §7.2). Softer than a real cup on purpose: it is what merges the two scoring stripes into one band,
+     * so flicking a little harder cannot turn a hit into a miss and back again.
+     */
+    const val RIM_KEEP = 0.8f
+
+    /**
+     * Below this approach speed the rim does not catch the ball at all. Without it a ball resting on a rim is given
+     * a tiny bounce every step by gravity and hovers there for the whole flight instead of falling off.
+     */
+    const val RIM_GRAB_SPEED = 25f
+
+    /**
+     * How much further than the physical mouth a descending ball is still caught. This is what closes the dead gap
+     * between the front cup and the back row, so the scoring band is one run rather than two stripes.
+     */
+    const val CUP_CATCH_MARGIN = 0.5f
+    const val RIM_BOUNCE = 0.22f
     const val SAMPLES_PER_SECOND = 60
     const val STEPS_PER_SECOND = 240
     const val MAX_SECONDS = 4
@@ -137,21 +161,23 @@ fun simulateThrow(input: ThrowInput, remainingCups: Set<Int>): ThrowResult = wit
             val nx = dx / horizontal
             val ny = dy / horizontal
             // Rim, a thin torus. Forgiving: a ball whose centre is already over the opening drops in instead.
-            val overOpening = horizontal < CUP_TOP_RADIUS - 0.6f
+            val overOpening = horizontal < CUP_TOP_RADIUS - 0.6f + CUP_CATCH_MARGIN
             val rim = Vec3(c.x + nx * CUP_TOP_RADIUS, c.y + ny * CUP_TOP_RADIUS, CUP_HEIGHT)
             val off = p - rim
             val dist = off.length()
             if (!overOpening && dist < BALL_RADIUS + RIM_TUBE && dist > 0.001f) {
                 val normal = off * (1f / dist)
                 val into = v dot normal
-                if (into < 0f) {
+                if (into < -RIM_GRAB_SPEED) {
                     // The part into the rim bounces back softly; most of the sliding part is kept.
                     val along = normal * into
-                    v = (v - along) * 0.9f - along * 0.35f
+                    v = (v - along) * RIM_KEEP - along * RIM_BOUNCE
                     if (rimContacts.lastOrNull()?.sample != path.size) rimContacts.add(RimContact(path.size, id))
                     touchedRim = true
+                    // Only a ball moving into the rim is pushed off it: a ball already leaving must be let go, or
+                    // the soft rim holds it on the shell and it hovers there for the whole flight.
+                    p = rim + normal * (BALL_RADIUS + RIM_TUBE)
                 }
-                p = rim + normal * (BALL_RADIUS + RIM_TUBE)
             }
             val wall = cupRadiusAt(p.z)
             if (p.z < CUP_HEIGHT && horizontal < wall) {
@@ -179,7 +205,10 @@ fun simulateThrow(input: ThrowInput, remainingCups: Set<Int>): ThrowResult = wit
         }
         if (n % samplesEvery == 0) path.add(p)
         val stopped = onTable && p.z <= BALL_RADIUS + 0.01f && hypot(v.x, v.y) < 20f
-        if (p.z < -40f || stopped || p.y > TABLE_LENGTH + 80f) break
+        // A ball that has come to rest anywhere — on the table, on a rim, against a cup — ends the flight. Without
+        // this a ball balanced on a cup is nudged by gravity every step and hovers for the full four seconds.
+        val resting = hypot(v.x, v.y) < 20f && abs(v.z) < 20f
+        if (p.z < -40f || stopped || resting || p.y > TABLE_LENGTH + 80f) break
     }
     if (path.last() != p) path.add(p)
     result(null)
