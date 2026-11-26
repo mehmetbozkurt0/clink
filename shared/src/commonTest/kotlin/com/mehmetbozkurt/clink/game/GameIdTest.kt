@@ -7,9 +7,9 @@ import kotlin.test.assertTrue
 
 class GameIdTest {
     @Test
-    fun theNewGameNeedsThreePlayersAndHasNoOnlineYet() {
+    fun theNewGameNeedsThreePlayersAndPlaysOnline() {
         assertEquals(3, GameId.MOST_LIKELY_TO.minPlayers)
-        assertFalse(GameId.MOST_LIKELY_TO.playsOnline)
+        assertTrue(GameId.MOST_LIKELY_TO.playsOnline)
     }
 
     @Test

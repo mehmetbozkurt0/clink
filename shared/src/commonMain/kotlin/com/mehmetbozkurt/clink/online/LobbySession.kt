@@ -204,10 +204,10 @@ class LobbySession internal constructor(
         val meta = snap.meta ?: return false
         val ready = playerOrder(snap.members).filter { it.online || it.uid == me.uid }
         val chosen = if (players != null) ready.filter { it.uid in players } else ready
-        val enough = if (meta.game == GameId.CUP_PONG) chosen.size == 2 else chosen.size >= 2
+        val enough = if (meta.game == GameId.CUP_PONG) chosen.size == 2 else chosen.size >= meta.game.minPlayers
         if (!enough) return false
         mutex.withLock {
-            val next = HostReferee.start(meta.game, meta.level, chosen, library, random, seq = (current?.seq ?: 0) + 1)
+            val next = HostReferee.start(meta.game, meta.level, chosen, library, random, seq = (current?.seq ?: 0) + 1, hostUid = me.uid)
             if (!write { repo.setMeta(lobbyId, meta.game, meta.level, LobbyStatus.PLAYING) }) return false
             update(next)
         }

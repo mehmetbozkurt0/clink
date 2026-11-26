@@ -13,5 +13,5 @@ enum class GameId(val minPlayers: Int = PlayerNames.MIN, val playsOnline: Boolea
     CUP_PONG,
 
     /** Pointing at one of two people says nothing, so this one needs three (spec 2026-11-25 §5). */
-    MOST_LIKELY_TO(minPlayers = 3, playsOnline = false),
+    MOST_LIKELY_TO(minPlayers = 3),
 }

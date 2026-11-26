@@ -40,6 +40,10 @@
     <string name="ml_who">WHO GOT POINTED AT MOST?</string>
     <string name="ml_pass">Pass this one</string>
     <string name="ml_wrong_person">Wrong person</string>
+    <string name="ml_pick">Pick someone</string>
+    <string name="ml_voted">%1$d/%2$d voted</string>
+    <string name="ml_reveal">Show the result</string>
+    <string name="ml_takes_penalty">%1$s takes the penalty</string>
     <string name="ml_no_prompts">No prompts at this level yet</string>
     <string name="ml_no_penalty">No penalty cards at this level</string>
     <string name="ml_summary_title">Tonight</string>
@@ -120,7 +124,7 @@
     <string name="lobby_players">Players %1$d/%2$d</string>
     <string name="lobby_host_badge">Host</string>
     <string name="lobby_start">Start</string>
-    <string name="lobby_need_two">At least 2 players needed to start</string>
+    <string name="lobby_need_players">At least %1$d players needed to start</string>
     <string name="lobby_pick_pair">Tap the 2 players for the match</string>
     <string name="lobby_waiting_start">Waiting for the host to start…</string>
     <string name="lobby_close_title">Close the lobby?</string>

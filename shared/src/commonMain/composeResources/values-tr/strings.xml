@@ -40,6 +40,10 @@
     <string name="ml_who">EN ÇOK GÖSTERİLEN KİM?</string>
     <string name="ml_pass">Bu soruyu geç</string>
     <string name="ml_wrong_person">Yanlış kişi</string>
+    <string name="ml_pick">Birini seç</string>
+    <string name="ml_voted">%1$d/%2$d oy verdi</string>
+    <string name="ml_reveal">Sonucu göster</string>
+    <string name="ml_takes_penalty">%1$s ceza çekiyor</string>
     <string name="ml_no_prompts">Bu seviyede henüz soru yok</string>
     <string name="ml_no_penalty">Bu seviyede ceza kartı yok</string>
     <string name="ml_summary_title">Bu akşam</string>
@@ -120,7 +124,7 @@
     <string name="lobby_players">Oyuncular %1$d/%2$d</string>
     <string name="lobby_host_badge">Kurucu</string>
     <string name="lobby_start">Başlat</string>
-    <string name="lobby_need_two">Başlamak için en az 2 oyuncu gerekli</string>
+    <string name="lobby_need_players">Başlamak için en az %1$d oyuncu gerekli</string>
     <string name="lobby_pick_pair">Maç için 2 oyuncuya dokun</string>
     <string name="lobby_waiting_start">Kurucunun başlatması bekleniyor…</string>
     <string name="lobby_close_title">Lobi kapatılsın mı?</string>

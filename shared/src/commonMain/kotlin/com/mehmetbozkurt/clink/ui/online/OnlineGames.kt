@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import com.mehmetbozkurt.clink.content.Level
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -44,6 +48,10 @@ import com.mehmetbozkurt.clink.game.cuppong.CupPongTable
 import com.mehmetbozkurt.clink.game.cuppong.CpPhase
 import com.mehmetbozkurt.clink.game.cuppong.Flight
 import com.mehmetbozkurt.clink.game.cuppong.MatchOverPanel
+import com.mehmetbozkurt.clink.game.mostlikely.MlAction
+import com.mehmetbozkurt.clink.game.mostlikely.MlPhase
+import com.mehmetbozkurt.clink.game.mostlikely.compactChips
+import com.mehmetbozkurt.clink.game.mostlikely.tapGuardKey
 import com.mehmetbozkurt.clink.game.spinthebottle.BottleCircle
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinMotion
@@ -62,6 +70,17 @@ import com.mehmetbozkurt.clink.online.OnlineAction
 import com.mehmetbozkurt.clink.online.SPIN_TEXT_MAX_LENGTH
 import com.mehmetbozkurt.clink.online.SessionState
 import com.mehmetbozkurt.clink.resources.Res
+import com.mehmetbozkurt.clink.resources.done_button
+import com.mehmetbozkurt.clink.resources.ml_chip
+import com.mehmetbozkurt.clink.resources.ml_no_penalty
+import com.mehmetbozkurt.clink.resources.ml_no_prompts
+import com.mehmetbozkurt.clink.resources.ml_pass
+import com.mehmetbozkurt.clink.resources.ml_pick
+import com.mehmetbozkurt.clink.resources.ml_reveal
+import com.mehmetbozkurt.clink.resources.ml_summary_title
+import com.mehmetbozkurt.clink.resources.ml_takes_penalty
+import com.mehmetbozkurt.clink.resources.ml_voted
+import com.mehmetbozkurt.clink.resources.penalty_done
 import com.mehmetbozkurt.clink.resources.answered
 import com.mehmetbozkurt.clink.resources.asks_answers
 import com.mehmetbozkurt.clink.resources.cp_hint
@@ -99,6 +118,14 @@ import com.mehmetbozkurt.clink.ui.components.WaitingLabel
 import com.mehmetbozkurt.clink.ui.components.cardTextStyle
 import com.mehmetbozkurt.clink.ui.components.rememberPhaseTapGuard
 import com.mehmetbozkurt.clink.ui.screens.ScreenColumn
+import com.mehmetbozkurt.clink.ui.components.LevelTag
+import com.mehmetbozkurt.clink.ui.components.WallChip
+import com.mehmetbozkurt.clink.ui.components.WaitingLabel
+import com.mehmetbozkurt.clink.ui.screens.title
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.ui.semantics.Role
 import com.mehmetbozkurt.clink.ui.theme.ClinkColors
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
@@ -488,4 +515,196 @@ internal fun OnlineCupPong(
             )
         }
     }
+}
+
+/**
+ * "Kim Daha Çok?" online (spec 2026-11-26 §6): everyone votes in secret, the result opens with the split, and the
+ * player or players with the most votes take a penalty. No screen ever shows who voted for whom.
+ */
+@Composable
+internal fun OnlineMostLikely(
+    session: SessionState,
+    me: OnlineSeat,
+    send: (OnlineAction) -> Unit,
+    onClose: () -> Unit,
+    onBackToLobby: () -> Unit,
+    topBarExtras: @Composable RowScope.() -> Unit,
+) {
+    val state = session.mostLikely ?: return
+    // Keyed on the round, not the phase value: a vote from anyone changes the phase without starting a new round.
+    val tapGuard = rememberPhaseTapGuard(state.phase.tapGuardKey())
+    fun act(action: MlAction) = tapGuard { send(OnlineAction.MostLikely(action)) }
+
+    ScreenColumn {
+        TopBar(
+            navigation = TopBarNav.Close,
+            // Closing publishes the night's tally to every phone first; the host's Done on it leaves (spec §6).
+            onNavigate = { if (me.isHost && state.endsWithTally()) act(MlAction.End) else onClose() },
+            title = session.game.title(),
+            trailing = topBarExtras,
+        )
+        when (val phase = state.phase) {
+            MlPhase.NoPrompts -> WaitingLabel(stringResource(Res.string.ml_no_prompts))
+            // One-phone phases: an online session never publishes them.
+            is MlPhase.ShowingPrompt -> WaitingLabel(stringResource(Res.string.ml_pick))
+            is MlPhase.Voting -> OnlineVoting(
+                level = state.level,
+                text = cardText(phase.cardId),
+                players = state.players,
+                myVote = me.seat?.let { phase.votes.getOrNull(it) },
+                voted = phase.votes.count { it != null },
+                slapKey = phase.cardId,
+                mySeat = me.seat,
+                isHost = me.isHost,
+                onVote = { seat, target -> act(MlAction.Vote(seat, target, phase.cardId)) },
+                onReveal = { act(MlAction.Reveal) },
+                onPass = { act(MlAction.Pass) },
+            )
+            is MlPhase.ShowingPenalty -> OnlineResult(
+                level = state.level,
+                players = state.players,
+                counts = phase.counts,
+                takers = phase.picked,
+                text = phase.cardId?.let { cardText(it) },
+                slapKey = phase,
+                mine = me.seat in phase.picked || me.isHost,
+                onDone = { act(MlAction.PenaltyDone) },
+            )
+            MlPhase.Summary -> OnlineSummary(state.players, state.picks, me.isHost, onDone = onBackToLobby)
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ColumnScope.OnlineVoting(
+    level: Level,
+    text: String,
+    players: List<String>,
+    myVote: Int?,
+    voted: Int,
+    slapKey: Any,
+    mySeat: Int?,
+    isHost: Boolean,
+    onVote: (Int, Int) -> Unit,
+    onReveal: () -> Unit,
+    onPass: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
+    ) {
+        SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
+            LevelTag(level)
+            Text(text = text, modifier = Modifier.padding(top = 14.dp), color = ClinkColors.Ink, style = cardTextStyle())
+        }
+        Text(text = stringResource(Res.string.ml_pick), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyMedium)
+    }
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        players.forEachIndexed { index, name ->
+            WallChip(
+                text = name,
+                compact = compactChips(players.size),
+                selected = myVote == index,
+                onClick = if (mySeat != null) ({ onVote(mySeat, index) }) else null,
+            )
+        }
+    }
+    Text(
+        text = stringResource(Res.string.ml_voted, voted, players.size),
+        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+        color = ClinkColors.Muted,
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = TextAlign.Center,
+    )
+    if (isHost) {
+        if (voted > 0) OnlineTextAction(stringResource(Res.string.ml_reveal), onReveal)
+        OnlineTextAction(stringResource(Res.string.ml_pass), onPass)
+    }
+}
+
+@Composable
+private fun ColumnScope.OnlineResult(
+    level: Level,
+    players: List<String>,
+    counts: List<Int>,
+    takers: List<Int>,
+    text: String?,
+    slapKey: Any,
+    mine: Boolean,
+    onDone: () -> Unit,
+) {
+    val names = takers.mapNotNull { players.getOrNull(it) }
+    Column(
+        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+    ) {
+        // Counts only: who voted for whom is never shown, to anybody (spec 2026-11-26 §4).
+        players.indices.filter { counts.getOrElse(it) { 0 } > 0 }.sortedByDescending { counts[it] }.forEach { seat ->
+            Text(
+                text = stringResource(Res.string.ml_chip, players[seat], counts[seat]),
+                color = ClinkColors.Paper,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
+        Text(
+            text = stringResource(Res.string.ml_takes_penalty, names.joinToString(" · ")).toUpperCase(Locale.current),
+            modifier = Modifier.padding(top = 6.dp),
+            color = ClinkColors.Pink,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        if (text == null) {
+            Text(stringResource(Res.string.ml_no_penalty), color = ClinkColors.Muted, style = MaterialTheme.typography.bodyLarge)
+        } else {
+            SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
+                LevelTag(level)
+                Text(text = text, modifier = Modifier.padding(top = 14.dp), color = ClinkColors.Ink, style = cardTextStyle())
+            }
+        }
+    }
+    if (mine) {
+        PrimaryButton(text = stringResource(Res.string.penalty_done), onClick = onDone, modifier = Modifier.fillMaxWidth())
+    } else {
+        WaitingLabel(stringResource(Res.string.online_waiting_for, names.joinToString(" · ")))
+    }
+}
+
+@Composable
+private fun ColumnScope.OnlineSummary(players: List<String>, picks: List<Int>, isHost: Boolean, onDone: () -> Unit) {
+    Column(
+        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+    ) {
+        Text(
+            text = stringResource(Res.string.ml_summary_title).toUpperCase(Locale.current),
+            color = ClinkColors.Acid,
+            style = MaterialTheme.typography.displaySmall,
+        )
+        players.indices.filter { picks.getOrElse(it) { 0 } > 0 }.sortedByDescending { picks[it] }.forEach { seat ->
+            Text(
+                text = stringResource(Res.string.ml_chip, players[seat], picks[seat]),
+                color = ClinkColors.Paper,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
+    }
+    if (isHost) {
+        PrimaryButton(text = stringResource(Res.string.done_button), onClick = onDone, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+/** The same quiet action the one-phone game uses, for the host's two extra controls. */
+@Composable
+private fun OnlineTextAction(text: String, onClick: () -> Unit) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(role = Role.Button, onClick = onClick)
+            .wrapContentHeight(Alignment.CenterVertically),
+        textAlign = TextAlign.Center,
+        color = ClinkColors.Muted,
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }

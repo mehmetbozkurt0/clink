@@ -79,7 +79,7 @@ import com.mehmetbozkurt.clink.resources.lobby_invite
 import com.mehmetbozkurt.clink.resources.lobby_invite_text
 import com.mehmetbozkurt.clink.resources.lobby_leave_confirm
 import com.mehmetbozkurt.clink.resources.lobby_leave_title
-import com.mehmetbozkurt.clink.resources.lobby_need_two
+import com.mehmetbozkurt.clink.resources.lobby_need_players
 import com.mehmetbozkurt.clink.resources.lobby_pick_pair
 import com.mehmetbozkurt.clink.resources.lobby_players
 import com.mehmetbozkurt.clink.resources.lobby_remove_confirm
@@ -205,9 +205,14 @@ private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
                             topBarExtras = chatButton,
                         )
                     }
-                    // Unreachable while GameId.playsOnline is false, and loud like HostReferee if that ever changes
-                    // without the rules being written.
-                    GameId.MOST_LIKELY_TO -> error("${game.game} has no online screen yet")
+                    GameId.MOST_LIKELY_TO -> OnlineMostLikely(
+                            session = game,
+                            me = me,
+                            send = send,
+                            onClose = onClose,
+                            onBackToLobby = { scope.launch { session.endGame() } },
+                            topBarExtras = chatButton,
+                        )
                 }
             }
             else -> Lobby(session, snap, chatButton, onLeave = { confirmLeave = true })
@@ -290,7 +295,8 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
     // Cup Pong: the two picked players, if both are still here and online.
     val livePair = pair.filter { uid -> players.any { it.uid == uid && (it.online || it.uid == session.me.uid) } }
     val ready = players.count { it.online || it.uid == session.me.uid }
-    val canStart = if (meta.game == GameId.CUP_PONG) livePair.size == 2 || (ready == 2 && pair.isEmpty()) else ready >= 2
+    val canStart =
+        if (meta.game == GameId.CUP_PONG) livePair.size == 2 || (ready == 2 && pair.isEmpty()) else ready >= meta.game.minPlayers
     // The invite: the code and the link that opens the app (spec §5.1).
     val invite = stringResource(Res.string.lobby_invite_text, session.code, inviteLink(session.code))
 
@@ -361,7 +367,11 @@ private fun Lobby(session: LobbySession, snap: LobbySnapshot, chatButton: @Compo
         if (session.isHost) {
             if (startFailed || !canStart) {
                 Text(
-                    text = stringResource(if (meta.game == GameId.CUP_PONG && ready > 2) Res.string.lobby_pick_pair else Res.string.lobby_need_two),
+                    text = if (meta.game == GameId.CUP_PONG && ready > 2) {
+                        stringResource(Res.string.lobby_pick_pair)
+                    } else {
+                        stringResource(Res.string.lobby_need_players, meta.game.minPlayers)
+                    },
                     color = ClinkColors.Muted,
                     style = MaterialTheme.typography.bodyMedium,
                 )

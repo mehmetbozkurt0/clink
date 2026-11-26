@@ -7,6 +7,10 @@ import com.mehmetbozkurt.clink.game.cuppong.CupPongReducer
 import com.mehmetbozkurt.clink.game.cuppong.CpAction
 import com.mehmetbozkurt.clink.game.cuppong.CpPhase
 import com.mehmetbozkurt.clink.game.cuppong.initialCupPongState
+import com.mehmetbozkurt.clink.game.mostlikely.MlAction
+import com.mehmetbozkurt.clink.game.mostlikely.MlPhase
+import com.mehmetbozkurt.clink.game.mostlikely.MostLikelyReducer
+import com.mehmetbozkurt.clink.game.mostlikely.initialMostLikelyState
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinPhase
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinTheBottleReducer
@@ -28,18 +32,31 @@ const val SPIN_TEXT_MAX_LENGTH = 200
 object HostReferee {
 
     /** A new game for [players] in seat order; for Cup Pong exactly the two match players. */
-    fun start(game: GameId, level: Level, players: List<Member>, library: ContentLibrary, random: Random, seq: Int = 1): SessionState {
+    fun start(
+        game: GameId,
+        level: Level,
+        players: List<Member>,
+        library: ContentLibrary,
+        random: Random,
+        seq: Int = 1,
+        hostUid: String = "",
+    ): SessionState {
         val names = players.map { it.name }
         val uids = players.map { it.uid }
         return when (game) {
-            GameId.TRUTH_OR_DARE -> SessionState(seq, game, level, uids, tod = initialTruthOrDareState(names, level, library))
-            GameId.SPIN_THE_BOTTLE -> SessionState(seq, game, level, uids, spin = initialSpinState(names, level, library))
+            GameId.TRUTH_OR_DARE -> SessionState(seq, game, level, uids, hostUid, tod = initialTruthOrDareState(names, level, library))
+            GameId.SPIN_THE_BOTTLE -> SessionState(seq, game, level, uids, hostUid, spin = initialSpinState(names, level, library))
             GameId.CUP_PONG -> {
                 require(players.size == 2) { "Cup Pong is 1v1" }
-                SessionState(seq, game, level, uids, cupPong = initialCupPongState(names, level, library))
+                SessionState(seq, game, level, uids, hostUid, cupPong = initialCupPongState(names, level, library))
             }
-            // Unreachable while GameId.playsOnline is false: the lobby cannot pick this game (spec 2026-11-25 §8).
-            GameId.MOST_LIKELY_TO -> error("$game has no online rules yet")
+            GameId.MOST_LIKELY_TO -> {
+                require(players.size >= GameId.MOST_LIKELY_TO.minPlayers) { "$game needs ${GameId.MOST_LIKELY_TO.minPlayers} players" }
+                SessionState(
+                    seq, game, level, uids, hostUid,
+                    mostLikely = initialMostLikelyState(names, level, library, random, voting = true),
+                )
+            }
         }
     }
 
@@ -51,8 +68,25 @@ object HostReferee {
             is OnlineAction.AskQuestion -> askQuestion(session, seat, action.text)
             is OnlineAction.AnswerQuestion -> answerQuestion(session, seat, action.text, random)
             is OnlineAction.Throw -> throwBall(session, seat, action, random)
+            is OnlineAction.MostLikely -> mostLikelyAction(session, seat, uid, action.action, random)
         }
         return next?.takeIf { it != session }?.copy(seq = session.seq + 1)
+    }
+
+    /**
+     * A vote carries the sender's own seat, whatever seat they claimed; "show the result" and "pass" are the host's
+     * alone, and the one-phone actions have no meaning online (spec 2026-11-26 §7).
+     */
+    private fun mostLikelyAction(session: SessionState, seat: Int, uid: String, action: MlAction, random: Random): SessionState? {
+        val state = session.mostLikely ?: return null
+        val allowed = when (action) {
+            is MlAction.Vote -> action.copy(voter = seat)
+            MlAction.Reveal, MlAction.Pass -> action.takeIf { uid == session.hostUid }
+            MlAction.PenaltyDone -> action.takeIf { uid == session.hostUid || seat in (state.phase as? MlPhase.ShowingPenalty)?.picked.orEmpty() }
+            MlAction.End -> action.takeIf { uid == session.hostUid }
+            is MlAction.Pick, MlAction.WrongPerson -> null
+        } ?: return null
+        return session.copy(mostLikely = MostLikelyReducer.reduce(state, allowed, random))
     }
 
     /**
@@ -92,6 +126,17 @@ object HostReferee {
                     }
                 is SpinPhase.ShowingPenalty ->
                     if (offline(phase.answerer)) session.copy(spin = SpinTheBottleReducer.reduce(spin, SpinAction.PenaltyDone, random)) else null
+            }
+        }
+        session.mostLikely?.let { ml ->
+            val seats = session.playerUids.indices.filter { !offline(it) }.toSet()
+            return when (val phase = ml.phase) {
+                // Nobody left to wait for: the round opens with the votes it has (spec 2026-11-26 §6).
+                is MlPhase.Voting -> if (ml.allVoted(seats)) session.copy(mostLikely = MostLikelyReducer.reduce(ml, MlAction.Reveal, random)) else null
+                // Nobody present has to take it, so it does not hold the room up.
+                is MlPhase.ShowingPenalty ->
+                    if (phase.picked.none { it in seats }) session.copy(mostLikely = MostLikelyReducer.reduce(ml, MlAction.PenaltyDone, random)) else null
+                else -> null
             }
         }
         return null

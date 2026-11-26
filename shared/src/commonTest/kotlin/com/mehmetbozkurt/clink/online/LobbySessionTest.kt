@@ -106,6 +106,25 @@ class LobbySessionTest {
     }
 
     @Test
+    fun aGameThatNeedsThreePlayersWillNotStartWithTwo() = runTest {
+        val repo = FakeLobbyRepository()
+        val hostSession = assertNotNull(launcher(repo).create(host, GameId.MOST_LIKELY_TO, Level.CASUAL))
+        assertIs<JoinResult.Joined>(launcher(repo).join("ABC234", guest))
+        advanceUntilIdle()
+        assertFalse(hostSession.startGame())
+        assertNull(repo.session(hostSession.lobbyId))
+    }
+
+    @Test
+    fun theSameLobbyStartsTruthOrDareWithTwo() = runTest {
+        val repo = FakeLobbyRepository()
+        val hostSession = assertNotNull(launcher(repo).create(host, GameId.TRUTH_OR_DARE, Level.CASUAL))
+        assertIs<JoinResult.Joined>(launcher(repo).join("ABC234", guest))
+        advanceUntilIdle()
+        assertTrue(hostSession.startGame())
+    }
+
+    @Test
     fun offlinePlayerIsSkippedByTheHost() = runTest {
         val repo = FakeLobbyRepository()
         val hostSession = assertNotNull(launcher(repo).create(host, GameId.TRUTH_OR_DARE, Level.CASUAL))

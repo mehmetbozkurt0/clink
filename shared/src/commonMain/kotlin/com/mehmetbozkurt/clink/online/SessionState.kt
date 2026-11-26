@@ -3,6 +3,7 @@ package com.mehmetbozkurt.clink.online
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.game.GameId
 import com.mehmetbozkurt.clink.game.cuppong.CupPongState
+import com.mehmetbozkurt.clink.game.mostlikely.MostLikelyState
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinState
 import com.mehmetbozkurt.clink.game.truthordare.TruthOrDareState
 import kotlinx.serialization.Serializable
@@ -18,11 +19,14 @@ data class SessionState(
     val game: GameId,
     val level: Level,
     val playerUids: List<String>,
+    /** Who is refereeing, so the pure rules can enforce the host-only actions themselves (spec 2026-11-26 §7). */
+    val hostUid: String = "",
     val tod: TruthOrDareState? = null,
     val spin: SpinState? = null,
     val spinQuestion: String? = null,
     val spinAnswer: String? = null,
     val cupPong: CupPongState? = null,
+    val mostLikely: MostLikelyState? = null,
 )
 
 fun encodeSession(session: SessionState): String = OnlineJson.encodeToString(SessionState.serializer(), session)

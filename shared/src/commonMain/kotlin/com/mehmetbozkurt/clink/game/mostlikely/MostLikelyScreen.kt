@@ -103,9 +103,11 @@ fun MostLikelyScreen(players: List<String>, level: Level, onEnd: () -> Unit) {
                 onPick = { act(MlAction.Pick(it)) },
                 onPass = { act(MlAction.Pass) },
             )
+            // Only an online session votes, and this screen is the one-phone one (spec 2026-11-26 §7).
+            is MlPhase.Voting -> error("the one-phone game does not vote")
             is MlPhase.ShowingPenalty -> Penalty(
                 level = state.level,
-                name = state.players[phase.picked],
+                names = phase.picked.map { state.players[it] },
                 text = phase.cardId?.let { container.library.text(it, Locale.current.language) },
                 slapKey = phase,
                 onDone = { act(MlAction.PenaltyDone) },
@@ -179,7 +181,7 @@ private fun ColumnScope.Prompt(
 @Composable
 private fun ColumnScope.Penalty(
     level: Level,
-    name: String,
+    names: List<String>,
     text: String?,
     slapKey: Any,
     onDone: () -> Unit,
@@ -189,8 +191,9 @@ private fun ColumnScope.Penalty(
         modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
     ) {
+        // One name on a phone; an online tie puts several here (spec 2026-11-26 §6).
         Text(
-            text = name.toUpperCase(Locale.current),
+            text = names.joinToString(" · ") { it.toUpperCase(Locale.current) },
             modifier = Modifier.fillMaxWidth(),
             color = ClinkColors.Pink,
             style = MaterialTheme.typography.displaySmall,

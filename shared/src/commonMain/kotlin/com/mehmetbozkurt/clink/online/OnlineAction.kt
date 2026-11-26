@@ -1,6 +1,7 @@
 package com.mehmetbozkurt.clink.online
 
 import com.mehmetbozkurt.clink.game.cuppong.ThrowInput
+import com.mehmetbozkurt.clink.game.mostlikely.MlAction
 import com.mehmetbozkurt.clink.game.spinthebottle.SpinAction
 import com.mehmetbozkurt.clink.game.truthordare.TodAction
 import kotlinx.serialization.SerialName
@@ -27,6 +28,9 @@ sealed interface OnlineAction {
     /** Cup Pong: only the flick input is sent; the host computes the result (spec §7.3). */
     @Serializable @SerialName("throw")
     data class Throw(val input: ThrowInput) : OnlineAction
+
+    @Serializable @SerialName("ml")
+    data class MostLikely(val action: MlAction) : OnlineAction
 }
 
 // "@type", not "type": TodPhase.ShowingCard already has a property called type.
