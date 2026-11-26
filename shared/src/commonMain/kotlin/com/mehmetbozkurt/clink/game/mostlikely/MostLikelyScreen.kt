@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -128,9 +129,10 @@ private fun ColumnScope.Prompt(
     onPick: (Int) -> Unit,
     onPass: () -> Unit,
 ) {
+    // The card sits in the middle of the free space at its own height, as the other games' cards do.
     Column(
         modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
     ) {
         SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
             LevelTag(level)
@@ -176,7 +178,7 @@ private fun ColumnScope.Penalty(
 ) {
     Column(
         modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
     ) {
         Text(
             text = name.toUpperCase(Locale.current),
@@ -208,7 +210,7 @@ private fun ColumnScope.Penalty(
 private fun ColumnScope.Summary(players: List<String>, picks: List<Int>, onDone: () -> Unit) {
     Column(
         modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
     ) {
         Text(
             text = stringResource(Res.string.ml_summary_title).toUpperCase(Locale.current),
