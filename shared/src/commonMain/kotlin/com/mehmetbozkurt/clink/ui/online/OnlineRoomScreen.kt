@@ -205,8 +205,9 @@ private fun OnlineRoom(session: LobbySession, onExit: () -> Unit) {
                             topBarExtras = chatButton,
                         )
                     }
-                    // Unreachable while GameId.playsOnline is false: the picker never offers this game.
-                    GameId.MOST_LIKELY_TO -> Unit
+                    // Unreachable while GameId.playsOnline is false, and loud like HostReferee if that ever changes
+                    // without the rules being written.
+                    GameId.MOST_LIKELY_TO -> error("${game.game} has no online screen yet")
                 }
             }
             else -> Lobby(session, snap, chatButton, onLeave = { confirmLeave = true })

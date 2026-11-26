@@ -108,7 +108,7 @@
         { "id": "mostlikely-hard-010", "text": { "tr": "Kim en çok dedikodu yapar?", "en": "Who gossips the most?" } },
         { "id": "mostlikely-hard-011", "text": { "tr": "Kim zor bir günde kimseyi aramaz?", "en": "Who tells nobody when they're having a bad day?" } },
         { "id": "mostlikely-hard-012", "text": { "tr": "Kim bir arkadaşının parasını geri vermeyi unutur?", "en": "Who forgets to pay a friend back?" } },
-        { "id": "mostlikely-hard-013", "text": { "tr": "Kim buradaki birinin hakkında en çok şey biliyor?", "en": "Who knows the most about someone in this room?" } },
+        { "id": "mostlikely-hard-013", "text": { "tr": "Kim buradaki biri hakkında en çok şey biliyor?", "en": "Who knows the most about someone in this room?" } },
         { "id": "mostlikely-hard-014", "text": { "tr": "Kim özür dilemekte en çok zorlanır?", "en": "Who finds it hardest to apologise?" } },
         { "id": "mostlikely-hard-015", "text": { "tr": "Kim her şeyi ailesine anlatır?", "en": "Who tells their family everything?" } }
       ]
@@ -126,13 +126,12 @@
         { "id": "mostlikely-spicy-008", "text": { "tr": "Kim iki kişiyle aynı anda yazışır?", "en": "Who texts two people at once?" } },
         { "id": "mostlikely-spicy-009", "text": { "tr": "Kim bir arkadaşının eskisiyle çıkar?", "en": "Who dates a friend's ex?" } },
         { "id": "mostlikely-spicy-010", "text": { "tr": "Kim bir ilişkide daha çok emek verir?", "en": "Who puts more into a relationship?" } },
-        { "id": "mostlikely-spicy-011", "text": { "tr": "Kim bir bakışla anlaşır?", "en": "Who flirts with just a look?" } },
+        { "id": "mostlikely-spicy-011", "text": { "tr": "Kim bakarak flört eder, tek kelime etmez?", "en": "Who flirts with a look and never a word?" } },
         { "id": "mostlikely-spicy-012", "text": { "tr": "Kim tanıştığı gün âşık olur?", "en": "Who falls in love on day one?" } },
         { "id": "mostlikely-spicy-013", "text": { "tr": "Kim bir eskisinin profiline en çok bakar?", "en": "Who checks an ex's profile the most?" } },
         { "id": "mostlikely-spicy-014", "text": { "tr": "Kim bir öpücüğü en çok abartır?", "en": "Who makes the biggest deal out of a kiss?" } },
-        { "id": "mostlikely-spicy-015", "text": { "tr": "Kim burada en çok sır saklıyor?", "en": "Who is hiding the most in this room?" } }
+        { "id": "mostlikely-spicy-015", "text": { "tr": "Kim bir gecede âşık olduğunu söyler?", "en": "Who says ‘I love you’ after one night?" } }
       ]
     }
-
   ]
 }

@@ -1,5 +1,6 @@
 package com.mehmetbozkurt.clink.game.mostlikely
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -7,7 +8,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +27,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,6 +37,7 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import com.mehmetbozkurt.clink.content.Level
 import com.mehmetbozkurt.clink.resources.Res
 import com.mehmetbozkurt.clink.resources.done_button
+import com.mehmetbozkurt.clink.resources.game_mostlikely
 import com.mehmetbozkurt.clink.resources.ml_chip
 import com.mehmetbozkurt.clink.resources.ml_instruction
 import com.mehmetbozkurt.clink.resources.ml_no_penalty
@@ -82,7 +87,11 @@ fun MostLikelyScreen(players: List<String>, level: Level, onEnd: () -> Unit) {
     )
 
     ScreenColumn {
-        TopBar(navigation = TopBarNav.Close, onNavigate = { confirmEnd = true })
+        TopBar(
+            navigation = TopBarNav.Close,
+            onNavigate = { confirmEnd = true },
+            title = stringResource(Res.string.game_mostlikely),
+        )
         when (val phase = state.phase) {
             MlPhase.NoPrompts -> Notice(stringResource(Res.string.ml_no_prompts), onDone = onEnd)
             is MlPhase.ShowingPrompt -> Prompt(
@@ -186,20 +195,24 @@ private fun ColumnScope.Penalty(
             color = ClinkColors.Pink,
             style = MaterialTheme.typography.displaySmall,
         )
-        SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
-            LevelTag(level)
+        if (text == null) {
+            // No card to show, so no card: a penalty poster saying there are no penalties reads as a contradiction.
             Text(
-                text = stringResource(Res.string.penalty_title).toUpperCase(Locale.current),
-                modifier = Modifier.padding(top = 14.dp),
-                color = ClinkColors.Ink,
-                style = MaterialTheme.typography.headlineMedium,
+                text = stringResource(Res.string.ml_no_penalty),
+                color = ClinkColors.Muted,
+                style = MaterialTheme.typography.bodyLarge,
             )
-            Text(
-                text = text ?: stringResource(Res.string.ml_no_penalty),
-                modifier = Modifier.padding(top = 8.dp),
-                color = ClinkColors.Ink,
-                style = cardTextStyle(),
-            )
+        } else {
+            SlapPoster(key = slapKey, modifier = Modifier.fillMaxWidth(), rotation = -1f) {
+                LevelTag(level)
+                Text(
+                    text = stringResource(Res.string.penalty_title).toUpperCase(Locale.current),
+                    modifier = Modifier.padding(top = 14.dp),
+                    color = ClinkColors.Ink,
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+                Text(text = text, modifier = Modifier.padding(top = 8.dp), color = ClinkColors.Ink, style = cardTextStyle())
+            }
         }
     }
     PrimaryButton(text = stringResource(Res.string.penalty_done), onClick = onDone, modifier = Modifier.fillMaxWidth())
@@ -243,7 +256,15 @@ private fun ColumnScope.Notice(text: String, onDone: () -> Unit) {
 /** A quiet escape under the main button: readable, but never the thing the eye lands on first. */
 @Composable
 private fun TextAction(text: String, onClick: () -> Unit) {
-    androidx.compose.material3.TextButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Text(text = text, color = ClinkColors.Muted, style = MaterialTheme.typography.bodyMedium)
-    }
+    Text(
+        text = text,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(role = Role.Button, onClick = onClick)
+            .wrapContentHeight(Alignment.CenterVertically),
+        textAlign = TextAlign.Center,
+        color = ClinkColors.Muted,
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }
